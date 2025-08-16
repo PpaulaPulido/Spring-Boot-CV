@@ -1,0 +1,264 @@
+:root {
+  --primary: #004aad;
+  --primary-light: #1d5fde;
+  --secondary: #f5f6fa;
+  --text-dark: #222;
+  --text-light: #fff;
+  --radius: 10px;
+  --shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+/* ===== HERO ===== */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 2rem;
+  padding: 4rem 2rem;
+}
+
+.hero-text h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.kicker {
+  font-size: 0.9rem;
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.cta-row {
+  margin: 1.5rem 0;
+}
+
+.cta {
+  background: var(--primary);
+  color: var(--text-light);
+}
+
+.ghost {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+
+.ghost:hover {
+  background: var(--primary-light);
+  color: var(--text-light);
+}
+
+.preview img {
+  width: 100%;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: transform 0.4s ease;
+}
+
+.preview img:hover {
+  transform: scale(1.03);
+}
+
+/* ===== FEATURES ===== */
+.feature-band {
+  background: var(--primary);
+  color: var(--text-light);
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  background: rgba(255,255,255,0.05);
+  padding: 1.5rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255,255,255,0.1);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+/* ===== TEMPLATES ===== */
+.section {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.template-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.chip {
+  background: #fff;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s;
+  cursor: pointer;
+}
+
+.chip img {
+  width: 200px;
+  height: auto;
+}
+
+.chip:hover {
+  transform: translateY(-5px);
+}
+
+.label {
+  padding: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  background: var(--secondary);
+}
+
+.badge-mini {
+  background: var(--primary);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius);
+}
+
+/* ===== TESTIMONIALS ===== */
+.testimonials {
+  background: var(--secondary);
+  padding: 4rem 2rem;
+}
+
+.quote-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.quote {
+  background: #fff;
+  padding: 1rem;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.q-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  background: var(--primary);
+  border-radius: 50%;
+}
+
+/* ===== TIPS ===== */
+.tips {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 4rem 2rem;
+  background: #f8faff;
+  border-radius: 12px;
+  flex-wrap: wrap; /* para responsive */
+}
+
+.tip-card {
+  flex: 1 1 180px;
+  max-width: 500px;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.tip-card h3 {
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+  color: #0a3d62;
+  text-align: center;
+}
+
+.tip-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.tip-card ul li {
+  background: #e8f1ff;
+  padding: 0.8rem 1.2rem;
+  border-radius: 8px;
+  text-align: center;
+  width: fit-content;
+  font-size: 1rem;
+  color: #34495e;
+  transition: all 0.3s ease;
+}
+
+.tip-card ul li:hover {
+  background: #1e90ff;
+  color: white;
+  transform: scale(1.05);
+}
+
+.tip-media {
+  flex: 0.5 0 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.tip-media img {
+  max-width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  object-fit: cover;
+  transition: transform 0.4s ease-in-out; 
+}
+
+.tip-media:hover img {
+  transform: scale(1.20);
+}
+
+@media (max-width: 768px) {
+  .tips {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .tip-media img {
+    max-width: 60%;
+  }
+}

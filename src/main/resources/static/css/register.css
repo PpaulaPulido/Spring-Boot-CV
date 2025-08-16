@@ -1,0 +1,193 @@
+:root {
+    --primary: #004aad;
+    --primary-light: #3b77e6;
+    --secondary: #f5f6fa;
+    --text-dark: #222;
+    --text-light: #fff;
+    --radius: 10px;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Contenedor principal */
+.register-container {
+    display: flex;
+    max-width: 1100px;
+    margin: 2rem auto;
+    background:
+        linear-gradient(#fff, #fff) padding-box,
+        linear-gradient(145deg, transparent 35%, #004aad, #1d5fde) border-box;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+/* Formulario */
+.register-form {
+    flex: 1;
+    padding: 2rem;
+}
+
+.register-form h1 {
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+
+.register-form p {
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+    color: #555;
+}
+
+input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    background-color: #f9fbff;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 8px rgba(0, 74, 173, 0.4);
+    background-color: #fff;
+}
+
+/* Estilos para el input de teléfono */
+#phone {
+    width: 500px;
+    padding-left: 60px;
+    height: 40px;
+    border: 2px solid var(--primary);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    background-color: #f9fbff;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+}
+
+#phone:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 8px rgba(0, 74, 173, 0.4);
+    background-color: #fff;
+}
+
+/* Contenedor y lista de banderas (plugin) */
+.intl-tel-input {
+    width: 100% !important;
+    position: relative;
+}
+
+.intl-tel-input .flag-container {
+    padding: 0 0 0 8px !important;
+}
+
+.intl-tel-input .country-list {
+    width: 300px !important;
+}
+
+.intl-tel-input input[type="tel"]::placeholder {
+    color: transparent !important;
+}
+
+/* Botón de registro */
+.btn-submit {
+    width: 100%;
+    padding: 0.8rem;
+    background: var(--primary);
+    color: white;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-submit:hover {
+    background: var(--primary-light);
+}
+
+/* Texto de login */
+.login-text {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
+.login-text a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Imagen de la derecha */
+.image-content {
+    flex: 1;
+    width: 100%;
+    background-image: url('https://images.unsplash.com/photo-1661983228573-731da056ea20?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.register-image {
+    background-color: #f0f4ff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    flex: 1;
+}
+
+/* Estilos para el grupo de contraseña */
+.password-group {
+  position: relative;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  color: var(--primary);
+  transition: all 0.3s ease;
+}
+
+.eye-btn:hover {
+  color: var(--primary-light);
+}
+
+.eye-icon {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+#password, #confirmPassword {
+  padding-right: 40px;
+}

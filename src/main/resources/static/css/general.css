@@ -1,0 +1,255 @@
+:root {
+  --primary: #004aad;
+  --primary-light: #1d5fde;
+  --secondary: #f5f6fa;
+  --text-dark: #222;
+  --text-light: #fff;
+  --radius: 10px;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  color: var(--text-dark);
+  background-color: var(--secondary);
+  line-height: 1.5;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  background: var(--primary);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  color: var(--text-light);
+  font-weight: bold;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.logo-badge {
+  background: var(--text-light);
+  color: var(--primary);
+  border-radius: 50%;
+  font-weight: bold;
+  padding: 0.4rem 0.6rem;
+  margin-right: 0.5rem;
+}
+
+.nav-links a {
+  position: relative;
+  color: var(--text-light);
+  text-decoration: none;
+  margin: 0 0.8rem;
+  transition: color 0.3s;
+  padding-bottom: 3px;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background-color: var(--secondary);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--secondary);
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.actions .btn {
+  margin-left: 0.5rem;
+}
+
+/* Estilos base del botón */
+.btn {
+  display: inline-block; 
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.btn.primary {
+  background: var(--text-light);
+  color: var(--primary);
+}
+
+.btn.secondary {
+  background: transparent;
+  border: 1px solid var(--text-light);
+  color: var(--text-light);
+}
+
+.btn.primary:hover {
+  background: var(--primary-light);
+  color: var(--text-light);
+}
+
+.btn.secondary:hover {
+  background: var(--text-light);
+  color: var(--primary);
+}
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--primary);
+  color: var(--text-light);
+  padding: 1rem 2rem;
+  text-align: center;
+}
+
+.foot-logos {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: var(--text-light);
+  border-radius: 50%;
+}
+
+/* ===== ANIMATIONS ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-links {
+    display: none;
+  }
+}
+
+/* Personaliza el borde del SweetAlert */
+.border-red {
+  border: 2px solid rgb(100, 0, 0) !important;
+  box-shadow: 0 0 15px rgba(100, 0, 0, 0.3) !important;
+  border-radius: 10px !important;
+  background: white !important;
+  max-width: 500px !important;
+}
+
+.icon-swal {
+  color: rgb(100, 0, 0) !important;
+}
+
+.title-swal {
+  color: #000 !important;
+  font-size: 24px !important;
+  font-weight: bold !important;
+  margin-bottom: 10px !important;
+  display: block !important;
+}
+
+/* Contenido del mensaje */
+.div-swal {
+  text-align: center !important;
+  color: black !important;
+  font-size: 20px !important;
+  line-height: 1.5 !important;
+  padding: 0 20px !important;
+}
+
+.btn-red {
+  background-color: rgb(155, 20, 20) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 5px !important;
+  padding: 10px 30px !important;
+  font-weight: bold !important;
+  transition: all 0.3s !important;
+  margin-top: 20px !important;
+  font-size: 16px !important;
+  cursor: pointer;
+}
+
+.btn-red:hover {
+  background-color: rgb(179, 2, 2) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Éxito */
+.border-green {
+  border: 2px solid rgb(0, 100, 0) !important;
+  box-shadow: 0 0 15px rgba(0, 100, 0, 0.3) !important;
+  border-radius: 10px !important;
+  background: white !important;
+  max-width: 500px !important;
+}
+
+.icon-swal-green {
+  color: rgb(0, 100, 0) !important;
+}
+
+.btn-green {
+  background-color: rgb(20, 155, 20) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 5px !important;
+  padding: 10px 30px !important;
+  font-weight: bold !important;
+  transition: all 0.3s !important;
+  margin-top: 20px !important;
+  font-size: 16px !important;
+  cursor: pointer;
+}
+
+.btn-green:hover {
+  background-color: rgb(2, 179, 2) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
