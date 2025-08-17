@@ -1,3 +1,9 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 :root {
   --primary: #004aad;
   --primary-light: #1d5fde;
@@ -8,21 +14,23 @@
   --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 a {
   text-decoration: none;
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
   font-family: 'Segoe UI', sans-serif;
   color: var(--text-dark);
   background-color: var(--secondary);
   line-height: 1.5;
+}
+
+main {
+  flex: 1;
 }
 
 /* ===== NAVBAR ===== */
@@ -222,7 +230,7 @@ footer {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
 }
 
-/* Éxito */
+/* alert success */
 .border-green {
   border: 2px solid rgb(0, 100, 0) !important;
   box-shadow: 0 0 15px rgba(0, 100, 0, 0.3) !important;

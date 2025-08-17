@@ -58,3 +58,20 @@ export function showAlert({ icon = 'info', title = '', html = '', draggable = fa
         draggable
     });
 }
+
+// Control para el campo de confirmación de contraseña
+export function setupPasswordToggle(buttonId, inputId) {
+    const toggleButton = document.getElementById(buttonId);
+    const passwordInput = document.getElementById(inputId);
+    
+    toggleButton.addEventListener("click", function() {
+        const isPassword = passwordInput.type === "password";
+        const eyeOpen = this.querySelector('.eye-open');
+        const eyeClosed = this.querySelector('.eye-closed');
+        
+        passwordInput.type = isPassword ? "text" : "password";
+        eyeOpen.style.display = isPassword ? "none" : "block";
+        eyeClosed.style.display = isPassword ? "block" : "none";
+        this.setAttribute('aria-label', isPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
+    });
+}

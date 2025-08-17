@@ -1,44 +1,87 @@
-import { initPhoneInput, showAlert } from './functions.js';
+import { initPhoneInput, showAlert, setupPasswordToggle } from './functions.js';
 
 document.addEventListener('DOMContentLoaded', function () {
     const formRegister = document.getElementById("registerForm");
     const iti = initPhoneInput("#phone");
+    
+    // Obtener referencias a todos los campos
+    const firstNameInput = document.getElementById("firstName");
+    const lastNameInput = document.getElementById("lastName");
+    const emailInput = document.getElementById("email");
+    const phoneInput = document.getElementById("phone");
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPassword");
 
     formRegister.addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        // Obtener datos del formulario
+        // Validar campos vacíos
+        if (!firstNameInput.value.trim() || 
+            !lastNameInput.value.trim() || 
+            !emailInput.value.trim() || 
+            !phoneInput.value.trim() || 
+            !passwordInput.value || 
+            !confirmPasswordInput.value) {
+            
+            // Mostrar alerta general
+            showAlert({
+                icon: 'error',
+                title: 'Campos incompletos',
+                html: 'Por favor completa todos los campos requeridos.'
+            });
+
+            // Enfocar el primer campo vacío encontrado
+            if (!firstNameInput.value.trim()) {
+                firstNameInput.focus();
+            } else if (!lastNameInput.value.trim()) {
+                lastNameInput.focus();
+            } else if (!emailInput.value.trim()) {
+                emailInput.focus();
+            } else if (!phoneInput.value.trim()) {
+                phoneInput.focus();
+            } else if (!passwordInput.value) {
+                passwordInput.focus();
+            } else {
+                confirmPasswordInput.focus();
+            }
+            
+            return;
+        }
+
+        //datos del formulario
         const formData = {
-            firstName: document.getElementById("firstName").value.trim(),
-            lastName: document.getElementById("lastName").value.trim(),
-            email: document.getElementById("email").value.trim(),
-            phone: iti.getNumber(), // Obtiene número completo con código de país
-            password: document.getElementById("password").value,
-            confirmPassword: document.getElementById("confirmPassword").value
+            firstName: firstNameInput.value.trim(),
+            lastName: lastNameInput.value.trim(),
+            email: emailInput.value.trim(),
+            phone: iti.getNumber(),
+            password: passwordInput.value,
+            confirmPassword: confirmPasswordInput.value
         };
 
-        // Validación de email
+        //Validacion correo
         const emailRegex = /^(?=[^\s@]*[a-zA-Z])[^\s@]+@[^\s@]+\.(com|co|net|org)$/;
         if (!emailRegex.test(formData.email)) {
             showAlert({
                 icon: 'error',
                 title: 'Correo inválido',
-                // html: 'Debe incluir letras antes de @ y terminar en .com, .co, .net o .org'
+                html: 'Debe incluir letras antes de @ y terminar en .com, .co, .net o .org'
             });
+            emailInput.focus();
             return;
         }
 
-        // Validación de teléfono
+        //validacion numero
         if (!iti.isValidNumber()) {
             showAlert({
                 icon: 'error',
                 title: 'Teléfono inválido',
                 html: 'El número no es válido para el país seleccionado'
             });
+            phoneInput.focus();
             return;
         }
 
-        // Validación de contraseña
+        //validacion contraseña
         const passRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
         if (!passRegex.test(formData.password)) {
             showAlert({
@@ -46,20 +89,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 title: 'Contraseña débil',
                 html: 'Debe tener mínimo 8 caracteres, una mayúscula, un número y un caracter especial'
             });
+            passwordInput.focus();
             return;
         }
 
-        // Confirmación de contraseña
         if (formData.password !== formData.confirmPassword) {
             showAlert({
                 icon: 'error',
                 title: 'Contraseñas no coinciden',
                 html: 'Las contraseñas ingresadas no son iguales'
             });
+            confirmPasswordInput.focus();
             return;
         }
 
-        // Enviar datos al backend
+        // Enviar datos al backe
         try {
             const response = await fetch("/auth/register", {
                 method: "POST",
@@ -72,7 +116,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const result = await response.json();
 
             if (!response.ok) {
-                // Mostrar mensaje de error del backend
                 showAlert({
                     icon: 'error',
                     title: result.message,
@@ -86,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 title: '¡Registro exitoso!',
                 html: result.message,
                 willClose: () => {
-                    window.location.href = "/dashboard"; // Redirigir después de cerrar el alert
+                    window.location.href = "/dashboard";
                 }
             });
 
@@ -104,23 +147,8 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Error:', error);
         }
     });
-});
 
-// Control para el campo de confirmación de contraseña
-document.getElementById("toggleConfirmPassword").addEventListener("click", function () {
-    const confirmPasswordInput = document.getElementById("confirmPassword");
-    const eyeOpen = this.querySelector('.eye-open');
-    const eyeClosed = this.querySelector('.eye-closed');
-    
-    if (confirmPasswordInput.type === "password") {
-        confirmPasswordInput.type = "text";
-        eyeOpen.style.display = "none";
-        eyeClosed.style.display = "block";
-        this.setAttribute('aria-label', 'Ocultar contraseña');
-    } else {
-        confirmPasswordInput.type = "password";
-        eyeOpen.style.display = "block";
-        eyeClosed.style.display = "none";
-        this.setAttribute('aria-label', 'Mostrar contraseña');
-    }
+    // Configurar toggles de contraseña
+    setupPasswordToggle("togglePassword", "password");
+    setupPasswordToggle("toggleConfirmPassword", "confirmPassword");
 });
