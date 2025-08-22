@@ -1,71 +1,64 @@
-import {showAlert, setupPasswordToggle } from './functions.js';
+import { setupPasswordToggle } from './functions.js';
 
-document.addEventListener('DOMContentLoaded', function () {
-    const formLogin = document.getElementById("loginForm");
-    const emailInput = document.getElementById("email");
+document.addEventListener("DOMContentLoaded", () => {
+    const loginForm = document.getElementById("loginForm");
+    const usernameInput = document.getElementById("username");
     const passwordInput = document.getElementById("password");
 
-    formLogin.addEventListener("submit", async function (e) {
-        e.preventDefault();
+    // Función para mostrar errores debajo del campo
+    function showError(input, message) {
+        const formGroup = input.closest(".form-group");
+        const errorSpan = formGroup.querySelector(".error-message");
+        if (errorSpan) {
+            errorSpan.textContent = message;
+            errorSpan.classList.add("has-error");
+        }
+        input.classList.add("is-invalid");
+    }
 
-        // Validar campos vacíos
-        if (!emailInput.value.trim() || !passwordInput.value) {
-            showAlert({
-                icon: 'error',
-                title: 'Campos requeridos',
-                html: 'Por favor, completa todos los campos'
-            });
-            
-            // Enfocar el primer campo vacío
-            if (!emailInput.value.trim()) {
-                emailInput.focus();
-            } else {
-                passwordInput.focus();
-            }
-            return;
+    // Función para ocultar errores
+    function hideError(input) {
+        const formGroup = input.closest(".form-group");
+        const errorSpan = formGroup.querySelector(".error-message");
+        if (errorSpan) {
+            errorSpan.textContent = "";
+            errorSpan.classList.remove("has-error");
+        }
+        input.classList.remove("is-invalid");
+    }
+
+    // Configura la funcionalidad del "ojito" para la contraseña
+    setupPasswordToggle("togglePassword", "password");
+
+    loginForm.addEventListener("submit", (e) => {
+        let hasErrors = false;
+
+        // Limpia los errores anteriores
+        hideError(usernameInput);
+        hideError(passwordInput);
+
+        // Validación de campos vacíos
+        if (usernameInput.value.trim() === "") {
+            showError(usernameInput, "El correo electrónico es requerido.");
+            hasErrors = true;
         }
 
-        const formData = {
-            email: emailInput.value.trim(),
-            password: passwordInput.value,
-        };
-
-        try {
-            const response = await fetch("/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(formData),
-            });
-
-            const result = await response.json();
-
-            if (!response.ok) {
-                // Mostrar correo no existe o contraseña incorrecta
-                showAlert({
-                    icon: 'error',
-                    title: result.message,
-                });
-                return;
-            }
-
-            // Login exitoso
-            showAlert({
-                icon: 'success',
-                title: '¡Bienvenido!',
-                willClose: () => {
-                    window.location.href = "/dashboard"; // Redirigir al dashboard
-                }
-            });
-
-        } catch (error) {
-            showAlert({
-                icon: 'error',
-                title: 'Error de conexión',
-                html: 'No se pudo conectar con el servidor. Intenta nuevamente.'
-            });
-            console.error('Error:', error);
+        if (passwordInput.value.trim() === "") {
+            showError(passwordInput, "La contraseña es requerida.");
+            hasErrors = true;
         }
+
     });
 
-    setupPasswordToggle("togglePassword", "password");
+    usernameInput.addEventListener("blur", () => {
+        if (usernameInput.value.trim() !== "") {
+            hideError(usernameInput);
+        }
+    });
+    
+    passwordInput.addEventListener("blur", () => {
+        if (passwordInput.value.trim() !== "") {
+            hideError(passwordInput);
+        }
+    });
 });

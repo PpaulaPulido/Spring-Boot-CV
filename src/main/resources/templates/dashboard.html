@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - CurrículumCraft</title>
+    <link rel="stylesheet" href="/css/general.css" />
+    <link rel="stylesheet" href="/css/dashboard.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <div class="logo">
+          <a class="logo" href="/user/dashboard" aria-label="CurrículumCraft">
+            <div class="logo-badge">CC</div>
+            <span class="logo-title">CurrículumCraft</span>
+          </a>
+        </div>
+        <div class="nav-links">
+          <div class="dropdown">
+            <button class="dropbtn">Mi perfil ▾</button>
+            <div class="dropdown-content">
+              <a href="#">Configuración</a>
+              <a href="#" id="logoutBtn">Cerrar sesión</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Bienvenida -->
+    <section class="welcome">
+      <div class="welcome-text">
+        <h2>Hola! <span th:text="${username}">Usuario</span></h2>
+        <p>Crea tu CV en minutos con plantillas profesionales y personalización sencilla.</p>
+      </div>
+      <div class="welcome-actions">
+        <button class="btn-primary"><a href="/cv/templateCv">Crear nuevo CV</a></button>
+      </div>
+    </section>
+
+    <!-- Panel principal -->
+    <main class="dashboard">
+      <!-- Consejos -->
+      <div class="box consejos">
+        <h3>Consejos para tu CV</3>
+        <div class="tip">
+          📊 Logros medibles<br /><small>Usa números: "Aumenté 25% las ventas".</small>
+        </div>
+        <div class="tip">
+          📌 Claridad y orden<br /><small>Prioriza secciones y usa viñetas.</small>
+        </div>
+        <div class="tip">
+          📝 1 página si es posible<br /><small>Para junior/intermedio, conciso es mejor.</small>
+        </div>
+      </div>
+    </main>
+
+    <!-- Mis CVs -->
+    <section class="mis-cvs">
+      <div class="header-cvs">
+        <h3>Mis CVs</h3>
+      </div>
+
+      <div class="cv-list">
+        <div class="cv-card">
+          <h4>CV - Marketing</h4>
+          <p>Editado: 12 Jun 2025</p>
+          <div class="cv-actions">
+            <button class="btn-secondary">Editar</button>
+            <button class="btn-secondary">Ver</button>
+            <button class="btn-danger">Eliminar</button>
+          </div>
+        </div>
+
+        <div class="cv-card">
+          <h4>CV - Producto</h4>
+          <p>Editado: 03 Jun 2025</p>
+          <div class="cv-actions">
+            <button class="btn-secondary">Editar</button>
+            <button class="btn-secondary">Ver</button>
+            <button class="btn-danger">Eliminar</button>
+          </div>
+        </div>
+
+        <div class="cv-card">
+          <h4>CV - UX</h4>
+          <p>Editado: 28 May 2025</p>
+          <div class="cv-actions">
+            <button class="btn-secondary">Editar</button>
+            <button class="btn-secondary">Ver</button>
+            <button class="btn-danger">Eliminar</button>
+          </div>
+        </div>
+
+        <div class="cv-card empty">
+          <p>Aún no tienes más CVs</p>
+          <button class="btn-primary">Crear otro</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-inner">
+        <span>&copy; 2025 CurrículumCraft</span>
+        <div class="foot-logos">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+    </footer>
+
+    <script type="module" src="/js/dashboard.js"></script>
+  </body>
+</html>

@@ -265,6 +265,39 @@ input:focus {
   padding-right: 40px;
 }
 
+/* Estilos para los mensajes de error */
+.form-message {
+  text-align: center;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.error-message-container {
+  background-color: #fcebeb;
+  color: #c0392b;
+  border: 1px solid #c0392b;
+}
+
+.error-message {
+  display: block;
+  margin-top: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.has-error {
+  background-color: #971203;
+  color: #fff;
+  border-radius: 5px;
+  padding: 8px 12px;
+}
+
+.is-invalid {
+  border-color: #971203;
+}
+
 /* ===== Responsive registro ===== */
 @media (max-width: 1024px) {
   .register-container {

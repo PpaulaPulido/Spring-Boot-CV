@@ -2,6 +2,8 @@ package com.cv.springboot.di.app.springboot_cv.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -31,6 +33,9 @@ public class User {
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Summary> summaries = new ArrayList<>();
     
     // Getters y setters
     @PrePersist
@@ -61,4 +66,7 @@ public class User {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public List<Summary> getSummaries() { return summaries; }
+    public void setSummaries(List<Summary> summaries) { this.summaries = summaries; }
 }

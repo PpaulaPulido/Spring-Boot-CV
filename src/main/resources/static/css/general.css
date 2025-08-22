@@ -97,6 +97,51 @@ main {
   margin-left: 0.5rem;
 }
 
+/* Dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropbtn {
+  background: none;
+  border: none;
+  color: var(--text-light);
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.dropbtn:hover {
+  text-decoration: underline;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: var(--secondary);
+  min-width: 160px;
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: var(--primary);
+  padding: 10px 15px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown.show .dropdown-content {
+  display: block;
+}
+
+.dropdown-content a:hover {
+  color: var(--primary-light);
+}
+
 /* Estilos base del botón */
 .btn {
   display: inline-block; 

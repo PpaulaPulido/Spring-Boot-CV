@@ -1,98 +1,90 @@
 package com.cv.springboot.di.app.springboot_cv.controllers;
 
+import com.cv.springboot.di.app.springboot_cv.dto.RegisterRequest;
 import com.cv.springboot.di.app.springboot_cv.models.User;
 import com.cv.springboot.di.app.springboot_cv.services.UserService;
-import org.springframework.http.ResponseEntity; // Para devolver respuestas HTTP
+import jakarta.validation.Valid;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap; // Para crear mapas de respuesta
-import java.util.Map;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/auth")
 public class AuthController {
 
     private final UserService userService;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    //Visualizar el formulario de registro
     @GetMapping("/register")
-    public String registerForm(Model model) {
-        model.addAttribute("user", new User());
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("registerRequest", new RegisterRequest());
         return "register";
     }
 
-    // Visualizar el formulario de inicio de sesión
-    @GetMapping("/login")
-    public String loginForm(Model model) {
-        model.addAttribute("user", new User());
-        return "login";
-    }
-
-    // Manejar el envío del formulario de registro
     @PostMapping("/register")
-    @ResponseBody 
-    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody User newUser) {
-        // Crear una respuesta JSON
-        Map<String, Object> response = new HashMap<>();
-        
-        try {
-            // Validación de email mediante el servicio
-            if (userService.findByEmail(newUser.getEmail()) != null) {
-                response.put("status", "error");
-                response.put("message", "El correo electrónico ya está registrado");
-                return ResponseEntity.badRequest().body(response);
-            }
-            
-            User registeredUser = userService.register(newUser);
-            response.put("status", "success");
-            response.put("message", "Usuario registrado correctamente");
-            response.put("userId", registeredUser.getId());
-            return ResponseEntity.ok(response);
-            
-        } catch (IllegalArgumentException e) {
-            response.put("status", "error");
-            response.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        } 
+    public String registerUser(@Valid @ModelAttribute() RegisterRequest registerRequest,
+            BindingResult result,
+            RedirectAttributes redirectAttributes) {
+
+        // Validaciones personalizadas a nivel de negocio
+        if (userService.findByEmail(registerRequest.getEmail()).isPresent()) {
+            result.rejectValue("email", "email.exists", "Este correo electrónico ya está registrado.");
+        }
+
+        if (result.hasErrors()) {
+            // Si hay errores, agregamos el objeto con los errores al modelo flash y
+            // redireccionamos
+            redirectAttributes.addFlashAttribute("registerRequest", registerRequest);
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.registerRequest",
+                    result);
+            return "redirect:/auth/register";
+        }
+
+        // Crear y guardar el usuario
+        User user = new User();
+        user.setFirstName(registerRequest.getFirstName());
+        user.setLastName(registerRequest.getLastName());
+        user.setEmail(registerRequest.getEmail());
+        user.setPhone(registerRequest.getPhone());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+
+        userService.register(user);
+
+        redirectAttributes.addFlashAttribute("successMessage", "¡Registro exitoso! Ya puedes iniciar sesión.");
+        return "redirect:/auth/login?registerSuccess=true";
     }
 
-    // Manejar el envío del formulario de inicio de sesión
-    @PostMapping("/login")
-    @ResponseBody
-    public ResponseEntity<Map<String, Object>> loginUser(@RequestBody User loginUser) {
-        Map<String, Object> response = new HashMap<>();
-        
-        try {
-            //Verificar si el correo existe
-            User user = userService.findByEmail(loginUser.getEmail());
-            if (user == null) {
-                response.put("status", "error");
-                response.put("message", "El correo no está registrado");
-                return ResponseEntity.status(404).body(response); 
-            }
+    // Método para la página de inicio de sesión
+    @GetMapping("/login")
+    public String showLoginForm(@RequestParam(required = false) String error,
+            @RequestParam(required = false) String logout,
+            @RequestParam(required = false) String registerSuccess,
+            Model model) {
 
-            // Verificar contraseña
-            if (!user.getPassword().equals(loginUser.getPassword())) {
-                response.put("status", "error");
-                response.put("message", "Contraseña incorrecta");
-                return ResponseEntity.status(401).body(response); 
-            }
-
-            //Login exitoso
-            response.put("status", "success");
-            response.put("message", "Inicio de sesión exitoso");
-            return ResponseEntity.ok(response);
-
-        } catch (Exception e) {
-            response.put("status", "error");
-            response.put("message", "Error en el servidor: " + e.getMessage());
-            return ResponseEntity.internalServerError().body(response); // 500 Internal Server Error
+        if ("true".equals(error)) {
+            model.addAttribute("errorMessage", "Correo o Contraseña Incorrectos");
         }
+
+        if ("true".equals(logout)) {
+            model.addAttribute("successMessage", "Has cerrado sesión exitosamente");
+        }
+
+        if ("true".equals(registerSuccess)) {
+            model.addAttribute("successMessage", "¡Registro exitoso! Ya puedes iniciar sesión.");
+        }
+
+        return "login";
     }
 }

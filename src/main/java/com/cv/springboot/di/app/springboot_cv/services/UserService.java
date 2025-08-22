@@ -1,8 +1,10 @@
 package com.cv.springboot.di.app.springboot_cv.services;
 
 import com.cv.springboot.di.app.springboot_cv.models.User;
-import com.cv.springboot.di.app.springboot_cv.repositorios.UserRepository;
+import com.cv.springboot.di.app.springboot_cv.repositories.UserRepository;
+
 import org.springframework.stereotype.Service;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -13,7 +15,7 @@ public class UserService {
         this.userRepo = userRepo;
     }
 
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         return userRepo.findByEmail(email);
     }
 

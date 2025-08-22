@@ -1,3 +1,8 @@
+document.addEventListener("DOMContentLoaded", () => {
+  createResumePreview();
+});
+
+
 function createResumePreview() {
   const previewSection = document.createElement("section");
   previewSection.classList.add("resume-preview");
@@ -45,5 +50,3 @@ function createResumePreview() {
 
   document.getElementById("resumePreviewContainer").appendChild(previewSection);
 }
-
-document.addEventListener("DOMContentLoaded", createResumePreview);

@@ -1,91 +1,106 @@
 <!DOCTYPE html>
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>CurriculumCraft - Iniciar Sesión</title>
-    <link rel="stylesheet" href="/css/general.css" />
-    <link rel="stylesheet" href="/css/register.css" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-      <div class="navbar-inner">
-        <div class="logo">
-          <a class="logo" href="/" aria-label="CurrículumCraft">
-            <div class="logo-badge">CC</div>
-            <span class="logo-title">CurrículumCraft</span>
-          </a>
-        </div>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CurriculumCraft - Iniciar Sesión</title>
+  <link rel="stylesheet" href="/css/general.css" />
+  <link rel="stylesheet" href="/css/register.css" />
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="logo">
+        <a class="logo" href="/" aria-label="CurrículumCraft">
+          <div class="logo-badge">CC</div>
+          <span class="logo-title">CurrículumCraft</span>
+        </a>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <!-- Contenedor principal -->
-    <main class="login-container">
-      <section class="login-form">
-        <h1>Bienvenido de nuevo</h1>
-        <p>Inicia sesión para continuar creando tu CV profesional.</p>
+  <main class="login-container">
+    <section class="login-form">
+      <h1>Bienvenido de nuevo</h1>
+      <p>Inicia sesión para continuar creando tu CV profesional.</p>
 
-        <form id="loginForm" novalidate>
-          <div class="form-group">
-            <label for="email">Correo electrónico</label>
-            <input type="email" id="email" name="email" placeholder="ejemplo@correo.com" required />
-          </div>
+      <form id="loginForm" th:action="@{/auth/login}" method="post" novalidate>
 
-          <div class="form-group password-group">
-            <label for="password">Contraseña</label>
-            <div class="input-wrapper">
-              <input type="password" id="password" name="password" required />
-              <button type="button" id="togglePassword" class="eye-btn" aria-label="Mostrar contraseña">
-                <svg class="eye-icon" viewBox="0 0 24 24">
-                  <path class="eye-open" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
-                  <path class="eye-closed" d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" style="display:none" />
-                </svg>
-              </button>
-            </div>
-            <small class="error" id="passwordError"></small>
-          </div>
-
-          <button type="submit" class="btn-submit">Iniciar sesión</button>
-
-          <div class="extra-links">
-            <a href="#">¿Olvidaste tu contraseña?</a>
-          </div>
-        </form>
-
-        <p class="register-text">
-          ¿No tienes cuenta?
-          <a href="/auth/register">Regístrate</a>
-        </p>
-      </section>
-
-      <!-- Imagen lateral -->
-      <section class="login-image">
-        <div class="image-card">
-          <div class="badge">Inicia rápido</div>
-          <img src="https://images.unsplash.com/photo-1661983228573-731da056ea20?q=80&w=1170&auto=format&fit=crop" alt="Laptop sobre escritorio" />
-          <ul class="features">
-            <li>✏️ Personalización sencilla</li>
-            <li>📑 Plantillas modernas</li>
-            <li>📄 Exporta en PDF</li>
-          </ul>
+        <!-- Mensaje de error -->
+        <div th:if="${errorMessage}" class="form-message error-message-container">
+          <span th:text="${errorMessage}"></span>
         </div>
-      </section>
-    </main>
 
-    <!-- Footer -->
-    <footer>
-      <div class="footer-inner">
-        <span>&copy; 2025 CurrículumCraft</span>
-        <div class="foot-logos">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
+        <!-- Mensaje de éxito -->
+        <div th:if="${successMessage}" class="form-message success-message-container">
+          <span th:text="${successMessage}"></span>
         </div>
+
+        <div class="form-group">
+          <label for="username">Correo electrónico</label>
+          <input type="email" id="username" name="username" placeholder="ejemplo@correo.com" required />
+          <span class="error-message"></span>
+        </div>
+
+        <div class="form-group password-group">
+          <label for="password">Contraseña</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" name="password" required />
+            <button type="button" id="togglePassword" class="eye-btn" aria-label="Mostrar contraseña">
+              <svg class="eye-icon" viewBox="0 0 24 24">
+                <path class="eye-open"
+                  d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+                <path class="eye-closed"
+                  d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z"
+                  style="display:none" />
+              </svg>
+            </button>
+          </div>
+          <span class="error-message"></span>
+        </div>
+
+        <button type="submit" class="btn-submit">Iniciar sesión</button>
+
+        <div class="extra-links">
+          <a href="#">¿Olvidaste tu contraseña?</a>
+        </div>
+      </form>
+
+      <p class="register-text">
+        ¿No tienes cuenta?
+        <a href="/auth/register">Regístrate</a>
+      </p>
+    </section>
+
+    <section class="login-image">
+      <div class="image-card">
+        <div class="badge">Inicia rápido</div>
+        <img src="https://images.unsplash.com/photo-1661983228573-731da056ea20?q=80&w=1170&auto=format&fit=crop"
+          alt="Laptop sobre escritorio" />
+        <ul class="features">
+          <li>✏️ Personalización sencilla</li>
+          <li>📑 Plantillas modernas</li>
+          <li>📄 Exporta en PDF</li>
+        </ul>
       </div>
-    </footer>
+    </section>
+  </main>
 
-    <script type="module" src="/js/login.js"></script>
-  </body>
+  <footer>
+    <div class="footer-inner">
+      <span>&copy; 2025 CurrículumCraft</span>
+      <div class="foot-logos">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script type="module" src="/js/login.js"></script>
+</body>
+
 </html>
