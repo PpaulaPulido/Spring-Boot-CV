@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const addTechnicalSkillBtn = document.getElementById("addTechnicalSkill");
     const softSkillList = document.getElementById("softSkillList");
     const technicalSkillList = document.getElementById("technicalSkillList");
+    const profileImageInput = document.getElementById("profileImageFile");
 
     // Arrays para habilidades
     let softSkills = [];
@@ -18,15 +19,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Función para mostrar errores debajo del campo
     function showError(input, message) {
+        if (!input) return; // ← Validación de null
+
         const formGroup = input.closest(".form-group");
+        if (!formGroup) return;
+
         let errorSpan = formGroup.querySelector(".error-message");
-        
+
         if (!errorSpan) {
             errorSpan = document.createElement("span");
             errorSpan.className = "error-message";
             formGroup.appendChild(errorSpan);
         }
-        
+
         errorSpan.textContent = message;
         errorSpan.classList.add("has-error");
         input.classList.add("is-invalid");
@@ -34,14 +39,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Función para ocultar errores
     function hideError(input) {
+        if (!input) return; // ← Agrega esta validación
         const formGroup = input.closest(".form-group");
+        if (!formGroup) return; // ← Y esta también
+
         const errorSpan = formGroup.querySelector(".error-message");
-        
         if (errorSpan) {
             errorSpan.textContent = "";
             errorSpan.classList.remove("has-error");
         }
-        
+
         input.classList.remove("is-invalid");
     }
 
@@ -49,6 +56,38 @@ document.addEventListener("DOMContentLoaded", function () {
     function hideAllErrors() {
         const inputs = form.querySelectorAll('input, textarea');
         inputs.forEach(input => hideError(input));
+    }
+
+    // Validación de la imagen
+    function validateImage(file) {
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        if (!allowedTypes.includes(file.type)) {
+            return 'Formato de imagen no permitido. Use JPG, PNG o JPEG.';
+        }
+
+        if (file.size > maxSize) {
+            return 'La imagen no puede superar los 5MB.';
+        }
+
+        return null;
+    }
+
+    // Event listener para validar imagen al seleccionar
+    if (profileImageInput) {
+        profileImageInput.addEventListener('change', function (e) {
+            hideError(this);
+            const file = e.target.files[0];
+            if (file) {
+                const error = validateImage(file);
+                if (error) {
+                    showError(this, error);
+                    // Limpiar el input de archivo
+                    this.value = '';
+                }
+            }
+        });
     }
 
     // Agregar habilidades
@@ -61,13 +100,14 @@ document.addEventListener("DOMContentLoaded", function () {
             softSkills.push({ name: skillName, description: "" });
             updateSoftSkillList();
             softSkillInput.value = "";
+            hideError(softSkillInput);
         }
     }
 
     function addTechnicalSkill() {
         const skillName = technicalSkillInput.value.trim();
         const category = technicalSkillCategory.value.trim();
-        
+
         if (skillName) {
             technicalSkills.push({
                 name: skillName,
@@ -76,6 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
             updateTechnicalSkillList();
             technicalSkillInput.value = "";
             technicalSkillCategory.value = "";
+            hideError(technicalSkillInput);
         }
     }
 
@@ -103,10 +144,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function addSkillRemoveListeners() {
         document.querySelectorAll('.remove-skill').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const index = parseInt(this.getAttribute('data-index'));
                 const type = this.getAttribute('data-type');
-                
+
                 if (type === 'soft') {
                     softSkills.splice(index, 1);
                     updateSoftSkillList();
@@ -143,9 +184,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Validación antes de enviar
-    form.addEventListener("submit", function(e) {
-        e.preventDefault(); 
-        hideAllErrors(); 
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        hideAllErrors();
 
         let hasErrors = false;
         let firstErrorField = null;
@@ -167,9 +208,9 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!firstErrorField) firstErrorField = technicalSkillInput;
         }
 
-        // Validar que haya al menos una habilidad técnica
+        // Validar que haya al menos una habilidad blanda
         if (softSkills.length === 0) {
-            showError(softSkillInput, 'Debes agregar al menos una habilidad técnica');
+            showError(softSkillInput, 'Debes agregar al menos una habilidad blanda');
             hasErrors = true;
             if (!firstErrorField) firstErrorField = softSkillInput;
         }
@@ -192,13 +233,24 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
+        // Validar imagen si se seleccionó alguna
+        if (profileImageInput && profileImageInput.files.length > 0) {
+            const file = profileImageInput.files[0];
+            const imageError = validateImage(file);
+            if (imageError) {
+                showError(profileImageInput, imageError);
+                hasErrors = true;
+                if (!firstErrorField) firstErrorField = profileImageInput;
+            }
+        }
+
         if (hasErrors) {
             // Scroll al primer campo con error
             if (firstErrorField) {
                 firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 firstErrorField.focus();
             }
-            
+
             showAlert({
                 icon: 'warning',
                 title: 'Error de validación',
@@ -213,27 +265,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Limpiar validación al escribir
     form.querySelectorAll('input, textarea').forEach(input => {
-        input.addEventListener('input', function() {
+        input.addEventListener('input', function () {
             hideError(this);
         });
     });
 
     // Enter para agregar habilidades
-    softSkillInput.addEventListener('keypress', function(e) {
+    softSkillInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             addSoftSkill();
         }
     });
 
-    technicalSkillInput.addEventListener('keypress', function(e) {
+    technicalSkillInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             addTechnicalSkill();
         }
     });
 
-    technicalSkillCategory.addEventListener('keypress', function(e) {
+    technicalSkillCategory.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             addTechnicalSkill();

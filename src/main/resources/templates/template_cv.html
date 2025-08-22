@@ -35,7 +35,17 @@
   <main class="container">
     <section class="form-section">
       <h2>Crear Hoja de Vida</h2>
-      <form id="cvForm" th:action="@{/cv/create}" th:object="${cvRequest}" method="post" novalidate>
+      <form id="cvForm" th:action="@{/cv/create}" th:object="${cvRequest}" method="post" novalidate enctype="multipart/form-data">
+
+        <div class="form-group">
+          <label for="profileImageFile">Foto de CV</label>
+          <input type="file" id="profileImageFile" th:field="*{profileImageFile}" accept=".jpg,.jpeg,.png"
+            class="form-control">
+          <small>Formatos permitidos: JPG, PNG, JPEG. Máximo 5MB</small>
+          <span class="error-message" th:if="${#fields.hasErrors('profileImageFile')}"
+            th:errors="*{profileImageFile}"></span>
+        </div>
+
         <div class="form-group">
           <label for="fullName">Nombre Completo *</label>
           <input type="text" id="fullName" th:field="*{fullName}" placeholder="Escribe el nombre completo" required />
@@ -130,7 +140,7 @@
       </div>
     </div>
   </footer>
-  
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="/js/template_cv.js"></script>
