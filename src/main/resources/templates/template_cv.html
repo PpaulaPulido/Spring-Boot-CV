@@ -78,7 +78,7 @@
         <div class="form-group">
           <label for="summary">Resumen Profesional</label>
           <textarea id="summary" th:field="*{summary}"
-            placeholder="Breve descripción de tu experiencia y habilidades..." rows="4"></textarea>
+            placeholder="Breve descripción de tu experiencia y habilidades..." rows="15"></textarea>
         </div>
 
         <!-- Habilidades Blandas -->
@@ -117,6 +117,7 @@
         <button type="submit" class="button primary">Crear Hoja de Vida</button>
       </form>
     </section>
+    <div id="resumePreviewContainer"></div>
   </main>
 
   <footer>
@@ -133,6 +134,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="/js/template_cv.js"></script>
+  <script type="module" src="/js/cv.js"></script>
 </body>
 
 </html>
