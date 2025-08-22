@@ -1,6 +1,8 @@
 package com.cv.springboot.di.app.springboot_cv.models;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.Transient;
+import org.springframework.web.multipart.MultipartFile; // Importando MultipartFile para manejar archivos de imagen
 
 @Embeddable
 public class PersonalInfo {
@@ -12,8 +14,11 @@ public class PersonalInfo {
     private String portfolio;
     private String profession;
     private String summary;
+    private String profileImagePath;
 
-    // Getters y Setters
+    @Transient // No se persiste en la base de datos es decir se guarda la ruta mas no el archivo
+    private MultipartFile profileImageFile;
+
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
 
@@ -37,4 +42,10 @@ public class PersonalInfo {
 
     public String getSummary() { return summary; }
     public void setSummary(String summary) { this.summary = summary; }
+
+    public String getProfileImagePath() { return profileImagePath; }
+    public void setProfileImagePath(String profileImagePath) { this.profileImagePath = profileImagePath; }
+
+    public MultipartFile getProfileImageFile() { return profileImageFile; }
+    public void setProfileImageFile(MultipartFile profileImageFile) { this.profileImageFile = profileImageFile; }
 }

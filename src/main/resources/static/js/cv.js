@@ -12,7 +12,7 @@ function createResumePreview() {
       <!-- Columna izquierda -->
       <div class="resume-left">
         <div class="profile-pic">
-          <img id="previewPhoto" src="default.jpg" alt="Foto" />
+          <img id="previewPhoto" src="/images/default.jpg" alt="Foto" />
         </div>
         <p id="previewPhone"></p>
         <p id="previewID"></p>

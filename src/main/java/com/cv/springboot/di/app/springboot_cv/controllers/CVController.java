@@ -8,6 +8,7 @@ import com.cv.springboot.di.app.springboot_cv.services.SummaryService;
 import com.cv.springboot.di.app.springboot_cv.services.TechnicalSkillService;
 import com.cv.springboot.di.app.springboot_cv.services.SoftSkillService;
 import com.cv.springboot.di.app.springboot_cv.services.UserService;
+import com.cv.springboot.di.app.springboot_cv.services.ImageService;
 import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -17,8 +18,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -29,15 +31,21 @@ public class CVController {
     private final TechnicalSkillService technicalSkillService;
     private final SoftSkillService softSkillService;
     private final UserService userService;
+    private final ImageService imageService;
+
+    @Value("${app.upload.dir:uploads/images/}")
+    private String uploadDirectory;
 
     public CVController(SummaryService summaryService,
             TechnicalSkillService technicalSkillService,
             SoftSkillService softSkillService,
-            UserService userService) {
+            UserService userService,
+            ImageService imageService) {
         this.summaryService = summaryService;
         this.technicalSkillService = technicalSkillService;
         this.softSkillService = softSkillService;
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/templateCv")
@@ -80,6 +88,20 @@ public class CVController {
             personalInfo.setProfession(cvRequest.getProfession());
             personalInfo.setSummary(cvRequest.getSummary());
 
+            // Procesar la imagen si se subió
+            if (cvRequest.getProfileImageFile() != null && !cvRequest.getProfileImageFile().isEmpty()) {
+                try {
+                    String fileName = imageService.saveImage(cvRequest.getProfileImageFile(), uploadDirectory);
+                    personalInfo.setProfileImagePath(fileName);
+                } catch (IOException e) {
+                    redirectAttributes.addFlashAttribute("error", "Error al subir la imagen: " + e.getMessage());
+                    return "redirect:/cv/templateCv";
+                } catch (IllegalArgumentException e) {
+                    redirectAttributes.addFlashAttribute("error", e.getMessage());
+                    return "redirect:/cv/templateCv";
+                }
+            }
+
             // Crear Summary
             Summary summary = new Summary();
             summary.setUser(user);
@@ -121,78 +143,6 @@ public class CVController {
             return "redirect:/cv/templateCv";
         }
     }
-
-    // @PostMapping("/create")
-    // public String createCV(@RequestParam String fullName,
-    // @RequestParam String email,
-    // @RequestParam String phone,
-    // @RequestParam(required = false) String address,
-    // @RequestParam(required = false) String linkedin,
-    // @RequestParam(required = false) String portfolio,
-    // @RequestParam String profession,
-    // @RequestParam(required = false) String summary,
-    // @RequestParam(required = false) List<String> softSkillsNames,
-    // @RequestParam(required = false) List<String> technicalSkillsNames,
-    // @RequestParam(required = false) List<String> technicalSkillsCategories,
-    // Authentication authentication,
-    // RedirectAttributes redirectAttributes) {
-
-    // try {
-    // String userEmail = authentication.getName();
-    // User user = userService.findByEmail(userEmail)
-    // .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-    // // Crear PersonalInfo
-    // PersonalInfo personalInfo = new PersonalInfo();
-    // personalInfo.setFullName(fullName);
-    // personalInfo.setEmail(email);
-    // personalInfo.setPhone(phone);
-    // personalInfo.setAddress(address);
-    // personalInfo.setLinkedin(linkedin);
-    // personalInfo.setPortfolio(portfolio);
-    // personalInfo.setProfession(profession);
-    // personalInfo.setSummary(summary);
-
-    // // Crear y guardar Summary
-    // Summary summaryObj = new Summary();
-    // summaryObj.setUser(user);
-    // summaryObj.setPersonalInfo(personalInfo);
-    // Summary savedSummary = summaryService.saveSummary(summaryObj);
-
-    // // Guardar Soft Skills
-    // if (softSkillsNames != null) {
-    // for (String skillName : softSkillsNames) {
-    // SoftSkill softSkill = new SoftSkill();
-    // softSkill.setSummary(savedSummary);
-    // softSkill.setName(skillName);
-    // softSkillService.saveSoftSkill(softSkill);
-    // }
-    // }
-
-    // // Guardar Technical Skills
-    // if (technicalSkillsNames != null) {
-    // for (int i = 0; i < technicalSkillsNames.size(); i++) {
-    // TechnicalSkill technicalSkill = new TechnicalSkill();
-    // technicalSkill.setSummary(savedSummary);
-    // technicalSkill.setName(technicalSkillsNames.get(i));
-    // technicalSkill.setCategory(
-    // technicalSkillsCategories != null && i < technicalSkillsCategories.size()
-    // ? technicalSkillsCategories.get(i)
-    // : "General");
-    // technicalSkillService.saveTechnicalSkill(technicalSkill);
-    // }
-    // }
-
-    // redirectAttributes.addFlashAttribute("success", "¡Hoja de vida creada
-    // exitosamente!");
-    // return "redirect:/user/dashboard";
-
-    // } catch (Exception e) {
-    // redirectAttributes.addFlashAttribute("error", "Error al crear la hoja de
-    // vida");
-    // return "redirect:/cv/templateCv";
-    // }
-    // }
 
     @GetMapping("/my-cvs")
     public String listMyCVs(Model model, Authentication authentication) {

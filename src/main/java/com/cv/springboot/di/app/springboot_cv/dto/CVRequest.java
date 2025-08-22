@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class CVRequest {
 
     @NotBlank(message = "El nombre completo es obligatorio")
@@ -23,8 +25,8 @@ public class CVRequest {
     private String linkedin;
     private String portfolio;
     private String profession;
-
     private String summary;
+    private MultipartFile profileImageFile;
 
     @Valid
     private List<TechnicalSkillRequest> technicalSkills;
@@ -62,4 +64,7 @@ public class CVRequest {
 
     public List<SoftSkillRequest> getSoftSkills() { return softSkills; }
     public void setSoftSkills(List<SoftSkillRequest> softSkills) { this.softSkills = softSkills; }
+
+    public MultipartFile getProfileImageFile() { return profileImageFile; }
+    public void setProfileImageFile(MultipartFile profileImageFile) { this.profileImageFile = profileImageFile; }
 }
