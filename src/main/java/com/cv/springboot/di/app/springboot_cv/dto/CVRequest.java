@@ -1,12 +1,11 @@
 package com.cv.springboot.di.app.springboot_cv.dto;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.Valid; // Importar la anotación Valid
+import jakarta.validation.constraints.Email; 
+import jakarta.validation.constraints.NotBlank; //no permitir espacios en blanco o campo vacio
+import jakarta.validation.constraints.Pattern; //validar con expresiones regulares
 import java.util.List;
-
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartFile; // Importar MultipartFile para manejar archivos subidos
 
 public class CVRequest {
 
@@ -34,7 +33,6 @@ public class CVRequest {
     @Valid
     private List<SoftSkillRequest> softSkills;
 
-    // Getters y Setters
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
 

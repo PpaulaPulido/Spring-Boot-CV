@@ -9,18 +9,18 @@ import com.cv.springboot.di.app.springboot_cv.services.TechnicalSkillService;
 import com.cv.springboot.di.app.springboot_cv.services.SoftSkillService;
 import com.cv.springboot.di.app.springboot_cv.services.UserService;
 import com.cv.springboot.di.app.springboot_cv.services.ImageService;
-import jakarta.validation.Valid;
-import org.springframework.security.core.Authentication;
+import jakarta.validation.Valid; // activar validación de datos
+import org.springframework.security.core.Authentication; //info del usuario autenticado
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.ui.Model; 
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.io.IOException;
+import org.springframework.beans.factory.annotation.Value; // para inyectar propiedades de configuración
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; // para redirección y mensajes flash
+import java.io.IOException; //para capturar excepciones de entrada y salida de datos
 import java.util.List;
 
 @Controller
@@ -61,7 +61,6 @@ public class CVController {
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
-        // Validaciones adicionales manuales si es necesario
         if (cvRequest.getTechnicalSkills() == null || cvRequest.getTechnicalSkills().isEmpty()) {
             result.rejectValue("technicalSkills", "NotEmpty", "Debes agregar al menos una habilidad técnica");
         }

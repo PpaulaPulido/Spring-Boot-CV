@@ -2,7 +2,7 @@ package com.cv.springboot.di.app.springboot_cv.controllers;
 
 import com.cv.springboot.di.app.springboot_cv.models.User;
 import com.cv.springboot.di.app.springboot_cv.services.UserService;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.Authentication; 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

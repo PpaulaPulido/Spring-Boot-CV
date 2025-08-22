@@ -9,12 +9,14 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Target({FIELD, ANNOTATION_TYPE})
-@Retention(RUNTIME)
-@Constraint(validatedBy = EmailValidator.class)
-@Documented
+//Definir una anotacion personalizada para validar un email
+
+@Target({FIELD, ANNOTATION_TYPE}) //define que la anotacion puede aplicarse a campos y otras anotaciones
+@Retention(RUNTIME) //indica que la anotacion estara disponible en tiempo de ejecucion
+@Constraint(validatedBy = EmailValidator.class) //especifica la clase que valida el email
+@Documented //Puede ser documentada
 public @interface ValidEmail {
-    String message() default "Correo electrónico inválido";
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+    String message() default "Correo electrónico inválido"; //mensaje por defecto si el email no es valido
+    Class<?>[] groups() default {}; //grupos de validacion, permite agrupar anotaciones
+    Class<? extends Payload>[] payload() default {}; //info adicional acerca de las anotaciones
 }

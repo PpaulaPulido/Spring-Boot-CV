@@ -2,9 +2,8 @@ package com.cv.springboot.di.app.springboot_cv.services;
 
 import com.cv.springboot.di.app.springboot_cv.models.User;
 import com.cv.springboot.di.app.springboot_cv.repositories.UserRepository;
-
 import org.springframework.stereotype.Service;
-import java.util.Optional;
+import java.util.Optional; // Importar Optional para manejar valores que pueden ser nulos
 
 @Service
 public class UserService {

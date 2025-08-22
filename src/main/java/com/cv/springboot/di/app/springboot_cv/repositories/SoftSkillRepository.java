@@ -4,7 +4,6 @@ import com.cv.springboot.di.app.springboot_cv.models.SoftSkill;
 import com.cv.springboot.di.app.springboot_cv.models.Summary;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 @Repository

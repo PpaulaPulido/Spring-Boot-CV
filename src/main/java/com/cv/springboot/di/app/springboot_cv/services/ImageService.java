@@ -1,22 +1,24 @@
 package com.cv.springboot.di.app.springboot_cv.services;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartFile; // Importar MultipartFile para manejar archivos subidos
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.Files; // Importar Files para operaciones de archivos
+import java.nio.file.Path; // Importar Path para manejar rutas de archivos
+import java.nio.file.Paths; 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.UUID; // Importar UUID para generar nombres únicos de archivos
 
 @Service
 public class ImageService {
 
+    // Definir tipos de contenido permitidos y tamaño máximo del archivo
     private static final List<String> ALLOWED_CONTENT_TYPES = Arrays.asList(
         "image/jpeg", "image/jpg", "image/png"
     );
     
+    // Tamaño máximo de archivo permitido (5MB)
     private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
     public String saveImage(MultipartFile imageFile, String uploadDirectory) throws IOException {

@@ -1,6 +1,6 @@
 package com.cv.springboot.di.app.springboot_cv.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.*; // Importando las anotaciones de JPA para definir la entidad y sus relaciones
 
 @Entity
 @Table(name = "technical_skills")
@@ -16,7 +16,6 @@ public class TechnicalSkill {
     private String name; 
     private String category;
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

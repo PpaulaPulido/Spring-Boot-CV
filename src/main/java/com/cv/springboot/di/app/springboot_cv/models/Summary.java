@@ -1,6 +1,6 @@
 package com.cv.springboot.di.app.springboot_cv.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.*; // Importando las anotaciones de JPA para definir la entidad y sus relaciones
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +45,6 @@ public class Summary {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

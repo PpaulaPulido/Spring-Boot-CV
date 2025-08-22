@@ -4,7 +4,6 @@ import com.cv.springboot.di.app.springboot_cv.models.SoftSkill;
 import com.cv.springboot.di.app.springboot_cv.models.Summary;
 import com.cv.springboot.di.app.springboot_cv.repositories.SoftSkillRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
