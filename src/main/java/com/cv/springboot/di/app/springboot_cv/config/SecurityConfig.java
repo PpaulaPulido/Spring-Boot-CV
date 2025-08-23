@@ -5,11 +5,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity; // Importante para habilitar la seguridad web
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.SecurityFilterChain; // Importante para configurar la cadena de filtros de seguridad
+import org.springframework.beans.factory.annotation.Autowired; // Importante para la inyección de dependencias
 
 @Configuration
 @EnableWebSecurity
@@ -23,6 +23,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    //proveedor de autenticación que utiliza JPA para cargar los detalles del usuario
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         // Usamos el constructor por defecto y los métodos setter.

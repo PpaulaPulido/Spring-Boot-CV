@@ -1,6 +1,6 @@
 package com.cv.springboot.di.app.springboot_cv.models;
 
-import jakarta.persistence.*;
+import jakarta.persistence.*; //importar anotaciones de JPA
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,14 +37,13 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Summary> summaries = new ArrayList<>();
     
-    // Getters y setters
-    @PrePersist
+    @PrePersist //se ejecuta antes de insertar un nuevo registro
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
     
-    @PreUpdate
+    @PreUpdate  //se ejecuta antes de actualizar un registro existente
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }

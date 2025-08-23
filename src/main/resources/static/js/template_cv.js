@@ -196,6 +196,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
+        // Validar educación
         if (!educationModule.validateEducations()) {
             hasErrors = true;
             if (!firstErrorField) firstErrorField = document.getElementById('educationInstitution');
