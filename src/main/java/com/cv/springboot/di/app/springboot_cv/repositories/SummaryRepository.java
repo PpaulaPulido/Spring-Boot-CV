@@ -21,12 +21,4 @@ public interface SummaryRepository extends JpaRepository<Summary, Long> {
     
     // Encontrar un summary específico de un usuario
     Optional<Summary> findByIdAndUserId(Long id, Long userId);
-        
-    // Buscar summaries por profesión 
-    @Query("SELECT s FROM Summary s WHERE s.personalInfo.profession LIKE %:profession%")
-    List<Summary> findByProfessionContaining(@Param("profession") String profession);
-    
-    // Buscar summaries por nombre
-    @Query("SELECT s FROM Summary s WHERE s.personalInfo.fullName LIKE %:name%")
-    List<Summary> findByFullNameContaining(@Param("name") String name);
 }

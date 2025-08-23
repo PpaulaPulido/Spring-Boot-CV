@@ -35,7 +35,8 @@
   <main class="container">
     <section class="form-section">
       <h2>Crear Hoja de Vida</h2>
-      <form id="cvForm" th:action="@{/cv/create}" th:object="${cvRequest}" method="post" novalidate enctype="multipart/form-data">
+      <form id="cvForm" th:action="@{/cv/create}" th:object="${cvRequest}" method="post" novalidate
+        enctype="multipart/form-data">
 
         <div class="form-group">
           <label for="profileImageFile">Foto de CV</label>
@@ -124,6 +125,85 @@
         <div id="softSkillsContainer"></div>
         <div id="techSkillsContainer"></div>
 
+        <!-- Educación -->
+        <div class="skills-container">
+          <h3>Educación *</h3>
+
+          <div class="form-group">
+            <label for="educationInstitution">Institución Educativa *</label>
+            <input type="text" id="educationInstitution" placeholder="Ej: Universidad Nacional" />
+          </div>
+
+          <div class="form-group">
+            <label for="educationDegree">Título Obtenido *</label>
+            <input type="text" id="educationDegree" placeholder="Ej: Ingeniero de Sistemas" />
+          </div>
+
+          <div class="form-group">
+            <label for="educationStudyLevel">Nivel de Estudio</label>
+            <select id="educationStudyLevel" class="form-control">
+              <option value="">Selecciona un nivel de estudio</option>
+
+              <optgroup label="Educación Formal">
+                <option value="Bachillerato">Bachillerato / Educación Secundaria</option>
+                <option value="Técnico">Técnico</option>
+                <option value="Tecnólogo">Tecnólogo</option>
+                <option value="Pregrado">Pregrado / Licenciatura</option>
+                <option value="Especialización">Especialización</option>
+                <option value="Maestría">Maestría</option>
+                <option value="Doctorado">Doctorado</option>
+                <option value="Postdoctorado">Postdoctorado</option>
+              </optgroup>
+
+              <optgroup label="Educación No Formal">
+                <option value="Diplomado">Diplomado</option>
+                <option value="Certificación">Certificación</option>
+                <option value="Curso">Curso</option>
+                <option value="Taller">Taller</option>
+                <option value="Seminario">Seminario</option>
+                <option value="Educación Continua">Educación Continua</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="educationStartDate">Fecha de Inicio *</label>
+              <input type="month" id="educationStartDate" />
+            </div>
+
+            <div class="form-group">
+              <label for="educationEndDate">Fecha de Fin</label>
+              <input type="month" id="educationEndDate" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="educationCurrent" />Estudio Actualmente
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label for="educationDescription">Descripción</label>
+            <textarea id="educationDescription" placeholder="Describe tus logros, actividades relevantes..."
+              rows="3"></textarea>
+          </div>
+
+          <button type="button" class="button" id="addEducation">Agregar Educación</button>
+
+          <span class="error-message" id="educationError"></span>
+        </div>
+
+        <!-- Lista de Educaciones Agregadas -->
+        <div class="skills-container" id="educationListContainer" style="display: none;">
+          <h3>Estudios Agregados</h3>
+          <div class="education-list" id="educationList"></div>
+        </div>
+
+        <!-- Contenedor para campos ocultos de educación -->
+        <div id="educationContainer"></div>
+
         <button type="submit" class="button primary">Crear Hoja de Vida</button>
       </form>
     </section>
@@ -144,6 +224,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="/js/template_cv.js"></script>
+  <script type="module" src="/js/education.js"></script>
   <script type="module" src="/js/cv.js"></script>
 </body>
 

@@ -5,10 +5,11 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
-
 import org.springframework.web.multipart.MultipartFile;
 
-public class CVRequest {
+public class CVUpdateRequest {
+
+    private Long summaryId; // Nuevo campo para identificar el summary a actualizar
 
     @NotBlank(message = "El nombre completo es obligatorio")
     private String fullName;
@@ -38,6 +39,14 @@ public class CVRequest {
     private List<EducationRequest> educations;
 
     // Getters y Setters
+    public Long getSummaryId() {
+        return summaryId;
+    }
+
+    public void setSummaryId(Long summaryId) {
+        this.summaryId = summaryId;
+    }
+
     public String getFullName() {
         return fullName;
     }
