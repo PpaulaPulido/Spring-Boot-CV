@@ -9,7 +9,7 @@
 :root {
   --primary: #004aad;
   --primary-light: #1d5fde;
-  --accent: #19d3e0; 
+  --accent: #19d3e0;
   --celeste: #89cff0;
   --secondary: #f5f6fa;
   --text-dark: #222;
@@ -69,12 +69,12 @@
   transition: 0.3s ease;
 }
 
-.form-section .button-add{
+.form-section .button-add {
   background-color: var(--celeste);
   color: var(--secondary);
 }
 
-.form-section .button-primary{
+.form-section .button-primary {
   background-color: var(--primary);
   color: var(--secondary);
 }
@@ -527,4 +527,123 @@ optgroup {
 optgroup option {
   font-weight: normal;
   padding-left: 10px;
+}
+
+/* Estilos específicos para experiencia laboral */
+.work-list {
+  margin-top: 15px;
+}
+
+.work-item {
+  background: #f8f9fa;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border-left: 4px solid #007bff;
+  position: relative;
+}
+
+.work-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.work-title {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 16px;
+  margin: 0;
+}
+
+.remove-work {
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-work:hover {
+  background: #c82333;
+}
+
+.work-details {
+  margin-bottom: 8px;
+}
+
+.work-company-period {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.work-company {
+  color: #495057;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.work-separator {
+  color: #6c757d;
+}
+
+.work-period {
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.work-description {
+  color: #6c757d;
+  font-size: 13px;
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* Estados para trabajo actual */
+.work-item.current {
+  border-left-color: #28a745;
+}
+
+.work-current-badge {
+  display: inline-block;
+  background: #28a745;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  margin-left: 8px;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .work-company-period {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  .work-separator {
+    display: none;
+  }
+}
+
+/* Animaciones */
+.work-item {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.work-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

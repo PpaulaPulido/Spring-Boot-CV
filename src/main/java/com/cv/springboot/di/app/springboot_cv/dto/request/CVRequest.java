@@ -1,7 +1,7 @@
 package com.cv.springboot.di.app.springboot_cv.dto.request;
 
 import jakarta.validation.Valid; // Importar la anotación Valid
-import jakarta.validation.constraints.Email; 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank; //no permitir espacios en blanco o campo vacio
 import jakarta.validation.constraints.Pattern; //validar con expresiones regulares
 import java.util.List;
@@ -35,6 +35,9 @@ public class CVRequest {
 
     @Valid
     private List<EducationRequest> educations;
+
+    @Valid
+    private List<WorkExperienceRequest> workExperiences;
 
     // Getters y Setters
     public String getFullName() {
@@ -132,4 +135,13 @@ public class CVRequest {
     public void setEducations(List<EducationRequest> educations) {
         this.educations = educations;
     }
+
+    public List<WorkExperienceRequest> getWorkExperiences() {
+        return workExperiences;
+    }
+
+    public void setWorkExperiences(List<WorkExperienceRequest> workExperiences) {
+        this.workExperiences = workExperiences;
+    }
+
 }

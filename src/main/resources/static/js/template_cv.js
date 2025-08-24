@@ -7,11 +7,13 @@ import {
     validateImage
 } from './functions.js';
 import { initEducation } from './education.js';
+import { initWorkExperience } from './work_experience.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("cvForm");
     const iti = initPhoneInput("#phone");
     const educationModule = initEducation();
+    const workExperienceModule = initWorkExperience();
 
     const softSkillInput = document.getElementById("softSkillInput");
     const technicalSkillInput = document.getElementById("technicalSkillInput");
@@ -202,6 +204,12 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!firstErrorField) firstErrorField = document.getElementById('educationInstitution');
         }
 
+        //Validar experiencia laboral
+        if (!workExperienceModule.validateWorkExperiences()) {
+            hasErrors = true;
+            if (!firstErrorField) firstErrorField = document.getElementById('workPosition');
+        }
+
         if (hasErrors) {
             // Scroll al primer campo con error
             if (firstErrorField) {
@@ -218,6 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // Actualizar campos ocultos y enviar formulario
             updateHiddenFields();
             educationModule.updateHiddenFields();
+            workExperienceModule.updateHiddenFields();
             form.submit();
         }
     });

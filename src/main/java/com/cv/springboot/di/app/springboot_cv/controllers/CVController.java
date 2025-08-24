@@ -5,6 +5,7 @@ import com.cv.springboot.di.app.springboot_cv.dto.request.CVUpdateRequest;
 import com.cv.springboot.di.app.springboot_cv.dto.request.EducationRequest;
 import com.cv.springboot.di.app.springboot_cv.dto.request.SoftSkillRequest;
 import com.cv.springboot.di.app.springboot_cv.dto.request.TechnicalSkillRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.request.WorkExperienceRequest;
 import com.cv.springboot.di.app.springboot_cv.dto.response.SummaryResponse;
 import com.cv.springboot.di.app.springboot_cv.models.*;
 import com.cv.springboot.di.app.springboot_cv.services.SummaryService;
@@ -12,26 +13,21 @@ import com.cv.springboot.di.app.springboot_cv.services.TechnicalSkillService;
 import com.cv.springboot.di.app.springboot_cv.services.SoftSkillService;
 import com.cv.springboot.di.app.springboot_cv.services.UserService;
 import com.cv.springboot.di.app.springboot_cv.services.EducationService;
+import com.cv.springboot.di.app.springboot_cv.services.WorkExperienceService;
 import com.cv.springboot.di.app.springboot_cv.services.ImageService;
-import jakarta.validation.Valid; // activar validación de datos
-import org.springframework.security.core.Authentication; //info del usuario autenticado
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.beans.factory.annotation.Value; // para inyectar propiedades de configuración
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes; // para redirección y mensajes flash
-import java.io.IOException; //para capturar excepciones de entrada y salida de datos
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors; //Permite acumular elementos en una coleccion de datos
+import java.util.stream.Collectors;
 import java.util.Optional;
 
 @Controller
@@ -44,6 +40,7 @@ public class CVController {
     private final UserService userService;
     private final ImageService imageService;
     private final EducationService educationService;
+    private final WorkExperienceService workExperienceService;
 
     @Value("${app.upload.dir:uploads/images/}")
     private String uploadDirectory;
@@ -53,6 +50,7 @@ public class CVController {
             SoftSkillService softSkillService,
             UserService userService,
             EducationService educationService,
+            WorkExperienceService workExperienceService,
             ImageService imageService) {
         this.summaryService = summaryService;
         this.technicalSkillService = technicalSkillService;
@@ -60,6 +58,7 @@ public class CVController {
         this.userService = userService;
         this.imageService = imageService;
         this.educationService = educationService;
+        this.workExperienceService = workExperienceService;
     }
 
     @GetMapping("/templateCv")
@@ -75,12 +74,24 @@ public class CVController {
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
+        // Validaciones existentes
         if (cvRequest.getTechnicalSkills() == null || cvRequest.getTechnicalSkills().isEmpty()) {
             result.rejectValue("technicalSkills", "NotEmpty", "Debes agregar al menos una habilidad técnica");
         }
 
+        if (cvRequest.getSoftSkills() == null || cvRequest.getSoftSkills().isEmpty()) {
+            result.rejectValue("softSkills", "NotEmpty", "Debes agregar al menos una habilidad blanda");
+        }
+
+        if (cvRequest.getEducations() == null || cvRequest.getEducations().isEmpty()) {
+            result.rejectValue("educations", "NotEmpty", "Debes agregar al menos una educación");
+        }
+
+        if (cvRequest.getWorkExperiences() == null || cvRequest.getWorkExperiences().isEmpty()) {
+            result.rejectValue("workExperiences", "NotEmpty", "Debes agregar al menos una experiencia laboral");
+        }
+
         if (result.hasErrors()) {
-            // Log para debugging
             result.getAllErrors().forEach(error -> System.out.println("Error: " + error.getDefaultMessage()));
             return "template_cv";
         }
@@ -148,6 +159,7 @@ public class CVController {
                 }
             }
 
+            // Guardar Educaciones
             if (cvRequest.getEducations() != null) {
                 for (EducationRequest educationRequest : cvRequest.getEducations()) {
                     Education education = new Education();
@@ -170,6 +182,21 @@ public class CVController {
                 }
             }
 
+            //guardar experiencia laboral
+            if (cvRequest.getWorkExperiences() != null) {
+                for (WorkExperienceRequest workExperienceRequest : cvRequest.getWorkExperiences()) {
+                    WorkExperience workExperience = new WorkExperience();
+                    workExperience.setSummary(savedSummary);
+                    workExperience.setPosition(workExperienceRequest.getPosition());
+                    workExperience.setCompany(workExperienceRequest.getCompany());
+                    workExperience.setStartDate(workExperienceRequest.getStartDate());
+                    workExperience.setEndDate(workExperienceRequest.getEndDate());
+                    workExperience.setDescription(workExperienceRequest.getDescription());
+                    
+                    workExperienceService.saveWorkExperience(workExperience);
+                }
+            }
+
             redirectAttributes.addFlashAttribute("success", "¡Hoja de vida creada exitosamente!");
             return "redirect:/user/dashboard";
 
@@ -179,7 +206,7 @@ public class CVController {
         }
     }
 
-    //Metodos para la seccion de view CV
+    // Métodos para la sección de view CV
     @GetMapping("/view_cv")
     public String viewCv() {
         return "view_cv";
@@ -206,7 +233,7 @@ public class CVController {
         }
     }
 
-    //metodo para el boton de eliminar CV de my CV
+    // Método para el botón de eliminar CV de my CV
     @DeleteMapping("/api/delete/{id}")
     @ResponseBody
     public ResponseEntity<?> deleteCVApi(@PathVariable Long id, Authentication authentication) {
@@ -232,5 +259,4 @@ public class CVController {
                     .body("Error al eliminar el CV: " + e.getMessage());
         }
     }
-
 }

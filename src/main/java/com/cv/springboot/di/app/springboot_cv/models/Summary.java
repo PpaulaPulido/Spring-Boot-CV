@@ -31,6 +31,9 @@ public class Summary {
     @OneToMany(mappedBy = "summary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Education> educations = new ArrayList<>();
 
+    @OneToMany(mappedBy = "summary", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WorkExperience> workExperiences = new ArrayList<>();
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -120,6 +123,31 @@ public class Summary {
             education.setSummary(null);
         }
         this.educations.clear();
+    }
+
+    public List<WorkExperience> getWorkExperiences() {
+        return workExperiences;
+    }
+
+    public void setWorkExperiences(List<WorkExperience> workExperiences) {
+        this.workExperiences = workExperiences;
+    }
+
+    public void addWorkExperience(WorkExperience experience) {
+        this.workExperiences.add(experience);
+        experience.setSummary(this);
+    }
+
+    public void removeWorkExperience(WorkExperience experience) {
+        this.workExperiences.remove(experience);
+        experience.setSummary(null);
+    }
+
+    public void clearWorkExperiences() {
+        for (WorkExperience experience : this.workExperiences) {
+            experience.setSummary(null);
+        }
+        this.workExperiences.clear();
     }
 
     // Metodos para manejar actualizacion

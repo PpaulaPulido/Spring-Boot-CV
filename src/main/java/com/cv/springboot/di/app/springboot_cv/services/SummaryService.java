@@ -8,6 +8,7 @@ import com.cv.springboot.di.app.springboot_cv.dto.response.EducationResponse;
 import com.cv.springboot.di.app.springboot_cv.dto.response.SoftSkillResponse;
 import com.cv.springboot.di.app.springboot_cv.dto.response.SummaryResponse;
 import com.cv.springboot.di.app.springboot_cv.dto.response.TechnicalSkillResponse;
+import com.cv.springboot.di.app.springboot_cv.dto.response.WorkExperienceResponse;
 import com.cv.springboot.di.app.springboot_cv.models.Education;
 import com.cv.springboot.di.app.springboot_cv.models.PersonalInfo;
 import com.cv.springboot.di.app.springboot_cv.models.SoftSkill;
@@ -26,11 +27,13 @@ import java.util.stream.Collectors;
 public class SummaryService {
 
     private final SummaryRepository summaryRepository;
-    private final EducationService educationService;
+    private final WorkExperienceService workExperienceService;
 
-    public SummaryService(SummaryRepository summaryRepository, EducationService educationService) {
+    public SummaryService(SummaryRepository summaryRepository,
+            EducationService educationService,
+            WorkExperienceService workExperienceService) {
         this.summaryRepository = summaryRepository;
-        this.educationService = educationService;
+        this.workExperienceService = workExperienceService;
     }
 
     // Crear o actualizar un resumen
@@ -97,42 +100,44 @@ public class SummaryService {
     public SummaryResponse convertToResponse(Summary summary) {
         List<TechnicalSkillResponse> techSkills = summary.getTechnicalSkills().stream()
                 .map(skill -> new TechnicalSkillResponse(
-                    skill.getId(),
-                    skill.getName(),
-                    skill.getCategory()
-                ))
+                        skill.getId(),
+                        skill.getName(),
+                        skill.getCategory()))
                 .collect(Collectors.toList());
-        
+
         List<SoftSkillResponse> softSkills = summary.getSoftSkills().stream()
                 .map(skill -> new SoftSkillResponse(
-                    skill.getId(),
-                    skill.getName(),
-                    skill.getDescription()
-                ))
+                        skill.getId(),
+                        skill.getName(),
+                        skill.getDescription()))
                 .collect(Collectors.toList());
-        
+
         List<EducationResponse> educations = summary.getEducations().stream()
                 .map(edu -> new EducationResponse(
-                    edu.getId(),
-                    edu.getInstitution(),
-                    edu.getDegree(),
-                    edu.getStudyLevel(),
-                    edu.getStartDate(),
-                    edu.getEndDate(),
-                    edu.getCurrent(),
-                    edu.getDescription()
-                ))
+                        edu.getId(),
+                        edu.getInstitution(),
+                        edu.getDegree(),
+                        edu.getStudyLevel(),
+                        edu.getStartDate(),
+                        edu.getEndDate(),
+                        edu.getCurrent(),
+                        edu.getDescription()))
                 .collect(Collectors.toList());
-        
+
+        //AGREGAR EXPERIENCIAS LABORALES
+        List<WorkExperienceResponse> workExperiences = summary.getWorkExperiences().stream()
+                .map(workExperienceService::convertToResponse) // Usar el servicio
+                .collect(Collectors.toList());
+
         return new SummaryResponse(
-            summary.getId(),
-            summary.getPersonalInfo(),
-            techSkills,
-            softSkills,
-            educations,
-            summary.getCreatedAt(),
-            summary.getUpdatedAt()
-        );
+                summary.getId(),
+                summary.getPersonalInfo(),
+                techSkills,
+                softSkills,
+                educations,
+                workExperiences, 
+                summary.getCreatedAt(),
+                summary.getUpdatedAt());
     }
 
     // Actualizar summary completo

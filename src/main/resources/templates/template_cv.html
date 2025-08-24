@@ -204,6 +204,52 @@
         <!-- Contenedor para campos ocultos de educación -->
         <div id="educationContainer"></div>
 
+        <!-- Experiencia Laboral -->
+        <div class="skills-container">
+          <h3>Experiencia Laboral *</h3>
+
+          <div class="form-group">
+            <label for="workPosition">Puesto *</label>
+            <input type="text" id="workPosition" placeholder="Ej: Desarrollador Full Stack" />
+          </div>
+
+          <div class="form-group">
+            <label for="workCompany">Empresa *</label>
+            <input type="text" id="workCompany" placeholder="Ej: Google, Microsoft, etc." />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="workStartDate">Fecha de Inicio *</label>
+              <input type="month" id="workStartDate" />
+            </div>
+
+            <div class="form-group">
+              <label for="workEndDate">Fecha de Fin</label>
+              <input type="month" id="workEndDate" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="workDescription">Descripción de Responsabilidades</label>
+            <textarea id="workDescription" placeholder="Describe tus funciones, logros y responsabilidades..."
+              rows="4"></textarea>
+          </div>
+
+          <button type="button" class="button button-add" id="addWorkExperience">Agregar Experiencia</button>
+
+          <span class="error-message" id="workError"></span>
+        </div>
+
+        <!-- Lista de Experiencias Agregadas -->
+        <div class="skills-container" id="workListContainer" style="display: none;">
+          <h3>Experiencias Laborales Agregadas</h3>
+          <div class="work-list" id="workList"></div>
+        </div>
+
+        <!-- Contenedor para campos ocultos de experiencia laboral -->
+        <div id="workContainer"></div>
+
         <button type="submit" class="button button-primary">Crear Hoja de Vida</button>
       </form>
     </section>
@@ -225,7 +271,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="/js/template_cv.js"></script>
-  <script type="module" src="/js/education.js"></script>
   <script type="module" src="/js/cv.js"></script>
 </body>
 

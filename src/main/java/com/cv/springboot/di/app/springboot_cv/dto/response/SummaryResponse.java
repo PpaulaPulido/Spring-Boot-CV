@@ -11,6 +11,7 @@ public class SummaryResponse {
     private List<TechnicalSkillResponse> technicalSkills;
     private List<SoftSkillResponse> softSkills;
     private List<EducationResponse> educations;
+    private List<WorkExperienceResponse> workExperiences;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -18,12 +19,14 @@ public class SummaryResponse {
             List<TechnicalSkillResponse> technicalSkills,
             List<SoftSkillResponse> softSkills,
             List<EducationResponse> educations,
+            List<WorkExperienceResponse> workExperiences,
             LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.personalInfo = personalInfo;
         this.technicalSkills = technicalSkills;
         this.softSkills = softSkills;
         this.educations = educations;
+        this.workExperiences = workExperiences;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -46,6 +49,10 @@ public class SummaryResponse {
 
     public List<EducationResponse> getEducations() {
         return educations;
+    }
+
+    public List<WorkExperienceResponse> getWorkExperiences() {
+        return workExperiences;
     }
 
     public LocalDateTime getCreatedAt() {
