@@ -1,13 +1,15 @@
-package com.cv.springboot.di.app.springboot_cv.dto;
+package com.cv.springboot.di.app.springboot_cv.dto.request;
 
-import jakarta.validation.Valid; // Importar la anotación Valid
-import jakarta.validation.constraints.Email; 
-import jakarta.validation.constraints.NotBlank; //no permitir espacios en blanco o campo vacio
-import jakarta.validation.constraints.Pattern; //validar con expresiones regulares
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import java.util.List;
-import org.springframework.web.multipart.MultipartFile; // Importar MultipartFile para manejar archivos subidos
+import org.springframework.web.multipart.MultipartFile;
 
-public class CVRequest {
+public class CVUpdateRequest {
+
+    private Long summaryId; // Nuevo campo para identificar el summary a actualizar
 
     @NotBlank(message = "El nombre completo es obligatorio")
     private String fullName;
@@ -37,6 +39,14 @@ public class CVRequest {
     private List<EducationRequest> educations;
 
     // Getters y Setters
+    public Long getSummaryId() {
+        return summaryId;
+    }
+
+    public void setSummaryId(Long summaryId) {
+        this.summaryId = summaryId;
+    }
+
     public String getFullName() {
         return fullName;
     }

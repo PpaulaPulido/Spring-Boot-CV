@@ -1,4 +1,4 @@
-package com.cv.springboot.di.app.springboot_cv.dto;
+package com.cv.springboot.di.app.springboot_cv.dto.request;
 
 import jakarta.validation.constraints.*;
 import com.cv.springboot.di.app.springboot_cv.validation.PasswordMatches;

@@ -1,6 +1,6 @@
 package com.cv.springboot.di.app.springboot_cv.controllers;
 
-import com.cv.springboot.di.app.springboot_cv.dto.RegisterRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.request.RegisterRequest;
 import com.cv.springboot.di.app.springboot_cv.models.User;
 import com.cv.springboot.di.app.springboot_cv.services.UserService;
 import jakarta.validation.Valid; //activar validaciones declaradas en el dto

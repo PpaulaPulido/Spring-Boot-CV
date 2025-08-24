@@ -1,8 +1,10 @@
-package com.cv.springboot.di.app.springboot_cv.dto;
+package com.cv.springboot.di.app.springboot_cv.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.YearMonth;
+
+import com.cv.springboot.di.app.springboot_cv.models.Education;
 
 public class EducationRequest {
     
@@ -24,7 +26,7 @@ public class EducationRequest {
     private Boolean current = false;
     
     private String description;
-    
+
     // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

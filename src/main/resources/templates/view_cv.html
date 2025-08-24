@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mis CVs - CurrículumCraft</title>
+    <link rel="stylesheet" href="/css/general.css" />
+    <link rel="stylesheet" href="/css/view_cv.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-inner">
+            <div class="logo">
+                <a class="logo" href="/user/dashboard" aria-label="CurrículumCraft">
+                    <div class="logo-badge">CC</div>
+                    <span class="logo-title">CurrículumCraft</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <div class="dropdown">
+                    <button class="dropbtn">Mi perfil ▾</button>
+                    <div class="dropdown-content">
+                        <a href="/cv/view_cv">Mis Cv</a>
+                        <a href="#">Configuración</a>
+                        <a href="#" id="logoutBtn">Cerrar sesión</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard">
+        <section class="header-section">
+            <h1>Mis Hojas de Vida</h1>
+            <p>Administra y busca entre todos tus CVs creados.</p>
+            <a href="/cv/templateCv" class="btn-primary">+ Crear nuevo CV</a>
+        </section>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <section class="cv-grid" id="cvGrid">
+            <div class="loading" id="loading">
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <span>&copy; 2025 CurrículumCraft</span>
+            <div class="foot-logos">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/view_cv.js"></script>
+</body>
+
+</html>

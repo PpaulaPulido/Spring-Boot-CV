@@ -3,8 +3,6 @@ package com.cv.springboot.di.app.springboot_cv.repositories;
 import com.cv.springboot.di.app.springboot_cv.models.Summary;
 import com.cv.springboot.di.app.springboot_cv.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +19,5 @@ public interface SummaryRepository extends JpaRepository<Summary, Long> {
     
     // Encontrar un summary específico de un usuario
     Optional<Summary> findByIdAndUserId(Long id, Long userId);
+
 }

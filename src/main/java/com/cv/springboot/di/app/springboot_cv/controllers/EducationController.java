@@ -1,6 +1,6 @@
 package com.cv.springboot.di.app.springboot_cv.controllers;
 
-import com.cv.springboot.di.app.springboot_cv.dto.EducationRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.request.EducationRequest;
 import com.cv.springboot.di.app.springboot_cv.models.Education;
 import com.cv.springboot.di.app.springboot_cv.models.Summary;
 import com.cv.springboot.di.app.springboot_cv.models.User;

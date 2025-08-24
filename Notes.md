@@ -133,3 +133,5 @@ Usar BCrypt para encriptar contraseñas.
 | Base de datos | Almacena los datos permanentes                               |
 
 ---
+## Recuperacion de datos
+Base de Datos → Entidades JPA → Repositories → Services → Controllers → DTOs → JSON → Frontend (JavaScript)

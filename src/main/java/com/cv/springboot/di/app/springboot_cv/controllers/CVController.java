@@ -1,10 +1,11 @@
 package com.cv.springboot.di.app.springboot_cv.controllers;
 
-import com.cv.springboot.di.app.springboot_cv.dto.CVRequest;
-import com.cv.springboot.di.app.springboot_cv.dto.CVUpdateRequest;
-import com.cv.springboot.di.app.springboot_cv.dto.EducationRequest;
-import com.cv.springboot.di.app.springboot_cv.dto.TechnicalSkillRequest;
-import com.cv.springboot.di.app.springboot_cv.dto.SoftSkillRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.request.CVRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.request.CVUpdateRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.request.EducationRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.request.SoftSkillRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.request.TechnicalSkillRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.response.SummaryResponse;
 import com.cv.springboot.di.app.springboot_cv.models.*;
 import com.cv.springboot.di.app.springboot_cv.services.SummaryService;
 import com.cv.springboot.di.app.springboot_cv.services.TechnicalSkillService;
@@ -17,16 +18,21 @@ import org.springframework.security.core.Authentication; //info del usuario aute
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.beans.factory.annotation.Value; // para inyectar propiedades de configuración
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; // para redirección y mensajes flash
 import java.io.IOException; //para capturar excepciones de entrada y salida de datos
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/cv")
@@ -173,186 +179,58 @@ public class CVController {
         }
     }
 
-    // En el método updateSummary del servicio, agrega:
-    // summaryService.updateEducations(existingSummary,
-    // updateRequest.getEducations());
+    //Metodos para la seccion de view CV
+    @GetMapping("/view_cv")
+    public String viewCv() {
+        return "view_cv";
+    }
 
-    // En el método convertSummaryToUpdateRequest, agrega:
-    // Convertir educations
-    // List<EducationRequest> educationRequests = summary.getEducations().stream()
-    // .map(education -> {
-    // EducationRequest er = new EducationRequest();
-    // er.setId(education.getId());
-    // er.setInstitution(education.getInstitution());
-    // er.setDegree(education.getDegree());
-    // er.setStudyLevel(education.getStudyLevel());
-    // er.setStartDate(education.getStartDate());
-    // er.setEndDate(education.getEndDate());
-    // er.setCurrent(education.getCurrent());
-    // er.setDescription(education.getDescription());
-    // return er;
-    // })
-    // .collect(Collectors.toList());
-    // request.setEducations(educationRequests);
+    @GetMapping("/api/my-cvs")
+    @ResponseBody
+    public ResponseEntity<List<SummaryResponse>> getMyCVsApi(Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            User user = userService.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-    // @GetMapping("/edit/{id}")
-    // public String showEditForm(@PathVariable Long id, Model model, Authentication
-    // authentication) {
-    // try {
-    // String email = authentication.getName();
-    // User user = userService.findByEmail(email)
-    // .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            List<Summary> summaries = summaryService.getSummariesByUser(user);
 
-    // Summary summary = summaryService.getSummaryByIdAndUserId(id, user.getId())
-    // .orElseThrow(() -> new RuntimeException("CV no encontrado"));
+            List<SummaryResponse> response = summaries.stream()
+                    .map(summaryService::convertToResponse)
+                    .collect(Collectors.toList());
 
-    // // Convertir Summary a CVUpdateRequest para prellenar el formulario
-    // CVUpdateRequest cvUpdateRequest = convertSummaryToUpdateRequest(summary);
-    // cvUpdateRequest.setSummaryId(id);
+            return ResponseEntity.ok(response);
 
-    // model.addAttribute("cvUpdateRequest", cvUpdateRequest);
-    // model.addAttribute("summaryId", id);
-    // return "edit_cv";
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
-    // } catch (Exception e) {
-    // return "redirect:/cv/my-cvs?error=CV+no+encontrado";
-    // }
-    // }
+    //metodo para el boton de eliminar CV de my CV
+    @DeleteMapping("/api/delete/{id}")
+    @ResponseBody
+    public ResponseEntity<?> deleteCVApi(@PathVariable Long id, Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            User user = userService.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-    // @PostMapping("/update/{id}")
-    // public String updateCV(@PathVariable Long id,
-    // @Valid @ModelAttribute("cvUpdateRequest") CVUpdateRequest cvUpdateRequest,
-    // BindingResult result,
-    // Authentication authentication,
-    // RedirectAttributes redirectAttributes) {
+            // Verificar que el CV existe y pertenece al usuario
+            Optional<Summary> summary = summaryService.getSummaryByIdAndUserId(id, user.getId());
+            if (summary.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("CV no encontrado o no tienes permisos");
+            }
 
-    // if (result.hasErrors()) {
-    // return "edit_cv";
-    // }
+            // Usar el método que verifica el usuario
+            summaryService.deleteSummary(id, user.getId());
 
-    // try {
-    // String email = authentication.getName();
-    // User user = userService.findByEmail(email)
-    // .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            return ResponseEntity.ok().build();
 
-    // // Procesar nueva imagen si se subió
-    // if (cvUpdateRequest.getProfileImageFile() != null &&
-    // !cvUpdateRequest.getProfileImageFile().isEmpty()) {
-    // try {
-    // String fileName =
-    // imageService.saveImage(cvUpdateRequest.getProfileImageFile(),
-    // uploadDirectory);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar el CV: " + e.getMessage());
+        }
+    }
 
-    // // Obtener el summary actual para eliminar la imagen anterior si existe
-    // Summary currentSummary = summaryService.getSummaryByIdAndUserId(id,
-    // user.getId())
-    // .orElseThrow(() -> new RuntimeException("Summary no encontrado"));
-
-    // if (currentSummary.getPersonalInfo().getProfileImagePath() != null) {
-    // imageService.deleteImage(currentSummary.getPersonalInfo().getProfileImagePath(),
-    // uploadDirectory);
-    // }
-
-    // // Crear PersonalInfo con la nueva imagen
-    // PersonalInfo personalInfo = new PersonalInfo();
-    // personalInfo.setProfileImagePath(fileName);
-    // // Actualizar solo la imagen en el summary
-    // currentSummary.getPersonalInfo().setProfileImagePath(fileName);
-    // summaryService.saveSummary(currentSummary);
-
-    // } catch (IOException e) {
-    // redirectAttributes.addFlashAttribute("error", "Error al subir la imagen: " +
-    // e.getMessage());
-    // return "redirect:/cv/edit/" + id;
-    // }
-    // }
-
-    // // Actualizar el summary completo
-    // Summary updatedSummary = summaryService.updateSummary(id, cvUpdateRequest,
-    // user);
-
-    // redirectAttributes.addFlashAttribute("success", "¡Hoja de vida actualizada
-    // exitosamente!");
-    // return "redirect:/cv/my-cvs";
-
-    // } catch (Exception e) {
-    // redirectAttributes.addFlashAttribute("error", "Error al actualizar: " +
-    // e.getMessage());
-    // return "redirect:/cv/edit/" + id;
-    // }
-    // }
-
-    // @PostMapping("/delete/{id}")
-    // public String deleteCV(@PathVariable Long id, Authentication authentication,
-    // RedirectAttributes redirectAttributes) {
-    // try {
-    // String email = authentication.getName();
-    // User user = userService.findByEmail(email)
-    // .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-    // // Eliminar imagen de perfil si existe
-    // Summary summary = summaryService.getSummaryByIdAndUserId(id, user.getId())
-    // .orElseThrow(() -> new RuntimeException("Summary no encontrado"));
-
-    // if (summary.getPersonalInfo().getProfileImagePath() != null) {
-    // imageService.deleteImage(summary.getPersonalInfo().getProfileImagePath(),
-    // uploadDirectory);
-    // }
-
-    // summaryService.deleteSummary(id, user.getId());
-
-    // redirectAttributes.addFlashAttribute("success", "¡Hoja de vida eliminada
-    // exitosamente!");
-    // return "redirect:/cv/my-cvs";
-
-    // } catch (Exception e) {
-    // redirectAttributes.addFlashAttribute("error", "Error al eliminar: " +
-    // e.getMessage());
-    // return "redirect:/cv/my-cvs";
-    // }
-    // }
-
-    // // Método helper para convertir Summary a CVUpdateRequest
-    // private CVUpdateRequest convertSummaryToUpdateRequest(Summary summary) {
-    // CVUpdateRequest request = new CVUpdateRequest();
-    // PersonalInfo info = summary.getPersonalInfo();
-
-    // request.setFullName(info.getFullName());
-    // request.setEmail(info.getEmail());
-    // request.setPhone(info.getPhone());
-    // request.setAddress(info.getAddress());
-    // request.setLinkedin(info.getLinkedin());
-    // request.setPortfolio(info.getPortfolio());
-    // request.setProfession(info.getProfession());
-    // request.setSummary(info.getSummary());
-    // request.setSummaryId(summary.getId());
-
-    // // Convertir technical skills
-    // List<TechnicalSkillRequest> techSkills =
-    // summary.getTechnicalSkills().stream()
-    // .map(skill -> {
-    // TechnicalSkillRequest tsr = new TechnicalSkillRequest();
-    // tsr.setName(skill.getName());
-    // tsr.setCategory(skill.getCategory());
-    // return tsr;
-    // })
-    // .collect(Collectors.toList());
-    // request.setTechnicalSkills(techSkills);
-
-    // // Convertir soft skills
-    // List<SoftSkillRequest> softSkills = summary.getSoftSkills().stream()
-    // .map(skill -> {
-    // SoftSkillRequest ssr = new SoftSkillRequest();
-    // ssr.setName(skill.getName());
-    // ssr.setDescription(skill.getDescription());
-    // return ssr;
-    // })
-    // .collect(Collectors.toList());
-    // request.setSoftSkills(softSkills);
-
-    // return request;
-    // }
-
-
-    
 }
