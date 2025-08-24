@@ -48,15 +48,10 @@ public class Summary {
         updatedAt = LocalDateTime.now();
     }
 
-<<<<<<< HEAD
     // Getters y Setters
     public Long getId() {
         return id;
     }
-=======
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
->>>>>>> 0702960e1c6b854e0ead5f6684babe9c8c081eba
 
     public void setId(Long id) {
         this.id = id;

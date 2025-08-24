@@ -9,6 +9,8 @@
 :root {
   --primary: #004aad;
   --primary-light: #1d5fde;
+  --accent: #19d3e0; 
+  --celeste: #89cff0;
   --secondary: #f5f6fa;
   --text-dark: #222;
   --text-light: #fff;
@@ -61,12 +63,20 @@
   margin-top: 10px;
   padding: 10px;
   width: 100%;
-  background-color: var(--primary);
-  color: var(--text-light);
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: 0.3s ease;
+}
+
+.form-section .button-add{
+  background-color: var(--celeste);
+  color: var(--secondary);
+}
+
+.form-section .button-primary{
+  background-color: var(--primary);
+  color: var(--secondary);
 }
 
 .form-section .button:hover {

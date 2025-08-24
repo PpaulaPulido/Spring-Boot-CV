@@ -99,7 +99,7 @@
             <label for="softSkillInput">Agregar Habilidad Blanda</label>
             <input type="text" id="softSkillInput" placeholder="Ej. Comunicación asertiva" />
             <span class="error-message" th:if="${#fields.hasErrors('softSkills')}" th:errors="*{softSkills}"></span>
-            <button type="button" class="button" id="addSoftSkill">Agregar</button>
+            <button type="button" class="button button-add" id="addSoftSkill">Agregar</button>
           </div>
           <div class="skill-list" id="softSkillList"></div>
         </div>
@@ -116,7 +116,7 @@
             <input type="text" id="technicalSkillCategory" />
             <span class="error-message" th:if="${#fields.hasErrors('technicalSkills')}"
               th:errors="*{technicalSkills}"></span>
-            <button type="button" class="button" id="addTechnicalSkill">Agregar</button>
+            <button type="button" class="button button-add" id="addTechnicalSkill">Agregar</button>
           </div>
           <div class="skill-list" id="technicalSkillList"></div>
         </div>
@@ -190,7 +190,7 @@
               rows="3"></textarea>
           </div>
 
-          <button type="button" class="button" id="addEducation">Agregar Educación</button>
+          <button type="button" class="button button-add" id="addEducation">Agregar Educación</button>
 
           <span class="error-message" id="educationError"></span>
         </div>
@@ -204,7 +204,7 @@
         <!-- Contenedor para campos ocultos de educación -->
         <div id="educationContainer"></div>
 
-        <button type="submit" class="button primary">Crear Hoja de Vida</button>
+        <button type="submit" class="button button-primary">Crear Hoja de Vida</button>
       </form>
     </section>
     <div id="resumePreviewContainer"></div>

@@ -7,8 +7,6 @@ import jakarta.validation.constraints.Pattern; //validar con expresiones regular
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile; // Importar MultipartFile para manejar archivos subidos
 
-import org.springframework.web.multipart.MultipartFile;
-
 public class CVRequest {
 
     @NotBlank(message = "El nombre completo es obligatorio")
@@ -35,7 +33,6 @@ public class CVRequest {
     @Valid
     private List<SoftSkillRequest> softSkills;
 
-<<<<<<< HEAD
     @Valid
     private List<EducationRequest> educations;
 
@@ -43,10 +40,6 @@ public class CVRequest {
     public String getFullName() {
         return fullName;
     }
-=======
-    public String getFullName() { return fullName; }
-    public void setFullName(String fullName) { this.fullName = fullName; }
->>>>>>> 0702960e1c6b854e0ead5f6684babe9c8c081eba
 
     public void setFullName(String fullName) {
         this.fullName = fullName;
@@ -80,7 +73,6 @@ public class CVRequest {
         return linkedin;
     }
 
-<<<<<<< HEAD
     public void setLinkedin(String linkedin) {
         this.linkedin = linkedin;
     }
@@ -140,11 +132,4 @@ public class CVRequest {
     public void setEducations(List<EducationRequest> educations) {
         this.educations = educations;
     }
-=======
-    public List<SoftSkillRequest> getSoftSkills() { return softSkills; }
-    public void setSoftSkills(List<SoftSkillRequest> softSkills) { this.softSkills = softSkills; }
-
-    public MultipartFile getProfileImageFile() { return profileImageFile; }
-    public void setProfileImageFile(MultipartFile profileImageFile) { this.profileImageFile = profileImageFile; }
->>>>>>> 0702960e1c6b854e0ead5f6684babe9c8c081eba
 }

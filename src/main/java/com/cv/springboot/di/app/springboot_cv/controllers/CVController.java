@@ -10,35 +10,22 @@ import com.cv.springboot.di.app.springboot_cv.services.SummaryService;
 import com.cv.springboot.di.app.springboot_cv.services.TechnicalSkillService;
 import com.cv.springboot.di.app.springboot_cv.services.SoftSkillService;
 import com.cv.springboot.di.app.springboot_cv.services.UserService;
-<<<<<<< HEAD
 import com.cv.springboot.di.app.springboot_cv.services.EducationService;
-import com.cv.springboot.di.app.springboot_cv.services.ImageService;
-import jakarta.validation.Valid;
-import org.springframework.security.core.Authentication;
-=======
 import com.cv.springboot.di.app.springboot_cv.services.ImageService;
 import jakarta.validation.Valid; // activar validación de datos
 import org.springframework.security.core.Authentication; //info del usuario autenticado
->>>>>>> 0702960e1c6b854e0ead5f6684babe9c8c081eba
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model; 
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-<<<<<<< HEAD
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import java.io.IOException;
-=======
 import org.springframework.beans.factory.annotation.Value; // para inyectar propiedades de configuración
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; // para redirección y mensajes flash
 import java.io.IOException; //para capturar excepciones de entrada y salida de datos
->>>>>>> 0702960e1c6b854e0ead5f6684babe9c8c081eba
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Collectors;
 
 @Controller
@@ -50,10 +37,7 @@ public class CVController {
     private final SoftSkillService softSkillService;
     private final UserService userService;
     private final ImageService imageService;
-<<<<<<< HEAD
     private final EducationService educationService;
-=======
->>>>>>> 0702960e1c6b854e0ead5f6684babe9c8c081eba
 
     @Value("${app.upload.dir:uploads/images/}")
     private String uploadDirectory;
@@ -62,21 +46,14 @@ public class CVController {
             TechnicalSkillService technicalSkillService,
             SoftSkillService softSkillService,
             UserService userService,
-<<<<<<< HEAD
-            ImageService imageService,
-            EducationService educationService) {
-=======
+            EducationService educationService,
             ImageService imageService) {
->>>>>>> 0702960e1c6b854e0ead5f6684babe9c8c081eba
         this.summaryService = summaryService;
         this.technicalSkillService = technicalSkillService;
         this.softSkillService = softSkillService;
         this.userService = userService;
         this.imageService = imageService;
-<<<<<<< HEAD
         this.educationService = educationService;
-=======
->>>>>>> 0702960e1c6b854e0ead5f6684babe9c8c081eba
     }
 
     @GetMapping("/templateCv")
@@ -196,26 +173,26 @@ public class CVController {
         }
     }
 
-<<<<<<< HEAD
     // En el método updateSummary del servicio, agrega:
-    // summaryService.updateEducations(existingSummary, updateRequest.getEducations());
+    // summaryService.updateEducations(existingSummary,
+    // updateRequest.getEducations());
 
     // En el método convertSummaryToUpdateRequest, agrega:
     // Convertir educations
     // List<EducationRequest> educationRequests = summary.getEducations().stream()
-    //         .map(education -> {
-    //             EducationRequest er = new EducationRequest();
-    //             er.setId(education.getId());
-    //             er.setInstitution(education.getInstitution());
-    //             er.setDegree(education.getDegree());
-    //             er.setStudyLevel(education.getStudyLevel());
-    //             er.setStartDate(education.getStartDate());
-    //             er.setEndDate(education.getEndDate());
-    //             er.setCurrent(education.getCurrent());
-    //             er.setDescription(education.getDescription());
-    //             return er;
-    //         })
-    //         .collect(Collectors.toList());
+    // .map(education -> {
+    // EducationRequest er = new EducationRequest();
+    // er.setId(education.getId());
+    // er.setInstitution(education.getInstitution());
+    // er.setDegree(education.getDegree());
+    // er.setStudyLevel(education.getStudyLevel());
+    // er.setStartDate(education.getStartDate());
+    // er.setEndDate(education.getEndDate());
+    // er.setCurrent(education.getCurrent());
+    // er.setDescription(education.getDescription());
+    // return er;
+    // })
+    // .collect(Collectors.toList());
     // request.setEducations(educationRequests);
 
     // @GetMapping("/edit/{id}")
@@ -312,13 +289,6 @@ public class CVController {
     // String email = authentication.getName();
     // User user = userService.findByEmail(email)
     // .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-=======
-    @GetMapping("/my-cvs")
-    public String listMyCVs(Model model, Authentication authentication) {
-        String email = authentication.getName();
-        User user = userService.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
->>>>>>> 0702960e1c6b854e0ead5f6684babe9c8c081eba
 
     // // Eliminar imagen de perfil si existe
     // Summary summary = summaryService.getSummaryByIdAndUserId(id, user.getId())
