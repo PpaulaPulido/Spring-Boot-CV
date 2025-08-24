@@ -35,9 +35,11 @@
 
     <main class="dashboard">
         <section class="header-section">
-            <h1>Mis Hojas de Vida</h1>
-            <p>Administra y busca entre todos tus CVs creados.</p>
-            <a href="/cv/templateCv" class="btn-primary">+ Crear nuevo CV</a>
+            <div class="div-section">
+                <h1>Mis Hojas de Vida</h1>
+                <p>Administra y busca entre todos tus CVs creados.</p>
+                <a href="/cv/templateCv" class="btn-primary">+ Crear nuevo CV</a>
+            </div>
         </section>
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
         <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>

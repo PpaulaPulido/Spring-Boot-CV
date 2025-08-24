@@ -31,7 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; // para redirección y mensajes flash
 import java.io.IOException; //para capturar excepciones de entrada y salida de datos
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Collectors; //Permite acumular elementos en una coleccion de datos
 import java.util.Optional;
 
 @Controller

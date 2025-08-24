@@ -27,8 +27,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <div class="cv-card" data-id="${summary.id}">
                 <div class="cv-img" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     ${personalInfo.profileImagePath ?
-                `<img src="/uploads/images/${personalInfo.profileImagePath}" alt="${personalInfo.fullName}" 
-                              style="width: 60px; height: 60px; border-radius: 50%; margin: 10px; object-fit: cover;">` :
+                `<img src="/uploads/images/${personalInfo.profileImagePath}" alt="${personalInfo.fullName}" class="profile-image">` :
                 '<div style="padding: 20px; color: white; text-align: center;">📄 CV</div>'}
                 </div>
                 <div class="cv-info">
