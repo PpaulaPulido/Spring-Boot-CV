@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${cv.personalInfo.fullName} + ' - CV'"></title>
+    <link rel="stylesheet" href="/css/general.css" />
+    <link rel="stylesheet" href="/css/template_cv.css" />
+    <link rel="stylesheet" th:href="@{/css/themes/{theme}.css(theme=${cv.personalInfo.theme})}">
+</head>
+<body>
+    <div class="back-button-container" style="text-align: center; margin: 20px 0;">
+        <a th:href="@{/cv/view_cv}" class="btn btn-primary">Volver a Mis CVs</a>
+    </div>
+    <div class="resume-container"> <!-- Changed from cv-container to resume-container to match CSS -->
+        <!-- Columna Izquierda -->
+        <div class="resume-left">
+            <!-- Profile Image -->
+            <div th:if="${cv.personalInfo.profileImagePath}" class="img-container">
+                <img th:src="@{/uploads/images/{imageName}(imageName=${cv.personalInfo.profileImagePath})}" alt="Foto de perfil" class="profile-image">
+            </div>
+            <div th:unless="${cv.personalInfo.profileImagePath}" class="img-container">
+                <img src="/images/default.jpg" alt="Foto de perfil por defecto" class="profile-image">
+            </div>
+
+            <h4>Contacto</h4>
+            <p><strong>Email:</strong> <span th:text="${cv.personalInfo.email}"></span></p>
+            <p><strong>Teléfono:</strong> <span th:text="${cv.personalInfo.phone}"></span></p>
+            <p><strong>Dirección:</strong> <span th:text="${cv.personalInfo.address}"></span></p>
+            <p th:if="${cv.personalInfo.linkedin}"><strong>LinkedIn:</strong> <a th:href="${cv.personalInfo.linkedin}" target="_blank" th:text="${cv.personalInfo.linkedin}"></a></p>
+            <p th:if="${cv.personalInfo.portfolio}"><strong>Portfolio:</strong> <a th:href="${cv.personalInfo.portfolio}" target="_blank" th:text="${cv.personalInfo.portfolio}"></a></p>
+
+            <h4>Habilidades Blandas</h4>
+            <ul>
+                <li th:each="skill : ${cv.softSkills}">
+                    <span th:text="${skill.name}"></span>
+                    <span th:if="${skill.description != null and skill.description.trim() != ''}" th:text=": ' + ${skill.description}"></span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Columna Derecha -->
+        <div class="resume-right">
+            <header>
+                <h1 th:text="${cv.personalInfo.fullName}"></h1>
+                <p th:text="${cv.personalInfo.profession}"></p>
+            </header>
+
+            <h3>Resumen Profesional</h3>
+            <p th:text="${cv.personalInfo.summary}"></p>
+
+            <h3>Educación</h3>
+            <div th:each="edu : ${cv.educations}" class="experience-item">
+                <h4 th:text="${edu.degree} + ' en ' + ${edu.institution}"></h4>
+                <p th:text="${edu.startDate} + ' - ' + (${edu.current} ? 'Actualidad' : ${edu.endDate})"></p>
+                <p th:text="${edu.description}"></p>
+            </div>
+
+            <h3>Experiencia Laboral</h3>
+            <div th:each="exp : ${cv.workExperiences}" class="experience-item">
+                <h4 th:text="${exp.position} + ' en ' + ${exp.company}"></h4>
+                <p th:text="${exp.startDate} + ' - ' + (${exp.current} ? 'Actualidad' : ${exp.endDate})"></p>
+                <p th:text="${exp.description}"></p>
+            </div>
+
+            <h3>Habilidades Técnicas</h3>
+            <div th:each="skill : ${cv.technicalSkills}" class="experience-item">
+                <h4 th:text="${skill.name}"></h4>
+                <p th:text="${skill.category}"></p>
+            </div>
+        </div>
+    </div>
+</body>

@@ -33,6 +33,9 @@ public class WorkExperience {
     @Column(length = 1000)
     private String description; // Descripción
 
+    @Column(nullable = true) // Allow nulls for existing records
+    private Boolean current; // Changed to wrapper class to allow nulls
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -47,12 +50,13 @@ public class WorkExperience {
     public WorkExperience() {}
 
     // Constructor con parámetros
-    public WorkExperience(String position, String company, YearMonth startDate, YearMonth endDate,String description) {
+    public WorkExperience(String position, String company, YearMonth startDate, YearMonth endDate,String description, Boolean current) {
         this.position = position;
         this.company = company;
         setStartDate(startDate);
         setEndDate(endDate);
         this.description = description;
+        this.current = current;
     }
 
     // Métodos para manejar YearMonth
@@ -137,6 +141,9 @@ public class WorkExperience {
 
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
+
+    public boolean isCurrent() { return current != null ? current : false; } // Handle null Boolean
+    public void setCurrent(Boolean current) { this.current = current; } // Changed to Boolean
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }

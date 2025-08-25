@@ -26,6 +26,7 @@ public class CVRequest {
     private String profession;
     private String summary;
     private MultipartFile profileImageFile;
+    private String theme;
 
     @Valid
     private List<TechnicalSkillRequest> technicalSkills;
@@ -142,6 +143,14 @@ public class CVRequest {
 
     public void setWorkExperiences(List<WorkExperienceRequest> workExperiences) {
         this.workExperiences = workExperiences;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 
 }

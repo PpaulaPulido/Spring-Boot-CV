@@ -32,7 +32,7 @@
     </div>
   </nav>
 
-  <main class="container">
+  <main class="main-content">
     <section class="form-section">
       <h2>Crear Hoja de Vida</h2>
       <form id="cvForm" th:action="@{/cv/create}" th:object="${cvRequest}" method="post" novalidate
@@ -91,6 +91,8 @@
           <textarea id="summary" th:field="*{summary}"
             placeholder="Breve descripción de tu experiencia y habilidades..." rows="15"></textarea>
         </div>
+
+        
 
         <!-- Habilidades Blandas -->
         <div class="skills-container">
@@ -247,13 +249,33 @@
           <div class="work-list" id="workList"></div>
         </div>
 
+        <!-- Theme Selector -->
+        <div class="form-group">
+          <h3>Elige un Tema</h3>
+          <div class="theme-selector">
+            <label>
+              <input type="radio" th:field="*{theme}" value="default" checked>
+              <span>Clásico</span>
+            </label>
+            <label>
+              <input type="radio" th:field="*{theme}" value="moderno">
+              <span>Moderno</span>
+            </label>
+          </div>
+        </div>
+
         <!-- Contenedor para campos ocultos de experiencia laboral -->
         <div id="workContainer"></div>
 
         <button type="submit" class="button button-primary">Crear Hoja de Vida</button>
       </form>
     </section>
-    <div id="resumePreviewContainer"></div>
+    <div class="preview-section">
+      <h3>Previsualización de CV</h3>
+      <div id="cvPreview" class="cv-preview-container">
+        <!-- CV Preview will be rendered here -->
+      </div>
+    </div>
   </main>
 
   <footer>
@@ -271,7 +293,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="/js/template_cv.js"></script>
-  <script type="module" src="/js/cv.js"></script>
+  
 </body>
 
 </html>

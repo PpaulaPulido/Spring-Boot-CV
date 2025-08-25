@@ -28,6 +28,7 @@ public class CVUpdateRequest {
     private String profession;
     private String summary;
     private MultipartFile profileImageFile;
+    private String theme;
 
     @Valid
     private List<TechnicalSkillRequest> technicalSkills;
@@ -141,5 +142,13 @@ public class CVUpdateRequest {
 
     public void setEducations(List<EducationRequest> educations) {
         this.educations = educations;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
     }
 }

@@ -1,0 +1,30 @@
+/* Default Theme - Updated for new structure */
+.resume-container {
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.resume-left {
+    background-color: #f7f2ec;
+    color: #333;
+}
+
+.resume-left h4 {
+    color: #333;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+
+.resume-right header h1 {
+    color: #333;
+}
+
+.resume-right h3 {
+    border-bottom: 2px solid #ddd;
+    color: #333;
+}
+
+.resume-left a {
+    color: #004aad;
+}

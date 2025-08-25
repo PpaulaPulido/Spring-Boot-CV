@@ -88,7 +88,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Si no hay errores, envía el formulario
         if (!hasErrors) {
-            registerForm.submit();
+            showAlert({
+                icon: "success",
+                title: "¡Éxito!",
+                html: "El usuario se guardó con éxito.",
+            }).then(() => {
+                registerForm.submit();
+            });
         } else {
             showAlert({
                 icon: "error",

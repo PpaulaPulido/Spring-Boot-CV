@@ -53,6 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <p><strong>Modificado:</strong> ${updatedAt}</p>
                     
                     <div class="cv-actions">
+                        <a href="/cv/view/${summary.id}" class="btn green">Ver</a>
                         <a href="/cv/edit/${summary.id}" class="btn blue">Editar</a>
                         <button class="btn red delete-btn" data-id="${summary.id}">Eliminar</button>
                     </div>

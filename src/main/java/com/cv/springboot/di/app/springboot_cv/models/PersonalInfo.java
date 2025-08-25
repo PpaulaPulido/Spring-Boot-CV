@@ -15,6 +15,7 @@ public class PersonalInfo {
     private String profession;
     private String summary;
     private String profileImagePath;
+    private String theme;
 
     @Transient // No se persiste en la base de datos es decir se guarda la ruta mas no el archivo
     private MultipartFile profileImageFile;
@@ -43,8 +44,12 @@ public class PersonalInfo {
     public String getSummary() { return summary; }
     public void setSummary(String summary) { this.summary = summary; }
 
-    public String getProfileImagePath() { return profileImagePath; }
     public void setProfileImagePath(String profileImagePath) { this.profileImagePath = profileImagePath; }
+
+    public String getProfileImagePath() { return profileImagePath; }
+
+    public String getTheme() { return theme; }
+    public void setTheme(String theme) { this.theme = theme; }
 
     public MultipartFile getProfileImageFile() { return profileImageFile; }
     public void setProfileImageFile(MultipartFile profileImageFile) { this.profileImageFile = profileImageFile; }

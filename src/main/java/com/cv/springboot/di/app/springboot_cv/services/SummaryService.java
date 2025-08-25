@@ -146,24 +146,17 @@ public class SummaryService {
         Summary existingSummary = summaryRepository.findByIdAndUserId(summaryId, user.getId())
                 .orElseThrow(() -> new RuntimeException("Summary no encontrado o no pertenece al usuario"));
 
-        // Crear nueva PersonalInfo con los datos actualizados
-        PersonalInfo updatedInfo = new PersonalInfo();
-        updatedInfo.setFullName(updateRequest.getFullName());
-        updatedInfo.setEmail(updateRequest.getEmail());
-        updatedInfo.setPhone(updateRequest.getPhone());
-        updatedInfo.setAddress(updateRequest.getAddress());
-        updatedInfo.setLinkedin(updateRequest.getLinkedin());
-        updatedInfo.setPortfolio(updateRequest.getPortfolio());
-        updatedInfo.setProfession(updateRequest.getProfession());
-        updatedInfo.setSummary(updateRequest.getSummary());
-
-        // Mantener la imagen existente si no se sube una nueva
-        if (updateRequest.getProfileImageFile() == null || updateRequest.getProfileImageFile().isEmpty()) {
-            updatedInfo.setProfileImagePath(existingSummary.getPersonalInfo().getProfileImagePath());
-        }
-
-        // Actualizar la información personal
-        existingSummary.updatePersonalInfo(updatedInfo);
+        // Obtener PersonalInfo existente y actualizarla
+        PersonalInfo personalInfo = existingSummary.getPersonalInfo();
+        personalInfo.setFullName(updateRequest.getFullName());
+        personalInfo.setEmail(updateRequest.getEmail());
+        personalInfo.setPhone(updateRequest.getPhone());
+        personalInfo.setAddress(updateRequest.getAddress());
+        personalInfo.setLinkedin(updateRequest.getLinkedin());
+        personalInfo.setPortfolio(updateRequest.getPortfolio());
+        personalInfo.setProfession(updateRequest.getProfession());
+        personalInfo.setSummary(updateRequest.getSummary());
+        personalInfo.setTheme(updateRequest.getTheme());
 
         // Actualizar habilidades técnicas
         existingSummary.clearTechnicalSkills();

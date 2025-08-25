@@ -1,3 +1,5 @@
+console.log("template_cv.js cargado y ejecutándose!");
+
 import {
     initPhoneInput,
     showAlert,
@@ -28,6 +30,169 @@ document.addEventListener("DOMContentLoaded", function () {
     let softSkills = [];
     let technicalSkills = [];
 
+    function collectFormData() {
+        const data = {};
+
+        // Personal Info
+        data.fullName = document.getElementById('fullName').value;
+        data.email = document.getElementById('email').value;
+        data.phone = document.getElementById('phone').value;
+        data.address = document.getElementById('address').value;
+        data.linkedin = document.getElementById('linkedin').value;
+        data.portfolio = document.getElementById('portfolio').value;
+        data.profession = document.getElementById('profession').value;
+        data.summary = document.getElementById('summary').value;
+        const checkedTheme = document.querySelector('input[name="theme"]:checked');
+        data.theme = checkedTheme ? checkedTheme.value : 'default'; // Proporciona un valor por defecto
+
+        // Skills (assuming softSkills and technicalSkills arrays are globally accessible or passed)
+        data.softSkills = softSkills; // These are already managed by JS
+        data.technicalSkills = technicalSkills; // These are already managed by JS
+
+        // Education (assuming educationModule.getEducations() exists)
+        data.educations = educationModule.getEducations();
+
+        // Work Experience (assuming workExperienceModule.getWorkExperiences() exists)
+        data.workExperiences = workExperienceModule.getWorkExperiences();
+
+        // Profile Image (this is tricky for live preview, might need to use FileReader)
+        // For now, we'll just pass the path if it exists, or a placeholder
+        const profileImageFile = document.getElementById('profileImageFile').files[0];
+        if (profileImageFile) {
+            // For live preview, we need to read the file as a Data URL
+            // This will be handled in the updatePreview function
+            data.profileImageFile = profileImageFile;
+        } else {
+            data.profileImageFile = null;
+        }
+
+        return data;
+    }
+
+    function generateCVHtml(data) {
+        // Profile Image
+        const profileImageHtml = data.profileImageFile ?
+            `<div class="img-container"><img src="${URL.createObjectURL(data.profileImageFile)}" alt="Foto de perfil"></div>` :
+            '<div class="img-container"><img src="/images/default.jpg" alt="Foto de perfil por defecto"></div>'; // Default image
+
+        // Contact Info
+        const contactInfoHtml = `
+            <h4>Contacto</h4>
+            <p><strong>Email:</strong> ${data.email || ''}</p>
+            <p><strong>Teléfono:</strong> ${data.phone || ''}</p>
+            <p><strong>Dirección:</strong> ${data.address || ''}</p>
+            ${data.linkedin ? `<p><strong>LinkedIn:</strong> <a href="${data.linkedin}" target="_blank">${data.linkedin}</a></p>` : ''}
+            ${data.portfolio ? `<p><strong>Portfolio:</strong> <a href="${data.portfolio}" target="_blank">${data.portfolio}</a></p>` : ''}
+        `;
+
+        // Soft Skills
+        const softSkillsHtml = data.softSkills.length > 0 ? `
+            <h4>Habilidades Blandas</h4>
+            <ul>
+                ${data.softSkills.map(skill => `<li>${skill.name}</li>`).join('')}
+            </ul>
+        ` : '';
+
+        // Technical Skills
+        const technicalSkillsHtml = data.technicalSkills.length > 0 ? `
+            <h3>Habilidades Técnicas</h3>
+            ${data.technicalSkills.map(skill => `
+                <div class="experience-item">
+                    <h4>${skill.name}</h4>
+                    <p>${skill.category}</p>
+                </div>
+            `).join('')}
+        ` : '';
+
+        // Professional Summary
+        const summaryHtml = data.summary ? `
+            <h3>Resumen Profesional</h3>
+            <p>${data.summary}</p>
+        ` : '';
+
+        // Education
+        const educationsHtml = data.educations.length > 0 ? `
+            <h3>Educación</h3>
+            ${data.educations.map(edu => `
+                <div class="experience-item">
+                    <h4>${edu.degree}</h4>
+                    <p><strong>${edu.institution}</strong> | ${edu.startDate} - ${edu.current ? 'Actual' : edu.endDate}</p>
+                    <p>${edu.description || ''}</p>
+                </div>
+            `).join('')}
+        ` : '';
+
+        // Work Experience
+        const workExperiencesHtml = data.workExperiences.length > 0 ? `
+            <h3>Experiencia Laboral</h3>
+            ${data.workExperiences.map(exp => `
+                <div class="experience-item">
+                    <h4>${exp.position}</h4>
+                    <p><strong>${exp.company}</strong> | ${exp.startDate} - ${exp.current ? 'Actual' : exp.endDate}</p>
+                    <p>${exp.description || ''}</p>
+                </div>
+            `).join('')}
+        ` : '';
+
+
+        return `
+            <div class="resume-container">
+                <!-- Columna Izquierda -->
+                <div class="resume-left">
+                    ${profileImageHtml}
+                    ${contactInfoHtml}
+                    ${softSkillsHtml}
+                </div>
+                <!-- Columna Derecha -->
+                <div class="resume-right">
+                    <header>
+                        <h1>${data.fullName || 'Nombre Completo'}</h1>
+                        <p>${data.profession || 'Profesión'}</p>
+                    </header>
+                    ${summaryHtml}
+                    ${educationsHtml}
+                    ${workExperiencesHtml}
+                    ${technicalSkillsHtml}
+                </div>
+            </div>
+        `;
+    }
+
+    function updatePreview() {
+        const cvData = collectFormData();
+        const cvPreviewContainer = document.getElementById('cvPreview');
+
+        // Generate HTML for the preview
+        cvPreviewContainer.innerHTML = generateCVHtml(cvData);
+
+        // --- Improved Theme Handling ---
+        const themeId = 'cv-theme-link';
+        let themeLink = document.getElementById(themeId);
+
+        // If the theme link doesn't exist, create it
+        if (!themeLink) {
+            themeLink = document.createElement('link');
+            themeLink.id = themeId;
+            themeLink.rel = 'stylesheet';
+            document.head.appendChild(themeLink);
+        }
+
+        // Update the href to apply the selected theme
+        themeLink.href = `/css/themes/${cvData.theme}.css`;
+    }
+
+    // Event listeners for live preview
+    form.querySelectorAll('input, textarea, select').forEach(input => {
+        input.addEventListener('input', updatePreview);
+    });
+
+    document.querySelectorAll('input[name="theme"]').forEach(radio => {
+        radio.addEventListener('change', updatePreview);
+    });
+
+    // Initial preview on load
+    updatePreview();
+
     // Event listener para validar imagen al seleccionar
     if (profileImageInput) {
         profileImageInput.addEventListener('change', function (e) {
@@ -41,26 +206,40 @@ document.addEventListener("DOMContentLoaded", function () {
                     this.value = '';
                 }
             }
+            updatePreview(); // Update preview after image selection
         });
     }
 
     // Agregar habilidades
-    addSoftSkillBtn.addEventListener("click", addSoftSkill);
-    addTechnicalSkillBtn.addEventListener("click", addTechnicalSkill);
+    addSoftSkillBtn.addEventListener("click", function() {
+        console.log("Botón 'Agregar Habilidad Blanda' clickeado.");
+        addSoftSkill();
+    });
+    addTechnicalSkillBtn.addEventListener("click", function() {
+        console.log("Botón 'Agregar Habilidad Técnica' clickeado.");
+        addTechnicalSkill();
+    });
 
     function addSoftSkill() {
         const skillName = softSkillInput.value.trim();
+        console.log("Intentando agregar habilidad blanda:", skillName);
         if (skillName) {
             softSkills.push({ name: skillName, description: "" });
             updateSoftSkillList();
             softSkillInput.value = "";
             hideError(softSkillInput);
+            updatePreview(); // Refresh preview
+            console.log("Habilidad blanda agregada:", skillName);
+        } else {
+            console.log("No se agregó habilidad blanda: el campo está vacío.");
+            showError(softSkillInput, 'El nombre de la habilidad blanda no puede estar vacío.');
         }
     }
 
     function addTechnicalSkill() {
         const skillName = technicalSkillInput.value.trim();
         const category = technicalSkillCategory.value.trim();
+        console.log("Intentando agregar habilidad técnica:", skillName, "Categoría:", category);
 
         if (skillName) {
             technicalSkills.push({
@@ -71,6 +250,11 @@ document.addEventListener("DOMContentLoaded", function () {
             technicalSkillInput.value = "";
             technicalSkillCategory.value = "";
             hideError(technicalSkillInput);
+            updatePreview(); // Refresh preview
+            console.log("Habilidad técnica agregada:", skillName, "Categoría:", category);
+        } else {
+            console.log("No se agregó habilidad técnica: el campo está vacío.");
+            showError(technicalSkillInput, 'El nombre de la habilidad técnica no puede estar vacío.');
         }
     }
 
@@ -109,6 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     technicalSkills.splice(index, 1);
                     updateTechnicalSkillList();
                 }
+                updatePreview(); // Refresh preview
             });
         });
     }

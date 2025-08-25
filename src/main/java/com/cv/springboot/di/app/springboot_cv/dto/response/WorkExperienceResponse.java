@@ -10,12 +10,13 @@ public class WorkExperienceResponse {
     private YearMonth startDate;
     private YearMonth endDate;
     private String description;
+    private boolean current; // Added current field
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
     public WorkExperienceResponse(Long id, String position, String company, 
                                  YearMonth startDate, YearMonth endDate, 
-                                 String description,
+                                 String description, boolean current, // Updated constructor
                                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.position = position;
@@ -23,6 +24,7 @@ public class WorkExperienceResponse {
         this.startDate = startDate;
         this.endDate = endDate;
         this.description = description;
+        this.current = current; // Assign current
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -34,6 +36,7 @@ public class WorkExperienceResponse {
     public YearMonth getStartDate() { return startDate; }
     public YearMonth getEndDate() { return endDate; }
     public String getDescription() { return description; }
+    public boolean isCurrent() { return current; } // Added getter for current
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

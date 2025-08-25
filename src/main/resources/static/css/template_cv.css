@@ -19,20 +19,44 @@
 }
 
 /* ===== MAIN CONTAINER ===== */
-.container {
+.main-content {
   display: flex;
   gap: 20px;
   padding: 20px;
   align-items: flex-start;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
 }
 
-/* ===== FORM SECTION ===== */
 .form-section {
+  flex: 1; /* Allow form to grow */
+  min-width: 450px; /* Minimum width for the form */
+  max-width: 600px; /* Maximum width for the form */
+}
+
+.preview-section {
+  flex: 1; /* Allow preview to grow */
+  min-width: 400px; /* Minimum width for the preview */
   background-color: white;
   padding: 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  width: 500px;
+  position: sticky; /* Make it sticky */
+  top: 20px; /* Stick to the top with some offset */
+  max-height: calc(100vh - 40px); /* Ensure it doesn't overflow viewport */
+  overflow-y: auto; /* Allow preview section itself to scroll if content is too tall */
+}
+
+.cv-preview-container {
+  border: 1px solid #eee;
+  min-height: 300px;
+  background-color: #fff;
+  padding: 1.5rem; /* Use rem for scalable padding */
+  aspect-ratio: 210 / 297; /* A4 paper aspect ratio */
+  width: 100%;
+  height: auto;
+  max-width: 800px; /* Max width of the preview */
+  margin: auto;
+  overflow-y: auto; /* Enable scrolling for long CVs */
 }
 
 .form-section h2 {
@@ -252,12 +276,19 @@
   text-align: center;
 }
 
-.resume-left img {
-  width: 120px;
-  height: 120px;
+.resume-left .img-container {
+  width: 150px; /* Container for the image */
+  height: 150px;
+  margin: 0 auto 15px;
   border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 15px;
+  overflow: hidden; /* Hide parts of image that don't fit */
+}
+
+.resume-left img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Scale image to cover the container, cropping if necessary */
+  border-radius: 50%;
 }
 
 .resume-left h4 {
@@ -481,23 +512,6 @@
   border-left: 2px solid #e9ecef;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .form-row {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .education-header {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .remove-education {
-    align-self: flex-end;
-  }
-}
-
 /* Estilos para el contenedor de educación cuando está vacío */
 #educationListContainer:empty {
   display: none !important;
@@ -625,8 +639,55 @@ optgroup option {
   font-weight: bold;
 }
 
-/* Responsive */
+/* Animaciones */
+.work-item {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.work-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1200px) {
+  .main-content {
+    flex-direction: column;
+    align-items: center;
+  }
+  .form-section,
+  .preview-section {
+    width: 100%;
+    max-width: 800px; /* Limit width on larger screens when stacked */
+    position: relative; /* Unset sticky when stacked */
+    top: auto;
+  }
+}
+
 @media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .education-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .remove-education {
+    align-self: flex-end;
+  }
+
+  .resume-container {
+    flex-direction: column;
+  }
+
+  .resume-left,
+  .resume-right {
+    width: 100%;
+  }
+
   .work-company-period {
     flex-direction: column;
     align-items: flex-start;
@@ -636,14 +697,4 @@ optgroup option {
   .work-separator {
     display: none;
   }
-}
-
-/* Animaciones */
-.work-item {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.work-item:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }

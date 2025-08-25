@@ -109,8 +109,9 @@ public class CVController {
             personalInfo.setAddress(cvRequest.getAddress());
             personalInfo.setLinkedin(cvRequest.getLinkedin());
             personalInfo.setPortfolio(cvRequest.getPortfolio());
-            personalInfo.setProfession(cvRequest.getProfession());
+                        personalInfo.setProfession(cvRequest.getProfession());
             personalInfo.setSummary(cvRequest.getSummary());
+            personalInfo.setTheme(cvRequest.getTheme());
 
             // Procesar la imagen si se subió
             if (cvRequest.getProfileImageFile() != null && !cvRequest.getProfileImageFile().isEmpty()) {
@@ -258,5 +259,19 @@ public class CVController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al eliminar el CV: " + e.getMessage());
         }
+    }
+    @GetMapping("/view/{id}")
+    public String viewCvDetail(@PathVariable Long id, Model model, Authentication authentication) {
+        String email = authentication.getName();
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        Summary summary = summaryService.getSummaryByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> new RuntimeException("CV no encontrado o no tienes permisos"));
+
+        SummaryResponse cv = summaryService.convertToResponse(summary);
+
+        model.addAttribute("cv", cv);
+        return "cv_detail";
     }
 }

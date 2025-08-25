@@ -60,6 +60,7 @@ public class WorkExperienceService {
             workExperience.getStartDate(),
             workExperience.getEndDate(),
             workExperience.getDescription(),
+            workExperience.isCurrent(),
             workExperience.getCreatedAt(),
             workExperience.getUpdatedAt()
         );

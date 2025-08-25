@@ -150,31 +150,7 @@ public class Summary {
         this.workExperiences.clear();
     }
 
-    // Metodos para manejar actualizacion
-    public void updatePersonalInfo(PersonalInfo newInfo) {
-        if (this.personalInfo == null) {
-            this.personalInfo = newInfo;
-        } else {
-            if (newInfo.getFullName() != null)
-                this.personalInfo.setFullName(newInfo.getFullName());
-            if (newInfo.getEmail() != null)
-                this.personalInfo.setEmail(newInfo.getEmail());
-            if (newInfo.getPhone() != null)
-                this.personalInfo.setPhone(newInfo.getPhone());
-            if (newInfo.getAddress() != null)
-                this.personalInfo.setAddress(newInfo.getAddress());
-            if (newInfo.getLinkedin() != null)
-                this.personalInfo.setLinkedin(newInfo.getLinkedin());
-            if (newInfo.getPortfolio() != null)
-                this.personalInfo.setPortfolio(newInfo.getPortfolio());
-            if (newInfo.getProfession() != null)
-                this.personalInfo.setProfession(newInfo.getProfession());
-            if (newInfo.getSummary() != null)
-                this.personalInfo.setSummary(newInfo.getSummary());
-            if (newInfo.getProfileImagePath() != null)
-                this.personalInfo.setProfileImagePath(newInfo.getProfileImagePath());
-        }
-    }
+    
 
     public void clearTechnicalSkills() {
         // Primero desconectar las habilidades técnicas existentes
