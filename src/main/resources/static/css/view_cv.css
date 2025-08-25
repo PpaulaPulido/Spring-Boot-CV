@@ -1,13 +1,13 @@
 :root {
-  --primary: #004aad;
-  --primary-light: #1d5fde;
-  --accent: #19d3e0; 
-  --celeste: #89cff0;
-  --secondary: #f5f6fa;
-  --text-dark: #222;
-  --text-light: #fff;
-  --radius: 10px;
-  --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    --primary: #004aad;
+    --primary-light: #1d5fde;
+    --accent: #19d3e0;
+    --celeste: #89cff0;
+    --secondary: #f5f6fa;
+    --text-dark: #222;
+    --text-light: #fff;
+    --radius: 10px;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
 /* Estilos para la vista de CVs */
@@ -246,6 +246,47 @@
     border-radius: 5px;
     object-fit: cover;
     margin: 10px;
+}
+
+/* Estado vacio CV*/
+.empty-state-centered {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8f9fa;
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.empty-state-centered .empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    color: #6c757d;
+}
+
+.empty-state-centered h3 {
+    color: #495057;
+    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.empty-state-centered p {
+    color: #6c757d;
+    margin-bottom: 30px;
+    font-size: 16px;
+    max-width: 400px;
+    line-height: 1.5;
+}
+
+.empty-state-centered .btn-primary {
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 8px;
 }
 
 .no-cvs .header-section {
