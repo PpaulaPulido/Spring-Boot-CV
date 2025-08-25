@@ -1,8 +1,19 @@
-import { initPhoneInput, showAlert } from './functions.js';
+import {
+    initPhoneInput,
+    showAlert,
+    showError,
+    hideError,
+    hideAllErrors,
+    validateImage
+} from './functions.js';
+import { initEducation } from './education.js';
+import { initWorkExperience } from './work_experience.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("cvForm");
     const iti = initPhoneInput("#phone");
+    const educationModule = initEducation();
+    const workExperienceModule = initWorkExperience();
 
     const softSkillInput = document.getElementById("softSkillInput");
     const technicalSkillInput = document.getElementById("technicalSkillInput");
@@ -16,63 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Arrays para habilidades
     let softSkills = [];
     let technicalSkills = [];
-
-    // Función para mostrar errores debajo del campo
-    function showError(input, message) {
-        if (!input) return; // ← Validación de null
-
-        const formGroup = input.closest(".form-group");
-        if (!formGroup) return;
-
-        let errorSpan = formGroup.querySelector(".error-message");
-
-        if (!errorSpan) {
-            errorSpan = document.createElement("span");
-            errorSpan.className = "error-message";
-            formGroup.appendChild(errorSpan);
-        }
-
-        errorSpan.textContent = message;
-        errorSpan.classList.add("has-error");
-        input.classList.add("is-invalid");
-    }
-
-    // Función para ocultar errores
-    function hideError(input) {
-        if (!input) return; // ← Agrega esta validación
-        const formGroup = input.closest(".form-group");
-        if (!formGroup) return; // ← Y esta también
-
-        const errorSpan = formGroup.querySelector(".error-message");
-        if (errorSpan) {
-            errorSpan.textContent = "";
-            errorSpan.classList.remove("has-error");
-        }
-
-        input.classList.remove("is-invalid");
-    }
-
-    // Ocultar todos los errores al inicio
-    function hideAllErrors() {
-        const inputs = form.querySelectorAll('input, textarea');
-        inputs.forEach(input => hideError(input));
-    }
-
-    // Validación de la imagen
-    function validateImage(file) {
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-        const maxSize = 5 * 1024 * 1024; // 5MB
-
-        if (!allowedTypes.includes(file.type)) {
-            return 'Formato de imagen no permitido. Use JPG, PNG o JPEG.';
-        }
-
-        if (file.size > maxSize) {
-            return 'La imagen no puede superar los 5MB.';
-        }
-
-        return null;
-    }
 
     // Event listener para validar imagen al seleccionar
     if (profileImageInput) {
@@ -186,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Validación antes de enviar
     form.addEventListener("submit", function (e) {
         e.preventDefault();
-        hideAllErrors();
+        hideAllErrors(form); // Pasar el formulario como parámetro
 
         let hasErrors = false;
         let firstErrorField = null;
@@ -244,6 +198,18 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
+        // Validar educación
+        if (!educationModule.validateEducations()) {
+            hasErrors = true;
+            if (!firstErrorField) firstErrorField = document.getElementById('educationInstitution');
+        }
+
+        //Validar experiencia laboral
+        if (!workExperienceModule.validateWorkExperiences()) {
+            hasErrors = true;
+            if (!firstErrorField) firstErrorField = document.getElementById('workPosition');
+        }
+
         if (hasErrors) {
             // Scroll al primer campo con error
             if (firstErrorField) {
@@ -259,6 +225,8 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             // Actualizar campos ocultos y enviar formulario
             updateHiddenFields();
+            educationModule.updateHiddenFields();
+            workExperienceModule.updateHiddenFields();
             form.submit();
         }
     });
@@ -293,6 +261,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Inicializar
-    hideAllErrors();
+    hideAllErrors(form); // Pasar el formulario como parámetro
     updateHiddenFields();
 });

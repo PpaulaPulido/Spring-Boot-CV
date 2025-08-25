@@ -8,7 +8,7 @@ export function initPhoneInput(inputSelector) {
 
     const iti = window.intlTelInput(inputPhone, {
         initialCountry: "auto",
-        geoIpLookup: function(success, failure) {
+        geoIpLookup: function (success, failure) {
             fetch("https://ipapi.co/json")
                 .then(res => res.json())
                 .then(data => success(data.country_code))
@@ -18,7 +18,7 @@ export function initPhoneInput(inputSelector) {
         separateDialCode: true,
         hiddenInput: "full_phone",
         utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-        customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+        customPlaceholder: function (selectedCountryPlaceholder, selectedCountryData) {
             return "Ej: " + selectedCountryPlaceholder;
         }
     });
@@ -62,22 +62,79 @@ export function showAlert({ icon = 'info', title = '', html = '', draggable = fa
 export function setupPasswordToggle(buttonId, inputId) {
     const toggleButton = document.getElementById(buttonId);
     const passwordInput = document.getElementById(inputId);
-    
+
     // Verificamos que los elementos existan antes de agregar el listener
     if (!toggleButton || !passwordInput) {
         console.error(`Error: No se encontró el botón con ID '${buttonId}' o el campo con ID '${inputId}'.`);
         return;
     }
-    
-    toggleButton.addEventListener("click", function() {
+
+    toggleButton.addEventListener("click", function () {
         const isPassword = passwordInput.type === "password";
         // Aquí está el cambio clave: usamos toggleButton para buscar los elementos
         const eyeOpen = toggleButton.querySelector('.eye-open');
         const eyeClosed = toggleButton.querySelector('.eye-closed');
-        
+
         passwordInput.type = isPassword ? "text" : "password";
         eyeOpen.style.display = isPassword ? "none" : "block";
         eyeClosed.style.display = isPassword ? "block" : "none";
         toggleButton.setAttribute('aria-label', isPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
     });
+}
+
+// Función para mostrar errores debajo del campo
+export function showError(input, message) {
+    if (!input) return;
+
+    const formGroup = input.closest(".form-group");
+    if (!formGroup) return;
+
+    let errorSpan = formGroup.querySelector(".error-message");
+
+    if (!errorSpan) {
+        errorSpan = document.createElement("span");
+        errorSpan.className = "error-message";
+        formGroup.appendChild(errorSpan);
+    }
+
+    errorSpan.textContent = message;
+    errorSpan.classList.add("has-error");
+    input.classList.add("is-invalid");
+}
+
+// Función para ocultar errores
+export function hideError(input) {
+    if (!input) return;
+    const formGroup = input.closest(".form-group");
+    if (!formGroup) return;
+
+    const errorSpan = formGroup.querySelector(".error-message");
+    if (errorSpan) {
+        errorSpan.textContent = "";
+        errorSpan.classList.remove("has-error");
+    }
+
+    input.classList.remove("is-invalid");
+}
+
+// Función para ocultar todos los errores
+export function hideAllErrors(form) {
+    const inputs = form.querySelectorAll('input, textarea');
+    inputs.forEach(input => hideError(input));
+}
+
+// Validación de la imagen
+export function validateImage(file) {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (!allowedTypes.includes(file.type)) {
+        return 'Formato de imagen no permitido. Use JPG, PNG o JPEG.';
+    }
+
+    if (file.size > maxSize) {
+        return 'La imagen no puede superar los 5MB.';
+    }
+
+    return null;
 }

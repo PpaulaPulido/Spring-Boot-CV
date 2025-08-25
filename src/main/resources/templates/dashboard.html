@@ -1,119 +1,209 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dashboard - CurrículumCraft</title>
-    <link rel="stylesheet" href="/css/general.css" />
-    <link rel="stylesheet" href="/css/dashboard.css" />
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav class="navbar">
-      <div class="navbar-inner">
-        <div class="logo">
-          <a class="logo" href="/user/dashboard" aria-label="CurrículumCraft">
-            <div class="logo-badge">CC</div>
-            <span class="logo-title">CurrículumCraft</span>
-          </a>
-        </div>
-        <div class="nav-links">
-          <div class="dropdown">
-            <button class="dropbtn">Mi perfil ▾</button>
-            <div class="dropdown-content">
-              <a href="#">Configuración</a>
-              <a href="#" id="logoutBtn">Cerrar sesión</a>
-            </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - CurrículumCraft</title>
+  <link rel="stylesheet" href="/css/general.css" />
+  <link rel="stylesheet" href="/css/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <div class="logo">
+        <a class="logo" href="/user/dashboard" aria-label="CurrículumCraft">
+          <div class="logo-badge">CC</div>
+          <span class="logo-title">CurrículumCraft</span>
+        </a>
+      </div>
+      <div class="nav-links">
+        <div class="dropdown">
+          <button class="dropbtn">Mi perfil ▾</button>
+          <div class="dropdown-content">
+            <a href="/cv/view_cv">Mis Cv</a>
+            <a href="#">Configuración</a>
+            <a href="#" id="logoutBtn">Cerrar sesión</a>
           </div>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <!-- Bienvenida -->
-    <section class="welcome">
-      <div class="welcome-text">
-        <h2>Hola! <span th:text="${username}">Usuario</span></h2>
-        <p>Crea tu CV en minutos con plantillas profesionales y personalización sencilla.</p>
+  <!-- Encabezado -->
+  <header class="header">
+    <div class="header-content">
+      <h1>¡Hola <span th:text="${username}">Usuario</span> Bienvenido de nuevo</h1>
+      <p>Crea, edita y mejora tu hoja de vida con plantillas profesionales y consejos prácticos.</p>
+      <div class="header-actions">
+        <a href="/cv/templateCv" class="btn btn-primary">+ Crear nuevo CV</a>
+        <a href="#section tips" class="btn btn-outline">Explorar consejos</a>
       </div>
-      <div class="welcome-actions">
-        <button class="btn-primary"><a href="/cv/templateCv">Crear nuevo CV</a></button>
+    </div>
+    <div class="header-image">
+      <img
+        src="https://images.ctfassets.net/p03bi75xct27/4JFT8AKFeYTtYodAubnIJz/5cdbacdab2f1cfb7700e7a9a057392b1/fragen-bewerbung_website_51538759.jpg"
+        alt="Ilustración" />
+    </div>
+  </header>
+
+  <!-- Consejos -->
+  <section class="section tips" id="section tips">
+    <h2>Consejos para una hoja de vida</h2>
+    <div class="tips-grid">
+      <div class="tip">
+        <div class="tip-image"><img
+            src="https://img.freepik.com/fotos-premium/primer-plano-archivo-curriculum-mesa-madera_392895-222504.jpg"
+            alt="tip1"></div>
+        <h4>Usa palabras clave</h4>
+        <p>Incluye términos del puesto para pasar filtros ATS.</p>
       </div>
-    </section>
+      <div class="tip">
+        <div class="tip-image"><img
+            src="https://www.semana.com/resizer/v2/4YFXCWOKP5BARDKVRTAZJX4HTQ.jpeg?auth=0dc7867f781dd788c48d07161b2ac0109f1122ecbbef8f8e3c406af333f6de36&smart=true&quality=75&width=1280&height=720"
+            alt="tip2"></div>
+        <h4>Una sola página</h4>
+        <p>Sé claro y conciso, prioriza logros medibles.</p>
+      </div>
+      <div class="tip">
+        <div class="tip-image"><img
+            src="https://alitascolombianas.com.co/wp-content/uploads/persona-escribiendo-un-curriculum-en-computadora-768x512.jpg"
+            alt="tip3"></div>
+        <h4>Cuantifica logros</h4>
+        <p>Añade métricas: +25% ventas, -15% costos, etc.</p>
+      </div>
+      <div class="tip">
+        <div class="tip-image"><img
+            src="https://img.freepik.com/fotos-premium/detalle-persona-escribiendo-hoja-papel_53419-5012.jpg"
+            alt="tip4"></div>
+        <h4>Diseño limpio</h4>
+        <p>Usa una plantilla profesional y tipografía legible.</p>
+      </div>
+    </div>
+  </section>
 
-    <!-- Panel principal -->
-    <main class="dashboard">
-      <!-- Consejos -->
-      <div class="box consejos">
-        <h3>Consejos para tu CV</3>
-        <div class="tip">
-          📊 Logros medibles<br /><small>Usa números: "Aumenté 25% las ventas".</small>
-        </div>
-        <div class="tip">
-          📌 Claridad y orden<br /><small>Prioriza secciones y usa viñetas.</small>
-        </div>
-        <div class="tip">
-          📝 1 página si es posible<br /><small>Para junior/intermedio, conciso es mejor.</small>
+  <!-- Pasos para crear un CV -->
+  <section class="section steps">
+    <h2>Cómo crear una hoja de vida en 4 pasos</h2>
+    <div class="steps-grid">
+      <div class="step">
+        <span class="step-number">1</span>
+        <h4>Completa tu información</h4>
+        <p>Llena tus datos personales, educación y experiencia laboral.</p>
+      </div>
+      <div class="step">
+        <span class="step-number">2</span>
+        <h4>Selecciona una plantilla</h4>
+        <p>Elige entre diseños profesionales y modernos.</p>
+      </div>
+      <div class="step">
+        <span class="step-number">3</span>
+        <h4>Personaliza el contenido</h4>
+        <p>Añade habilidades, logros e idiomas para destacar.</p>
+      </div>
+      <div class="step">
+        <span class="step-number">4</span>
+        <h4>Descarga y comparte</h4>
+        <p>Obtén tu CV en PDF y listo para enviar a reclutadores.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonios -->
+  <section class="section testimonials">
+    <h2>Testimonios de nuestros usuarios</h2>
+    <div class="testimonials-grid">
+      <div class="testimonial">
+        <div class="testimonial-img"><img
+            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="user"></div>
+        <p>"Gracias a ProCV conseguí trabajo en menos de un mes. Las plantillas son increíbles."</p>
+        <h5>- Andrea R.</h5>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-img"><img
+            src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="user"></div>
+        <p>"Me encantó la facilidad para editar mi CV y los consejos prácticos para entrevistas."</p>
+        <h5>- Carlos M.</h5>
+      </div>
+      <div class="testimonial">
+        <div class="testimonial-img"><img
+            src="https://images.unsplash.com/photo-1552642986-ccb41e7059e7?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="user"></div>
+        <p>"Nunca había tenido un CV tan profesional. ¡Super recomendado!"</p>
+        <h5>- Sofía G.</h5>
+      </div>
+    </div>
+  </section>
+
+  <!-- Entrevista -->
+  <section class="section interview">
+    <div class="interview-container">
+      <img
+        src="https://images.ctfassets.net/p03bi75xct27/4JFT8AKFeYTtYodAubnIJz/5cdbacdab2f1cfb7700e7a9a057392b1/fragen-bewerbung_website_51538759.jpg"
+        alt="Entrevista">
+      <div class="interview-content">
+        <h3>Cómo destacar en una entrevista laboral</h3>
+        <ul>
+          <li>Investiga la empresa y prepara preguntas.</li>
+          <li>Llega con anticipación y controla los tiempos.</li>
+          <li>Responde con el método STAR para estructurar logros.</li>
+          <li>Cuida tu lenguaje corporal y contacto visual.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recursos -->
+  <section class="section resources">
+    <h2>Novedades y Recursos</h2>
+    <div class="cards-grid">
+      <div class="card">
+        <img
+          src="https://grupoaspasia.com/wp-content/uploads/2024/11/Diez-habilidades-002.jpg">
+        <div class="card-body">
+          <h4>Las 10 habilidades más demandadas en 2025</h4>
+          <p>Conoce qué capacidades priorizan las empresas este año.</p>
+          <a href="https://ipp.cl/general/competencias-laborales-mas-demandadas/">Leer artículo</a>
         </div>
       </div>
-    </main>
-
-    <!-- Mis CVs -->
-    <section class="mis-cvs">
-      <div class="header-cvs">
-        <h3>Mis CVs</h3>
-      </div>
-
-      <div class="cv-list">
-        <div class="cv-card">
-          <h4>CV - Marketing</h4>
-          <p>Editado: 12 Jun 2025</p>
-          <div class="cv-actions">
-            <button class="btn-secondary">Editar</button>
-            <button class="btn-secondary">Ver</button>
-            <button class="btn-danger">Eliminar</button>
-          </div>
-        </div>
-
-        <div class="cv-card">
-          <h4>CV - Producto</h4>
-          <p>Editado: 03 Jun 2025</p>
-          <div class="cv-actions">
-            <button class="btn-secondary">Editar</button>
-            <button class="btn-secondary">Ver</button>
-            <button class="btn-danger">Eliminar</button>
-          </div>
-        </div>
-
-        <div class="cv-card">
-          <h4>CV - UX</h4>
-          <p>Editado: 28 May 2025</p>
-          <div class="cv-actions">
-            <button class="btn-secondary">Editar</button>
-            <button class="btn-secondary">Ver</button>
-            <button class="btn-danger">Eliminar</button>
-          </div>
-        </div>
-
-        <div class="cv-card empty">
-          <p>Aún no tienes más CVs</p>
-          <button class="btn-primary">Crear otro</button>
+      <div class="card">
+        <img
+          src="https://media.licdn.com/dms/image/v2/D4E12AQGT_IL4w2c0aQ/article-cover_image-shrink_720_1280/article-cover_image-shrink_720_1280/0/1675027130801?e=2147483647&v=beta&t=voBA-9YnHkkFsU1TUNfazfaDb_Vjcm6znzRi5r6rxQ4"
+          alt="LinkedIn">
+        <div class="card-body">
+          <h4>¿Qué buscan los reclutadores en LinkedIn?</h4>
+          <p>Optimiza tu perfil para atraer más oportunidades.</p>
+          <a href="https://www.linkedin.com/blog/member/archive/7-secrets-to-attracting-recruiters-on-linkedin">Leer artículo</a>
         </div>
       </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-      <div class="footer-inner">
-        <span>&copy; 2025 CurrículumCraft</span>
-        <div class="foot-logos">
-          <div class="dot"></div>
-          <div class="dot"></div>
-          <div class="dot"></div>
+      <div class="card">
+        <img src="https://i.ytimg.com/vi/uDIM_5nOPnU/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBeNewQifDj26d4GsCcm4eWV4fL8g">
+        <div class="card-body">
+          <h4>Errores que debes evitar</h4>
+          <p>Descubre los 10 errores más comunes en un CV y cómo corregirlos.</p>
+          <a href="https://adalab.es/blog/los-10-errores-mas-comunes-en-tu-cv-evitalos/">Leer más</a>
         </div>
       </div>
-    </footer>
+    </div>
+  </section>
 
-    <script type="module" src="/js/dashboard.js"></script>
-  </body>
+  <footer>
+    <div class="footer-inner">
+      <span>&copy; 2025 CurrículumCraft</span>
+      <div class="foot-logos">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="module" src="/js/dashboard.js"></script>
+</body>
+
 </html>

@@ -1,7 +1,8 @@
-package com.cv.springboot.di.app.springboot_cv.dto;
+package com.cv.springboot.di.app.springboot_cv.dto.request;
 
 public class TechnicalSkillRequest {
-    
+
+    private Long id;
     private String name;
     private String category;
 
@@ -10,4 +11,7 @@ public class TechnicalSkillRequest {
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+
+    public Long getId() {return id;}
+    public void setId(Long id) {this.id = id;}
 }
