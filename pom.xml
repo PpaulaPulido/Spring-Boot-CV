@@ -60,12 +60,16 @@
 			<optional>true</optional>
 		</dependency>
 
+		
+
 		<!-- PostgreSQL -->
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency> -->
+
+
 
 		<!-- Test -->
 		<dependency>
