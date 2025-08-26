@@ -1,4 +1,4 @@
-import { showError, hideError, hideAllErrors } from './functions.js';
+import { showError, hideError, hideAllErrors, validarNombreEntidad, isValidDescription, validarFecha, isValidLength } from './functions.js';
 
 export function initWorkExperience() {
     // Obtener elementos del DOM con verificación de null
@@ -27,24 +27,78 @@ export function initWorkExperience() {
 
     let workExperiences = [];
 
+    // Helper Validation Functions (moved to functions.js or removed)
+    // function isValidLength(value, min, max) { ... } // Moved
+    // function isAlphaNumericSpacePunctuation(value) { ... } // Removed
+    // function isValidDescription(value) { ... } // Moved
+    // function validarFecha(fechaStr) { ... } // Moved
+
     // Event listeners
     workForm.addButton.addEventListener('click', addWorkExperience);
     workForm.startDate.addEventListener('change', validateDates);
     workForm.endDate.addEventListener('change', validateDates);
 
+    // Updated validateDates function
     function validateDates() {
-        if (workForm.startDate.value && workForm.endDate.value) {
-            const startDate = new Date(workForm.startDate.value);
-            const endDate = new Date(workForm.endDate.value);
-            
-            if (endDate < startDate) {
-                showError(workForm.endDate, 'La fecha de fin no puede ser anterior a la fecha de inicio');
-                return false;
+        let hasDateErrors = false;
+        const startDateValue = workForm.startDate.value;
+        const endDateValue = workForm.endDate.value;
+
+        hideError(workForm.startDate);
+        hideError(workForm.endDate);
+
+        if (startDateValue) {
+            const validationResult = validarFecha(startDateValue);
+            if (!validationResult.valido) {
+                showError(workForm.startDate, validationResult.mensaje);
+                hasDateErrors = true;
             }
         }
-        hideError(workForm.endDate);
-        return true;
+
+        if (endDateValue) {
+            const validationResult = validarFecha(endDateValue);
+            if (!validationResult.valido) {
+                showError(workForm.endDate, validationResult.mensaje);
+                hasDateErrors = true;
+            }
+        }
+
+        if (startDateValue && endDateValue) {
+            const startDate = new Date(startDateValue + '-01');
+            const endDate = new Date(endDateValue + '-01');
+            
+            if (endDate < startDate) {
+                showError(workForm.endDate, 'La fecha de fin no puede ser anterior a la fecha de inicio.');
+                hasDateErrors = true;
+            }
+        }
+        return !hasDateErrors;
     }
+
+    // Real-time validation listeners
+    workForm.position.addEventListener('input', function() {
+        hideError(this);
+        const value = this.value.trim();
+        const validationResult = validarNombreEntidad(value, 'puesto');
+        if (!validationResult.valido) {
+            showError(this, validationResult.mensaje);
+        }
+    });
+    workForm.company.addEventListener('input', function() {
+        hideError(this);
+        const value = this.value.trim();
+        const validationResult = validarNombreEntidad(value, 'empresa');
+        if (!validationResult.valido) {
+            showError(this, validationResult.mensaje);
+        }
+    });
+    workForm.description.addEventListener('input', function() {
+        hideError(this);
+        const value = this.value.trim();
+        if (value && !isValidDescription(value)) {
+            showError(this, 'La descripción debe ser clara, con al menos 3 palabras y sin repeticiones excesivas.');
+        }
+    });
 
     function addWorkExperience() {
         hideError(workForm.error);
@@ -67,13 +121,52 @@ export function initWorkExperience() {
             }
         }
 
-        // Validar fechas
+        // Specific validations for position, company, description
+        if (workForm.position.value.trim()) {
+            const validationResult = validarNombreEntidad(workForm.position.value.trim(), 'puesto');
+            if (!validationResult.valido) {
+                showError(workForm.position, validationResult.mensaje);
+                hasErrors = true;
+            }
+        }
+
+        if (workForm.company.value.trim()) {
+            const validationResult = validarNombreEntidad(workForm.company.value.trim(), 'empresa');
+            if (!validationResult.valido) {
+                showError(workForm.company, validationResult.mensaje);
+                hasErrors = true;
+            }
+        }
+
+        if (workForm.description.value.trim() && !isValidDescription(workForm.description.value.trim())) {
+            showError(workForm.description, 'La descripción debe ser clara, con al menos 3 palabras y sin repeticiones excesivas.');
+            hasErrors = true;
+        }
+
+        // Validate dates using validarFecha
+        if (workForm.startDate.value) {
+            const validationResult = validarFecha(workForm.startDate.value);
+            if (!validationResult.valido) {
+                showError(workForm.startDate, validationResult.mensaje);
+                hasErrors = true;
+            }
+        }
+
+        if (workForm.endDate.value) {
+            const validationResult = validarFecha(workForm.endDate.value);
+            if (!validationResult.valido) {
+                showError(workForm.endDate, validationResult.mensaje);
+                hasErrors = true;
+            }
+        }
+
+        // Validate date range (end date not before start date)
         if (!validateDates()) {
             hasErrors = true;
         }
 
         if (hasErrors) {
-            workForm.error.textContent = 'Por favor completa los campos requeridos';
+            workForm.error.textContent = 'Por favor corrige los errores en los campos de experiencia laboral.';
             workForm.error.style.display = 'block';
             return;
         }
@@ -83,7 +176,7 @@ export function initWorkExperience() {
             position: workForm.position.value.trim(),
             company: workForm.company.value.trim(),
             startDate: workForm.startDate.value,
-            endDate: workForm.endDate.value,
+            endDate: workForm.endDate.value, // Keep original value for storage
             description: workForm.description.value.trim()
         };
 
@@ -129,16 +222,16 @@ export function initWorkExperience() {
 
     function formatPeriod(workExperience) {
         const startDate = new Date(workExperience.startDate + '-01');
-        const startFormatted = startDate.toLocaleDateString('es-ES', { 
-            year: 'numeric', 
-            month: 'long' 
+        const startFormatted = startDate.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long'
         });
         
         if (workExperience.endDate) {
             const endDate = new Date(workExperience.endDate + '-01');
-            const endFormatted = endDate.toLocaleDateString('es-ES', { 
-                year: 'numeric', 
-                month: 'long' 
+            const endFormatted = endDate.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long'
             });
             return `${startFormatted} - ${endFormatted}`;
         }
@@ -168,7 +261,8 @@ export function initWorkExperience() {
             workForm.position,
             workForm.company,
             workForm.startDate,
-            workForm.endDate
+            workForm.endDate,
+            workForm.description // Added description to clear errors
         ]);
     }
 

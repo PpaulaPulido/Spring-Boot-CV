@@ -6,7 +6,25 @@ import {
     showError,
     hideError,
     hideAllErrors,
-    validateImage
+    validateImage,
+    isValidLength,
+    isAlphaNumericSpace,
+    isAlphaSpace,
+    isValidURL,
+    isLinkedInURL,
+    isValidEmail,
+    isValidFullName,
+    isValidProfession,
+    isValidAddress,
+    validarResumenProfesional,
+    // New skill validation functions
+    normalizeSkillText,
+    isValidSoftSkillName,
+    isValidTechnicalSkillName,
+    isValidTechnicalCategory,
+    isDuplicateSkillGlobal,
+    isValidDescription, // Now imported
+    validarFecha // Now imported
 } from './functions.js';
 import { initEducation } from './education.js';
 import { initWorkExperience } from './work_experience.js';
@@ -43,24 +61,21 @@ document.addEventListener("DOMContentLoaded", function () {
         data.profession = document.getElementById('profession').value;
         data.summary = document.getElementById('summary').value;
         const checkedTheme = document.querySelector('input[name="theme"]:checked');
-        data.theme = checkedTheme ? checkedTheme.value : 'default'; // Proporciona un valor por defecto
+        data.theme = checkedTheme ? checkedTheme.value : 'default';
 
-        // Skills (assuming softSkills and technicalSkills arrays are globally accessible or passed)
-        data.softSkills = softSkills; // These are already managed by JS
-        data.technicalSkills = technicalSkills; // These are already managed by JS
+        // Skills
+        data.softSkills = softSkills;
+        data.technicalSkills = technicalSkills;
 
-        // Education (assuming educationModule.getEducations() exists)
+        // Education
         data.educations = educationModule.getEducations();
 
-        // Work Experience (assuming workExperienceModule.getWorkExperiences() exists)
+        // Work Experience
         data.workExperiences = workExperienceModule.getWorkExperiences();
 
-        // Profile Image (this is tricky for live preview, might need to use FileReader)
-        // For now, we'll just pass the path if it exists, or a placeholder
+        // Profile Image
         const profileImageFile = document.getElementById('profileImageFile').files[0];
         if (profileImageFile) {
-            // For live preview, we need to read the file as a Data URL
-            // This will be handled in the updatePreview function
             data.profileImageFile = profileImageFile;
         } else {
             data.profileImageFile = null;
@@ -73,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Profile Image
         const profileImageHtml = data.profileImageFile ?
             `<div class="img-container"><img src="${URL.createObjectURL(data.profileImageFile)}" alt="Foto de perfil"></div>` :
-            '<div class="img-container"><img src="/images/default.jpg" alt="Foto de perfil por defecto"></div>'; // Default image
+            '<div class="img-container"><img src="/images/default.jpg" alt="Foto de perfil por defecto"></div>';
 
         // Contact Info
         const contactInfoHtml = `
@@ -133,7 +148,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `).join('')}
         ` : '';
-
 
         return `
             <div class="resume-container">
@@ -221,41 +235,69 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     function addSoftSkill() {
-        const skillName = softSkillInput.value.trim();
-        console.log("Intentando agregar habilidad blanda:", skillName);
-        if (skillName) {
-            softSkills.push({ name: skillName, description: "" });
-            updateSoftSkillList();
-            softSkillInput.value = "";
-            hideError(softSkillInput);
-            updatePreview(); // Refresh preview
-            console.log("Habilidad blanda agregada:", skillName);
-        } else {
-            console.log("No se agregó habilidad blanda: el campo está vacío.");
-            showError(softSkillInput, 'El nombre de la habilidad blanda no puede estar vacío.');
+        const skillName = (softSkillInput.value || "").trim();
+        hideError(softSkillInput); // Clear previous error
+
+        const msg = isValidSoftSkillName(skillName);
+        if (msg) {
+            showError(softSkillInput, msg);
+            return;
         }
+
+        if (isDuplicateSkillGlobal(skillName, softSkills, technicalSkills)) {
+            showError(softSkillInput, 'Ya agregaste esta habilidad (blanda o técnica).');
+            return;
+        }
+
+        // Límite opcional para no desbordar el CV
+        if (softSkills.length >= 15) {
+            showError(softSkillInput, 'Máximo 15 habilidades blandas.');
+            return;
+        }
+
+        softSkills.push({ name: skillName, description: "" });
+        updateSoftSkillList();
+        softSkillInput.value = "";
+        updatePreview(); // Refresh preview
     }
 
     function addTechnicalSkill() {
-        const skillName = technicalSkillInput.value.trim();
-        const category = technicalSkillCategory.value.trim();
-        console.log("Intentando agregar habilidad técnica:", skillName, "Categoría:", category);
+        const skillName = (technicalSkillInput.value || "").trim();
+        const category = (technicalSkillCategory.value || "").trim();
 
-        if (skillName) {
-            technicalSkills.push({
-                name: skillName,
-                category: category || "General"
-            });
-            updateTechnicalSkillList();
-            technicalSkillInput.value = "";
-            technicalSkillCategory.value = "";
-            hideError(technicalSkillInput);
-            updatePreview(); // Refresh preview
-            console.log("Habilidad técnica agregada:", skillName, "Categoría:", category);
-        } else {
-            console.log("No se agregó habilidad técnica: el campo está vacío.");
-            showError(technicalSkillInput, 'El nombre de la habilidad técnica no puede estar vacío.');
+        hideError(technicalSkillInput);
+        hideError(technicalSkillCategory);
+
+        const msgName = isValidTechnicalSkillName(skillName);
+        if (msgName) {
+            showError(technicalSkillInput, msgName);
+            return;
         }
+
+        const msgCat = isValidTechnicalCategory(category);
+        if (msgCat) {
+            showError(technicalSkillCategory, msgCat);
+            return;
+        }
+
+        if (isDuplicateSkillGlobal(skillName, softSkills, technicalSkills)) {
+            showError(technicalSkillInput, 'Ya agregaste esta habilidad (blanda o técnica).');
+            return;
+        }
+
+        if (technicalSkills.length >= 20) {
+            showError(technicalSkillInput, 'Máximo 20 habilidades técnicas.');
+            return;
+        }
+
+        technicalSkills.push({
+            name: skillName,
+            category: category || "General"
+        });
+        updateTechnicalSkillList();
+        technicalSkillInput.value = "";
+        technicalSkillCategory.value = "";
+        updatePreview(); // Refresh preview
     }
 
     function updateSoftSkillList() {
@@ -322,15 +364,18 @@ document.addEventListener("DOMContentLoaded", function () {
         return container;
     }
 
-    // Validación antes de enviar
+    // Helper Validation Functions (local to template_cv.js, consider moving to functions.js if reused)
+    // isDuplicateSkill is replaced by isDuplicateSkillGlobal
+
+    // Validation before submission
     form.addEventListener("submit", function (e) {
         e.preventDefault();
-        hideAllErrors(form); // Pasar el formulario como parámetro
+        hideAllErrors(form);
 
         let hasErrors = false;
         let firstErrorField = null;
 
-        // Validar campos requeridos
+        // Validate required fields
         const requiredFields = form.querySelectorAll('[required]');
         requiredFields.forEach(field => {
             if (!field.value.trim()) {
@@ -340,39 +385,132 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Validar que haya al menos una habilidad técnica
+        // Validate fullName
+        const fullNameField = document.getElementById('fullName');
+        if (fullNameField) {
+            const fullNameError = isValidFullName(fullNameField.value);
+            if (fullNameError) {
+                showError(fullNameField, fullNameError);
+                hasErrors = true;
+                if (!firstErrorField) firstErrorField = fullNameField;
+            }
+        }
+
+        // Validate address
+        const addressField = document.getElementById('address');
+        if (addressField && addressField.value.trim()) {
+            const addressError = isValidAddress(addressField.value.trim());
+            if (addressError) {
+                showError(addressField, addressError);
+                hasErrors = true;
+                if (!firstErrorField) firstErrorField = addressField;
+            }
+        }
+
+        // Validate linkedin
+        const linkedinField = document.getElementById('linkedin');
+        if (linkedinField && linkedinField.value.trim()) {
+            const linkedinError = isLinkedInURL(linkedinField.value.trim());
+            if (linkedinError) {
+                showError(linkedinField, linkedinError);
+                hasErrors = true;
+                if (!firstErrorField) firstErrorField = linkedinField;
+            }
+        }
+
+        // Validate portfolio
+        const portfolioField = document.getElementById('portfolio');
+        if (portfolioField && portfolioField.value.trim()) {
+            const portfolioError = isValidURL(portfolioField.value.trim());
+            if (!portfolioError) { // isValidURL returns true/false
+                showError(portfolioField, 'Formato de URL de portafolio inválido. Ej: https://www.miportafolio.com');
+                hasErrors = true;
+                if (!firstErrorField) firstErrorField = portfolioField;
+            }
+        }
+
+        // Validate profession
+        const professionField = document.getElementById('profession');
+        if (professionField) {
+            const professionError = isValidProfession(professionField.value);
+            if (professionError) {
+                showError(professionField, professionError);
+                hasErrors = true;
+                if (!firstErrorField) firstErrorField = professionField;
+            }
+        }
+
+        // Validate summary
+        const summaryField = document.getElementById('summary');
+        if (summaryField && summaryField.value.trim()) {
+            const summaryValidation = validarResumenProfesional(summaryField.value.trim());
+            if (!summaryValidation.valido) {
+                showError(summaryField, summaryValidation.error);
+                hasErrors = true;
+                if (!firstErrorField) firstErrorField = summaryField;
+            }
+        }
+
+        // Validate that there is at least one technical skill
         if (technicalSkills.length === 0) {
             showError(technicalSkillInput, 'Debes agregar al menos una habilidad técnica');
             hasErrors = true;
             if (!firstErrorField) firstErrorField = technicalSkillInput;
         }
 
-        // Validar que haya al menos una habilidad blanda
+        // Validate that there is at least one soft skill
         if (softSkills.length === 0) {
             showError(softSkillInput, 'Debes agregar al menos una habilidad blanda');
             hasErrors = true;
             if (!firstErrorField) firstErrorField = softSkillInput;
         }
 
-        // Validar teléfono
+        // Validate phone
         if (iti && !iti.isValidNumber()) {
-            showError(document.getElementById('phone'), 'Por favor ingresa un número de teléfono válido');
+            const errorCode = iti.getValidationError();
+            let errorMessage = 'Por favor ingresa un número de teléfono válido';
+            // Map error codes to more specific messages
+            switch (errorCode) {
+                case 1: // IS_POSSIBLE
+                    errorMessage = 'Número de teléfono demasiado corto.';
+                    break;
+                case 2: // INVALID_COUNTRY_CODE
+                    errorMessage = 'Código de país inválido.';
+                    break;
+                case 3: // TOO_SHORT
+                    errorMessage = 'Número de teléfono demasiado corto.';
+                    break;
+                case 4: // TOO_LONG
+                    errorMessage = 'Número de teléfono demasiado largo.';
+                    break;
+                case 5: // NOT_A_NUMBER
+                    errorMessage = 'No es un número de teléfono válido.';
+                    break;
+                case 6: // IS_POSSIBLE_LOCAL_ONLY
+                    errorMessage = 'Número de teléfono válido solo localmente.';
+                    break;
+                case -99: // UNKNOWN
+                default:
+                    errorMessage = 'Número de teléfono inválido.';
+                    break;
+            }
+            showError(document.getElementById('phone'), errorMessage);
             hasErrors = true;
             if (!firstErrorField) firstErrorField = document.getElementById('phone');
         }
 
-        // Validar email si existe el campo
+        // Validate email if field exists
         const emailField = document.getElementById('email');
         if (emailField) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (emailField.value && !emailRegex.test(emailField.value)) {
-                showError(emailField, 'Formato de correo electrónico inválido');
+            const emailError = isValidEmail(emailField.value);
+            if (emailError) {
+                showError(emailField, emailError);
                 hasErrors = true;
                 if (!firstErrorField) firstErrorField = emailField;
             }
         }
 
-        // Validar imagen si se seleccionó alguna
+        // Validate image if one is selected
         if (profileImageInput && profileImageInput.files.length > 0) {
             const file = profileImageInput.files[0];
             const imageError = validateImage(file);
@@ -383,20 +521,20 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        // Validar educación
+        // Validate education
         if (!educationModule.validateEducations()) {
             hasErrors = true;
             if (!firstErrorField) firstErrorField = document.getElementById('educationInstitution');
         }
 
-        //Validar experiencia laboral
+        // Validate work experience
         if (!workExperienceModule.validateWorkExperiences()) {
             hasErrors = true;
             if (!firstErrorField) firstErrorField = document.getElementById('workPosition');
         }
 
         if (hasErrors) {
-            // Scroll al primer campo con error
+            // Scroll to the first field with an error
             if (firstErrorField) {
                 firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 firstErrorField.focus();
@@ -408,7 +546,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 html: 'Por favor corrige los errores en el formulario.'
             });
         } else {
-            // Actualizar campos ocultos y enviar formulario
+            // Update hidden fields and submit form
             updateHiddenFields();
             educationModule.updateHiddenFields();
             workExperienceModule.updateHiddenFields();
@@ -416,14 +554,84 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Limpiar validación al escribir
+    // Clear validation on input
     form.querySelectorAll('input, textarea').forEach(input => {
         input.addEventListener('input', function () {
             hideError(this);
         });
     });
 
-    // Enter para agregar habilidades
+    
+
+    // Real-time validation for specific fields
+    document.getElementById('fullName').addEventListener('input', function() {
+        const field = this;
+        hideError(field);
+        const fullNameError = isValidFullName(field.value);
+        if (fullNameError) {
+            showError(field, fullNameError);
+        }
+    });
+
+    document.getElementById('address').addEventListener('input', function() {
+        const field = this;
+        const value = field.value.trim();
+        hideError(field);
+        const addressError = isValidAddress(value);
+        if (addressError) {
+            showError(field, addressError);
+        }
+    });
+
+    document.getElementById('linkedin').addEventListener('input', function() {
+        const field = this;
+        const value = field.value.trim();
+        hideError(field);
+        const linkedinError = isLinkedInURL(value);
+        if (linkedinError) {
+            showError(field, linkedinError);
+        }
+    });
+
+    document.getElementById('portfolio').addEventListener('input', function() {
+        const field = this;
+        const value = field.value.trim();
+        hideError(field);
+        const portfolioError = isValidURL(value);
+        if (!portfolioError) { // isValidURL returns true/false
+            showError(field, 'Formato de URL de portafolio inválido. Ej: https://www.miportafolio.com');
+        }
+    });
+
+    document.getElementById('profession').addEventListener('input', function() {
+        const field = this;
+        hideError(field);
+        const professionError = isValidProfession(field.value);
+        if (professionError) {
+            showError(field, professionError);
+        }
+    });
+
+    document.getElementById('summary').addEventListener('input', function() {
+        const field = this;
+        const value = field.value.trim();
+        hideError(field);
+        const summaryValidation = validarResumenProfesional(value);
+        if (!summaryValidation.valido) {
+            showError(field, summaryValidation.error);
+        }
+    });
+
+    document.getElementById('email').addEventListener('input', function() {
+        const field = this;
+        hideError(field);
+        const emailError = isValidEmail(field.value);
+        if (emailError) {
+            showError(field, emailError);
+        }
+    });
+
+    // Enter to add skills
     softSkillInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -445,7 +653,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Inicializar
-    hideAllErrors(form); // Pasar el formulario como parámetro
+    // Initialize
+    hideAllErrors(form);
     updateHiddenFields();
 });

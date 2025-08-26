@@ -1,4 +1,4 @@
-import { initPhoneInput, showAlert, setupPasswordToggle } from './functions.js';
+import { initPhoneInput, showAlert, setupPasswordToggle, isValidLength } from './functions.js';
 
 // Tu función de validación del teléfono
 function validatePhone(iti) {
@@ -9,7 +9,7 @@ function validatePhone(iti) {
 }
 
 // Regex para validación
-const emailRegex = /^(?=[^\s@]*[a-zA-Z])[^\s@]+@[^\s@]+\.(com|co|net|org)$/;
+const emailRegex = /^[a-zA-Z0-9._%+-]{3,}@[a-zA-Z0-9.-]{3,}\.(com|co|es|net|org|edu)$/i;
 const passRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -62,8 +62,15 @@ document.addEventListener("DOMContentLoaded", () => {
         hideError(phoneInput);
 
         // Validación del email
-        if (!emailRegex.test(emailInput.value)) {
-            showError(emailInput, "Formato de correo inválido. Solo se aceptan .com, .co, .net, .org y debe empezar con una letra.");
+        const emailValue = emailInput.value.trim();
+        if (!emailRegex.test(emailValue)) {
+            showError(emailInput, 'Formato de correo electrónico inválido. Ej: usuario@dominio.com');
+            hasErrors = true;
+        } else if (emailValue.includes('..') || emailValue.startsWith('.') || emailValue.endsWith('.')) {
+            showError(emailInput, 'El correo electrónico contiene caracteres inválidos o formato incorrecto.');
+            hasErrors = true;
+        } else if (!isValidLength(emailValue, 5, 254)) {
+            showError(emailInput, 'El correo electrónico debe tener entre 5 y 254 caracteres.');
             hasErrors = true;
         }
 
@@ -106,10 +113,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Validar en tiempo real al cambiar el foco del campo
     emailInput.addEventListener("blur", () => {
-        if (emailRegex.test(emailInput.value)) {
-            hideError(emailInput);
-        } else if (emailInput.value !== "") {
-            showError(emailInput, "Formato de correo inválido.");
+        const emailValue = emailInput.value.trim();
+        hideError(emailInput); // Clear previous error
+        if (emailValue) {
+            if (!emailRegex.test(emailValue)) {
+                showError(emailInput, 'Formato de correo electrónico inválido. Ej: usuario@dominio.com');
+            } else if (emailValue.includes('..') || emailValue.startsWith('.') || emailValue.endsWith('.')) {
+                showError(emailInput, 'El correo electrónico contiene caracteres inválidos o formato incorrecto.');
+            } else if (!isValidLength(emailValue, 5, 254)) {
+                showError(emailInput, 'El correo electrónico debe tener entre 5 y 254 caracteres.');
+            }
         }
     });
 
