@@ -234,44 +234,44 @@ export function isValidFullName(value) {
     // 4. Validar cada parte del nombre
     for (let i = 0; i < nameParts.length; i++) {
         const part = nameParts[i];
-        
+
         // Longitud de cada parte
         if (part.length < 2 || part.length > 25) {
             return `Cada parte del nombre debe tener entre 2 y 25 caracteres. Problema en: "${part}"`;
         }
-        
+
         // Caracteres permitidos (letras, algunos caracteres especiales)
         if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ'’\-]+$/.test(part)) {
             return `Solo se permiten letras y algunos caracteres especiales (ñ, acentos, ' y -). Problema en: "${part}"`;
         }
-        
+
         // No más de 2 caracteres repetidos consecutivos
         if (/(.)\1\1/.test(part)) {
             return `No se permiten caracteres repetidos en exceso. Problema en: "${part}"`;
         }
-        
+
         // No patrones de teclado comunes
         if (isKeyboardPattern(part)) {
             return `El texto parece un patrón de teclado no válido. Problema en: "${part}"`;
         }
-        
+
         // No secuencias alfanuméricas
         if (isSequential(part)) {
             return `El texto parece una secuencia no válida. Problema en: "${part}"`;
         }
-        
+
         // Validar que comience con mayúscula (excepto para prefijos como "de", "del")
         const lowerPart = part.toLowerCase();
         if (i > 0 && (lowerPart === 'de' || lowerPart === 'del' || lowerPart === 'la' || lowerPart === 'las' || lowerPart === 'los')) {
             // Los prefijos pueden estar en minúscula
             continue;
         }
-        
+
         if (!/^[A-ZÁÉÍÓÚÑÜ]/.test(part)) {
             return `Cada palabra debe comenzar con mayúscula. Problema en: "${part}"`;
         }
     }
-    
+
     return null; // No error
 }
 
@@ -282,31 +282,31 @@ function isKeyboardPattern(text) {
         'qwerty', 'asdf', 'zxcv', 'poiu', 'lkj', 'mnb',
         '123', 'abc', 'qwe', 'asd', 'zxc', 'iop', 'jkl', 'bnm'
     ];
-    
+
     return keyboardPatterns.some(pattern => lowerText.includes(pattern));
 }
 
 // Función para detectar secuencias
 function isSequential(text) {
     const lowerText = text.toLowerCase();
-    
+
     // Verificar secuencias de 3 o más letras consecutivas
     for (let i = 0; i < lowerText.length - 2; i++) {
         const char1 = lowerText.charCodeAt(i);
         const char2 = lowerText.charCodeAt(i + 1);
         const char3 = lowerText.charCodeAt(i + 2);
-        
+
         // Secuencia ascendente (abc, bcd, etc.)
         if (char2 === char1 + 1 && char3 === char2 + 1) {
             return true;
         }
-        
+
         // Secuencia descendente (cba, dcb, etc.)
         if (char2 === char1 - 1 && char3 === char2 - 1) {
             return true;
         }
     }
-    
+
     return false;
 }
 
@@ -421,117 +421,138 @@ export function validarResumenProfesional(resumen) {
     return { valido: true, error: null };
 }
 
-export function validarNombreEntidad(nombre, tipo = "campo") {
-    const clean = nombre.trim();
-    if (clean.length < 2) {
-        return { valido: false, mensaje: `El ${tipo} debe tener al menos 2 caracteres.` };
+export function validarNombreEntidad(valor, tipo) {
+    if (!valor || !valor.trim()) {
+        return { valido: false, mensaje: `El ${tipo} es requerido` };
     }
-    if (!/[a-zA-ZáéíóúÁÉÍÓÚñÑ]/.test(clean)) {
-        return { valido: false, mensaje: `El ${tipo} debe contener letras.` };
+
+    // Validar longitud mínima y máxima
+    if (valor.length < 2) {
+        return { valido: false, mensaje: `El ${tipo} debe tener al menos 2 caracteres` };
     }
-    return { valido: true, mensaje: null };
+
+    if (valor.length > 50) {
+        return { valido: false, mensaje: `El ${tipo} no puede exceder los 50 caracteres` };
+    }
+
+    // Validar que no contenga caracteres repetidos excesivamente
+    if (/(.)\1{3,}/.test(valor)) {
+        return { valido: false, mensaje: `El ${tipo} contiene caracteres repetidos excesivamente` };
+    }
+
+    // Validar que contenga al menos una vocal
+    if (!/[aeiouáéíóú]/i.test(valor)) {
+        return { valido: false, mensaje: `El ${tipo} debe contener vocales` };
+    }
+
+    // Validar formato básico (letras, espacios, algunos caracteres especiales)
+    if (!/^[a-záéíóúñ\s\-.,()&]+$/i.test(valor)) {
+        return { valido: false, mensaje: `El ${tipo} contiene caracteres no permitidos` };
+    }
+
+    return { valido: true, mensaje: '' };
 }
 
 export function normalizeSkillText(s) {
-  return (s || "")
-    .trim()
-    .replace(/\s+/g, " ")
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, ""); // quita acentos
+    return (s || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // quita acentos
 }
 
 export function isValidSoftSkillName(value) {
-  const v = (value || "").trim();
+    const v = (value || "").trim();
 
-  if (v.length < 2 || v.length > 50) {
-    return "La habilidad blanda debe tener entre 2 y 50 caracteres.";
-  }
-  // letras + espacios + guion y apóstrofo, con acentos
-  if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'’-]+$/.test(v)) {
-    return "La habilidad blanda solo puede contener letras, espacios, guiones y apóstrofos.";
-  }
-  if (/(.)\1{3,}/.test(v)) {
-    return "La habilidad blanda no puede repetir el mismo carácter más de 3 veces seguidas.";
-  }
-  // Evita basura tipo 'asdf', 'qwerty', 'lorem', etc.
-  const basura = ["asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz"];
-  const n = normalizeSkillText(v);
-  if (basura.some(b => n.includes(b))) {
-    return "La habilidad blanda parece texto de prueba o inválido.";
-  }
-  return null;
+    if (v.length < 2 || v.length > 50) {
+        return "La habilidad blanda debe tener entre 2 y 50 caracteres.";
+    }
+    // letras + espacios + guion y apóstrofo, con acentos
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'’-]+$/.test(v)) {
+        return "La habilidad blanda solo puede contener letras, espacios, guiones y apóstrofos.";
+    }
+    if (/(.)\1{3,}/.test(v)) {
+        return "La habilidad blanda no puede repetir el mismo carácter más de 3 veces seguidas.";
+    }
+    // Evita basura tipo 'asdf', 'qwerty', 'lorem', etc.
+    const basura = ["asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz"];
+    const n = normalizeSkillText(v);
+    if (basura.some(b => n.includes(b))) {
+        return "La habilidad blanda parece texto de prueba o inválido.";
+    }
+    return null;
 }
 
 export function isValidTechnicalSkillName(value) {
-  const v = (value || "").trim();
+    const v = (value || "").trim();
 
-  // Longitud
-  if (v.length < 2 || v.length > 50) {
-    return "La habilidad técnica debe tener entre 2 y 50 caracteres.";
-  }
+    // Longitud
+    if (v.length < 2 || v.length > 50) {
+        return "La habilidad técnica debe tener entre 2 y 50 caracteres.";
+    }
 
-  // Permitir letras, números, espacios y símbolos comunes
-  if (!/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.+#()_\-\/&]+$/.test(v)) {
-    return "La habilidad técnica contiene caracteres no permitidos.";
-  }
+    // Permitir letras, números, espacios y símbolos comunes
+    if (!/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.+#()_\-\/&]+$/.test(v)) {
+        return "La habilidad técnica contiene caracteres no permitidos.";
+    }
 
-  // Evitar repeticiones exageradas de caracteres
-  if (/(.)\1{4,}/.test(v)) {
-    return "La habilidad técnica no puede repetir el mismo carácter más de 4 veces seguidas.";
-  }
+    // Evitar repeticiones exageradas de caracteres
+    if (/(.)\1{4,}/.test(v)) {
+        return "La habilidad técnica no puede repetir el mismo carácter más de 4 veces seguidas.";
+    }
 
-  // Debe contener al menos una palabra de 2 o más letras seguidas
-  if (!/\b[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]{2,}\b/.test(v)) {
-    return "La habilidad técnica debe contener al menos una palabra válida.";
-  }
+    // Debe contener al menos una palabra de 2 o más letras seguidas
+    if (!/\b[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]{2,}\b/.test(v)) {
+        return "La habilidad técnica debe contener al menos una palabra válida.";
+    }
 
-  // Evitar paréntesis con menos de 3 caracteres dentro (probable basura)
-  if (/\([^)]{0,2}\)/.test(v)) {
-    return "El texto entre paréntesis es demasiado corto o inválido.";
-  }
+    // Evitar paréntesis con menos de 3 caracteres dentro (probable basura)
+    if (/\([^)]{0,2}\)/.test(v)) {
+        return "El texto entre paréntesis es demasiado corto o inválido.";
+    }
 
-  // Bloquear palabras basura conocidas
-  const basura = ["asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz", "dfadgafdgdsgdf", "sfadfa"];
-  const n = normalizeSkillText(v);
-  if (basura.some(b => n.includes(b))) {
-    return "La habilidad técnica parece texto de prueba o inválido.";
-  }
+    // Bloquear palabras basura conocidas
+    const basura = ["asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz", "dfadgafdgdsgdf", "sfadfa"];
+    const n = normalizeSkillText(v);
+    if (basura.some(b => n.includes(b))) {
+        return "La habilidad técnica parece texto de prueba o inválido.";
+    }
 
-  return null;
+    return null;
 }
 
 export function isValidTechnicalCategory(value) {
-  const v = (value || "").trim();
-  if (!v) return null; // opcional
-  if (v.length < 2 || v.length > 50) {
-    return "La categoría debe tener entre 2 y 50 caracteres.";
-  }
-  if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(v)) {
-    return "La categoría solo puede contener letras y espacios.";
-  }
-  if (/(.)\1{3,}/.test(v)) {
-    return "La categoría no puede repetir el mismo carácter más de 3 veces seguidas.";
-  }
-  const basura = ["asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz"];
-  const n = normalizeSkillText(v);
-  if (basura.some(b => n.includes(b))) {
-    return "La categoría parece texto de prueba o inválido.";
-  }
-  return null;
+    const v = (value || "").trim();
+    if (!v) return null; // opcional
+    if (v.length < 2 || v.length > 50) {
+        return "La categoría debe tener entre 2 y 50 caracteres.";
+    }
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(v)) {
+        return "La categoría solo puede contener letras y espacios.";
+    }
+    if (/(.)\1{3,}/.test(v)) {
+        return "La categoría no puede repetir el mismo carácter más de 3 veces seguidas.";
+    }
+    const basura = ["asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz"];
+    const n = normalizeSkillText(v);
+    if (basura.some(b => n.includes(b))) {
+        return "La categoría parece texto de prueba o inválido.";
+    }
+    return null;
 }
 
 export function isDuplicateSkillNormalized(name, list) {
-  const n = normalizeSkillText(name);
-  return list.some(s => normalizeSkillText(s.name) === n);
+    const n = normalizeSkillText(name);
+    return list.some(s => normalizeSkillText(s.name) === n);
 }
 
 export function isDuplicateSkillGlobal(name, softList, techList) {
-  const n = normalizeSkillText(name);
-  return (
-    softList.some(s => normalizeSkillText(s.name) === n) ||
-    techList.some(s => normalizeSkillText(s.name) === n)
-  );
+    const n = normalizeSkillText(name);
+    return (
+        softList.some(s => normalizeSkillText(s.name) === n) ||
+        techList.some(s => normalizeSkillText(s.name) === n)
+    );
 }
 
 export function isValidDescription(value) {
@@ -555,7 +576,7 @@ export function isValidDescription(value) {
 export function validarFecha(fechaStr) {
     // Convertir a objeto Date
     const fecha = new Date(fechaStr);
-    
+
     // Verificar que sea una fecha válida
     if (isNaN(fecha.getTime())) {
         return { valido: false, mensaje: "La fecha no es válida" };

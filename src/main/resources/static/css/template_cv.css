@@ -24,39 +24,53 @@
   gap: 20px;
   padding: 20px;
   align-items: flex-start;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  flex-wrap: wrap;
+  /* Allow wrapping on smaller screens */
 }
 
 .form-section {
-  flex: 1; /* Allow form to grow */
-  min-width: 450px; /* Minimum width for the form */
-  max-width: 600px; /* Maximum width for the form */
+  flex: 1;
+  /* Allow form to grow */
+  min-width: 450px;
+  /* Minimum width for the form */
+  max-width: 600px;
+  /* Maximum width for the form */
 }
 
 .preview-section {
-  flex: 1; /* Allow preview to grow */
-  min-width: 400px; /* Minimum width for the preview */
+  flex: 1;
+  /* Allow preview to grow */
+  min-width: 400px;
+  /* Minimum width for the preview */
   background-color: white;
   padding: 20px;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  position: sticky; /* Make it sticky */
-  top: 20px; /* Stick to the top with some offset */
-  max-height: calc(100vh - 40px); /* Ensure it doesn't overflow viewport */
-  overflow-y: auto; /* Allow preview section itself to scroll if content is too tall */
+  position: sticky;
+  /* Make it sticky */
+  top: 20px;
+  /* Stick to the top with some offset */
+  max-height: calc(100vh - 40px);
+  /* Ensure it doesn't overflow viewport */
+  overflow-y: auto;
+  /* Allow preview section itself to scroll if content is too tall */
 }
 
 .cv-preview-container {
   border: 1px solid #eee;
   min-height: 300px;
   background-color: #fff;
-  padding: 1.5rem; /* Use rem for scalable padding */
-  aspect-ratio: 210 / 297; /* A4 paper aspect ratio */
+  padding: 1.5rem;
+  /* Use rem for scalable padding */
+  aspect-ratio: 210 / 297;
+  /* A4 paper aspect ratio */
   width: 100%;
   height: auto;
-  max-width: 800px; /* Max width of the preview */
+  max-width: 800px;
+  /* Max width of the preview */
   margin: auto;
-  overflow-y: auto; /* Enable scrolling for long CVs */
+  overflow-y: auto;
+  /* Enable scrolling for long CVs */
 }
 
 .form-section h2 {
@@ -277,17 +291,20 @@
 }
 
 .resume-left .img-container {
-  width: 150px; /* Container for the image */
+  width: 150px;
+  /* Container for the image */
   height: 150px;
   margin: 0 auto 15px;
   border-radius: 50%;
-  overflow: hidden; /* Hide parts of image that don't fit */
+  overflow: hidden;
+  /* Hide parts of image that don't fit */
 }
 
 .resume-left img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Scale image to cover the container, cropping if necessary */
+  object-fit: cover;
+  /* Scale image to cover the container, cropping if necessary */
   border-radius: 50%;
 }
 
@@ -526,6 +543,23 @@
   background-color: white;
 }
 
+.select-container {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: var(--radius);
+  font-size: 16px;
+  color: var(--text-dark);
+  background-color: white;
+  appearance: none;
+  transition: all 0.3s ease;
+}
+
 .form-control:focus {
   outline: none;
   border-color: #007bff;
@@ -655,11 +689,14 @@ optgroup option {
     flex-direction: column;
     align-items: center;
   }
+
   .form-section,
   .preview-section {
     width: 100%;
-    max-width: 800px; /* Limit width on larger screens when stacked */
-    position: relative; /* Unset sticky when stacked */
+    max-width: 800px;
+    /* Limit width on larger screens when stacked */
+    position: relative;
+    /* Unset sticky when stacked */
     top: auto;
   }
 }

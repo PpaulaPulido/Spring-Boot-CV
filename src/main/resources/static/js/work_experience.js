@@ -17,11 +17,10 @@ export function initWorkExperience() {
 
     // Verificar si los elementos existen
     if (!workForm.position || !workForm.addButton) {
-        console.warn('Elementos de experiencia laboral no encontrados. La sección probablemente no está en el DOM.');
         return {
             validateWorkExperiences: () => true,
             getWorkExperiences: () => [],
-            updateHiddenFields: () => {}
+            updateHiddenFields: () => { }
         };
     }
 
@@ -66,7 +65,7 @@ export function initWorkExperience() {
         if (startDateValue && endDateValue) {
             const startDate = new Date(startDateValue + '-01');
             const endDate = new Date(endDateValue + '-01');
-            
+
             if (endDate < startDate) {
                 showError(workForm.endDate, 'La fecha de fin no puede ser anterior a la fecha de inicio.');
                 hasDateErrors = true;
@@ -75,24 +74,84 @@ export function initWorkExperience() {
         return !hasDateErrors;
     }
 
-    // Real-time validation listeners
-    workForm.position.addEventListener('input', function() {
+    function validarLongitudMaxima(texto, maxLongitud) {
+        return texto.length <= maxLongitud;
+    }
+
+    function validarPalabrasClaras(texto) {
+        // Verificar que no tenga caracteres repetidos excesivamente (más de 3 seguidos)
+        if (/(.)\1{3,}/.test(texto)) {
+            return false;
+        }
+
+        // Verificar que tenga al menos una vocal (para evitar cadenas sin sentido)
+        if (!/[aeiouáéíóú]/i.test(texto)) {
+            return false;
+        }
+
+        // Verificar que tenga al menos dos letras diferentes
+        const uniqueChars = new Set(texto.replace(/[^a-záéíóúñ]/gi, ''));
+        if (uniqueChars.size < 2) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    workForm.position.addEventListener('input', function () {
         hideError(this);
         const value = this.value.trim();
-        const validationResult = validarNombreEntidad(value, 'puesto');
-        if (!validationResult.valido) {
-            showError(this, validationResult.mensaje);
+
+        if (value) {
+            // Validar longitud máxima
+            if (!validarLongitudMaxima(value, 15)) {
+                showError(this, 'El puesto no puede tener más de 15 caracteres.');
+                return;
+            }
+
+            // Validar palabras claras
+            if (!validarPalabrasClaras(value)) {
+                showError(this, 'El puesto debe contener palabras claras y válidas.');
+                return;
+            }
+
+            // Validación general
+            const validationResult = validarNombreEntidad(value, 'puesto');
+            if (!validationResult.valido) {
+                showError(this, validationResult.mensaje);
+            }
         }
     });
-    workForm.company.addEventListener('input', function() {
+
+
+    workForm.company.addEventListener('input', function () {
         hideError(this);
         const value = this.value.trim();
-        const validationResult = validarNombreEntidad(value, 'empresa');
-        if (!validationResult.valido) {
-            showError(this, validationResult.mensaje);
+
+        if (value) {
+            // Validar longitud máxima
+            if (!validarLongitudMaxima(value, 15)) {
+                showError(this, 'La empresa no puede tener más de 15 caracteres.');
+                return;
+            }
+
+            // Validar palabras claras
+            if (!validarPalabrasClaras(value)) {
+                showError(this, 'El nombre de empresa debe contener palabras claras y válidas.');
+                return;
+            }
+
+            // Validación general
+            const validationResult = validarNombreEntidad(value, 'empresa');
+            if (!validationResult.valido) {
+                showError(this, validationResult.mensaje);
+            }
         }
     });
-    workForm.description.addEventListener('input', function() {
+
+
+    workForm.description.addEventListener('input', function () {
         hideError(this);
         const value = this.value.trim();
         if (value && !isValidDescription(value)) {
@@ -102,7 +161,7 @@ export function initWorkExperience() {
 
     function addWorkExperience() {
         hideError(workForm.error);
-        
+
         // Validar campos requeridos
         const requiredFields = [
             { field: workForm.position, message: 'El puesto es requerido' },
@@ -213,7 +272,7 @@ export function initWorkExperience() {
 
         // Agregar event listeners para eliminar
         document.querySelectorAll('.remove-work').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const index = parseInt(this.getAttribute('data-index'));
                 removeWorkExperience(index);
             });
@@ -226,7 +285,7 @@ export function initWorkExperience() {
             year: 'numeric',
             month: 'long'
         });
-        
+
         if (workExperience.endDate) {
             const endDate = new Date(workExperience.endDate + '-01');
             const endFormatted = endDate.toLocaleDateString('es-ES', {
@@ -235,7 +294,7 @@ export function initWorkExperience() {
             });
             return `${startFormatted} - ${endFormatted}`;
         }
-        
+
         return startFormatted;
     }
 
@@ -243,7 +302,7 @@ export function initWorkExperience() {
         workExperiences.splice(index, 1);
         updateWorkList();
         updateHiddenFields();
-        
+
         if (workExperiences.length === 0) {
             workForm.listContainer.style.display = 'none';
         }
@@ -256,7 +315,7 @@ export function initWorkExperience() {
         workForm.endDate.value = '';
         workForm.description.value = '';
         workForm.error.style.display = 'none';
-        
+
         hideAllErrors([
             workForm.position,
             workForm.company,

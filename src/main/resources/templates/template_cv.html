@@ -92,15 +92,29 @@
             placeholder="Breve descripción de tu experiencia y habilidades..." rows="15"></textarea>
         </div>
 
-        
+
 
         <!-- Habilidades Blandas -->
         <div class="skills-container">
           <h3>Habilidades Blandas *</h3>
           <div class="form-group">
-            <label for="softSkillInput">Agregar Habilidad Blanda</label>
-            <input type="text" id="softSkillInput" placeholder="Ej. Comunicación asertiva" />
-            <span class="error-message" th:if="${#fields.hasErrors('softSkills')}" th:errors="*{softSkills}"></span>
+            <label for="softSkillSelect">Seleccionar Habilidad Blanda</label>
+            <div class="select-container">
+              <select id="softSkillSelect">
+                <option value="" disabled selected>Selecciona una habilidad</option>
+                <option value="comunicacion">Comunicación asertiva</option>
+                <option value="trabajo-equipo">Trabajo en equipo</option>
+                <option value="liderazgo">Liderazgo</option>
+                <option value="adaptabilidad">Adaptabilidad</option>
+                <option value="resolucion-problemas">Resolución de problemas</option>
+                <option value="pensamiento-critico">Pensamiento crítico</option>
+                <option value="creatividad">Creatividad</option>
+                <option value="gestion-tiempo">Gestión del tiempo</option>
+                <option value="empatia">Empatía</option>
+                <option value="negociacion">Negociación</option>
+              </select>
+            </div>
+            <span class="error-message" id="softSkillError"></span>
             <button type="button" class="button button-add" id="addSoftSkill">Agregar</button>
           </div>
           <div class="skill-list" id="softSkillList"></div>
@@ -115,7 +129,88 @@
           </div>
           <div class="form-group">
             <label for="technicalSkillCategory">Categoría</label>
-            <input type="text" id="technicalSkillCategory" />
+            <div class="select-container">
+              <select id="technicalSkillCategory">
+                <option value="" disabled selected>Selecciona una categoría</option>
+
+                <!-- Categorías Generales -->
+                <optgroup label="Desarrollo Web">
+                  <option value="frontend">Frontend Development</option>
+                  <option value="backend">Backend Development</option>
+                  <option value="fullstack">Full Stack Development</option>
+                </optgroup>
+
+                <optgroup label="Frameworks Frontend">
+                  <option value="react">React</option>
+                  <option value="angular">Angular</option>
+                  <option value="vue">Vue.js</option>
+                  <option value="svelte">Svelte</option>
+                </optgroup>
+
+                <optgroup label="Frameworks Backend">
+                  <option value="spring">Spring Boot (Java)</option>
+                  <option value="django">Django (Python)</option>
+                  <option value="express">Express.js (Node.js)</option>
+                  <option value="laravel">Laravel (PHP)</option>
+                  <option value="rails">Ruby on Rails</option>
+                  <option value="aspnet">ASP.NET</option>
+                </optgroup>
+
+                <!-- Otras áreas tecnológicas -->
+                <optgroup label="Bases de Datos">
+                  <option value="sql">SQL (MySQL, PostgreSQL)</option>
+                  <option value="nosql">NoSQL (MongoDB, Redis)</option>
+                  <option value="oracle">Oracle Database</option>
+                </optgroup>
+
+                <optgroup label="DevOps & Cloud">
+                  <option value="aws">Amazon Web Services (AWS)</option>
+                  <option value="azure">Microsoft Azure</option>
+                  <option value="gcp">Google Cloud Platform</option>
+                  <option value="docker">Docker</option>
+                  <option value="kubernetes">Kubernetes</option>
+                  <option value="jenkins">Jenkins</option>
+                </optgroup>
+
+                <optgroup label="Ciberseguridad">
+                  <option value="ethicalhacking">Ethical Hacking</option>
+                  <option value="networksec">Network Security</option>
+                  <option value="cryptography">Cryptography</option>
+                </optgroup>
+
+                <!-- Otras carreras -->
+                <optgroup label="Ciencia de Datos">
+                  <option value="machinelearning">Machine Learning</option>
+                  <option value="bigdata">Big Data</option>
+                  <option value="datavisualization">Data Visualization</option>
+                </optgroup>
+
+                <optgroup label="Diseño UX/UI">
+                  <option value="uxdesign">UX Design</option>
+                  <option value="uidesign">UI Design</option>
+                  <option value="prototyping">Prototyping</option>
+                </optgroup>
+
+                <optgroup label="Desarrollo Móvil">
+                  <option value="android">Android Development</option>
+                  <option value="ios">iOS Development</option>
+                  <option value="reactnative">React Native</option>
+                  <option value="flutter">Flutter</option>
+                </optgroup>
+
+                <optgroup label="Blockchain">
+                  <option value="smartcontracts">Smart Contracts</option>
+                  <option value="web3">Web3 Development</option>
+                  <option value="solidity">Solidity</option>
+                </optgroup>
+
+                <optgroup label="Inteligencia Artificial">
+                  <option value="nlp">Procesamiento Lenguaje Natural</option>
+                  <option value="computervision">Computer Vision</option>
+                  <option value="deeplearning">Deep Learning</option>
+                </optgroup>
+              </select>
+            </div>
             <span class="error-message" th:if="${#fields.hasErrors('technicalSkills')}"
               th:errors="*{technicalSkills}"></span>
             <button type="button" class="button button-add" id="addTechnicalSkill">Agregar</button>
@@ -293,7 +388,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script type="module" src="/js/template_cv.js"></script>
-  
+
 </body>
 
 </html>

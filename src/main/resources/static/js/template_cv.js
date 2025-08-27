@@ -25,6 +25,7 @@ import {
     isDuplicateSkillGlobal,
     isValidDescription, // Now imported
     validarFecha // Now imported
+
 } from './functions.js';
 import { initEducation } from './education.js';
 import { initWorkExperience } from './work_experience.js';
@@ -35,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const educationModule = initEducation();
     const workExperienceModule = initWorkExperience();
 
-    const softSkillInput = document.getElementById("softSkillInput");
+    const softSkillInput = document.getElementById("softSkillSelect");
     const technicalSkillInput = document.getElementById("technicalSkillInput");
     const technicalSkillCategory = document.getElementById("technicalSkillCategory");
     const addSoftSkillBtn = document.getElementById("addSoftSkill");
@@ -285,8 +286,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (technicalSkills.length >= 20) {
-            showError(technicalSkillInput, 'Máximo 20 habilidades técnicas.');
+        if (technicalSkills.length >= 10) {
+            showError(technicalSkillInput, 'Máximo 10 habilidades técnicas.');
             return;
         }
 
@@ -364,8 +365,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return container;
     }
 
-    // Helper Validation Functions (local to template_cv.js, consider moving to functions.js if reused)
-    // isDuplicateSkill is replaced by isDuplicateSkillGlobal
 
     // Validation before submission
     form.addEventListener("submit", function (e) {
