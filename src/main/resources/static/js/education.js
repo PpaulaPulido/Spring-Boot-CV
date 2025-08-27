@@ -1,4 +1,4 @@
-import { showError, hideError, hideAllErrors } from './functions.js';
+import { showError, hideError, hideAllErrors, validarNombreEntidad, isValidDescription, validarFecha, isValidLength } from './functions.js';
 
 export function initEducation() {
     const educationForm = {
@@ -18,9 +18,64 @@ export function initEducation() {
 
     let educations = [];
 
+    // Helper Validation Functions (moved to functions.js)
+    // function isValidLength(value, min, max) { ... } // Moved
+    // function isAlphaNumericSpacePunctuation(value) { ... } // Removed
+    // function isValidDescription(value) { ... } // Moved
+    // function validarFecha(fechaStr) { ... } // Moved
+
     // Event listeners
     educationForm.current.addEventListener('change', toggleEndDate);
     educationForm.addButton.addEventListener('click', addEducation);
+
+    // Real-time validation listeners
+    educationForm.institution.addEventListener('input', function () {
+        hideError(this);
+        const value = this.value.trim();
+        const validationResult = validarNombreEntidad(value, 'institución');
+        if (!validationResult.valido) {
+            showError(this, validationResult.mensaje);
+        }
+    });
+    educationForm.degree.addEventListener('input', function () {
+        hideError(this);
+        const value = this.value.trim();
+        const validationResult = validarNombreEntidad(value, 'título');
+        if (!validationResult.valido) {
+            showError(this, validationResult.mensaje);
+        }
+    });
+    educationForm.studyLevel.addEventListener('change', function () {
+        hideError(this);
+        if (!this.value) {
+            showError(this, 'Debes seleccionar un nivel de estudio.');
+        }
+    });
+    educationForm.startDate.addEventListener('change', function () {
+        hideError(this);
+        const validationResult = validarFecha(this.value);
+        if (!validationResult.valido) {
+            showError(this, validationResult.mensaje);
+        }
+        validateDates(); // Re-validate end date if start date changes
+    });
+    educationForm.endDate.addEventListener('change', function () {
+        hideError(this);
+        const validationResult = validarFecha(this.value);
+        if (!validationResult.valido) {
+            showError(this, validationResult.mensaje);
+        }
+        validateDates(); // Re-validate start date if end date changes
+    });
+    educationForm.description.addEventListener('input', function () {
+        hideError(this);
+        const value = this.value.trim();
+        if (value && !isValidDescription(value)) {
+            showError(this, 'La descripción debe ser clara, con al menos 3 palabras y sin repeticiones excesivas.');
+        }
+    });
+
+
     educationForm.startDate.addEventListener('change', validateDates);
     educationForm.endDate.addEventListener('change', validateDates);
 
@@ -34,49 +89,120 @@ export function initEducation() {
         }
     }
 
+    // Updated validateDates function
     function validateDates() {
-        if (educationForm.startDate.value && educationForm.endDate.value && !educationForm.current.checked) {
-            const startDate = new Date(educationForm.startDate.value);
-            const endDate = new Date(educationForm.endDate.value);
+        let hasDateErrors = false;
+        const startDateValue = educationForm.startDate.value;
+        const endDateValue = educationForm.endDate.value;
 
-            if (endDate < startDate) {
-                showError(educationForm.endDate, 'La fecha de fin no puede ser anterior a la fecha de inicio');
-                return false;
+        hideError(educationForm.startDate);
+        hideError(educationForm.endDate);
+
+        if (startDateValue) {
+            const validationResult = validarFecha(startDateValue);
+            if (!validationResult.valido) {
+                showError(educationForm.startDate, validationResult.mensaje);
+                hasDateErrors = true;
             }
         }
-        hideError(educationForm.endDate);
-        return true;
+
+        if (endDateValue && !educationForm.current.checked) {
+            const validationResult = validarFecha(endDateValue);
+            if (!validationResult.valido) {
+                showError(educationForm.endDate, validationResult.mensaje);
+                hasDateErrors = true;
+            }
+        }
+
+        if (startDateValue && endDateValue && !educationForm.current.checked) {
+            const startDate = new Date(startDateValue + '-01');
+            const endDate = new Date(endDateValue + '-01');
+
+            // validar si la fecha de fin es anterior a la de inicio
+            if (endDate < startDate) {
+                showError(educationForm.endDate, 'La fecha de fin no puede ser anterior a la fecha de inicio.');
+                hasDateErrors = true;
+            }
+            // validar duración mínima de 1 mes (solo si la fecha de fin no es anterior)
+            else {
+                const diffMonths = (endDate.getFullYear() - startDate.getFullYear()) * 12 +
+                    (endDate.getMonth() - startDate.getMonth());
+                if (diffMonths < 1) {
+                    showError(educationForm.endDate, 'La duración debe ser de al menos 1 mes.');
+                    hasDateErrors = true;
+                }
+            }
+        }
+        return !hasDateErrors;
     }
 
     function addEducation() {
         hideError(educationForm.error);
-
-        // Validar campos requeridos
-        const requiredFields = [
-            { field: educationForm.institution, message: 'La institución es requerida' },
-            { field: educationForm.degree, message: 'El título es requerido' },
-            { field: educationForm.studyLevel, message: 'El nivel de estudio es requerido' },
-            { field: educationForm.startDate, message: 'La fecha de inicio es requerida' }
-        ];
-
         let hasErrors = false;
 
-        for (const { field, message } of requiredFields) {
-            if (!field.value.trim()) {
-                showError(field, message);
+        // Validar campos requeridos y longitud/formato
+        if (!educationForm.institution.value.trim()) {
+            showError(educationForm.institution, 'La institución es requerida.');
+            hasErrors = true;
+        } else {
+            const validationResult = validarNombreEntidad(educationForm.institution.value.trim(), 'institución');
+            if (!validationResult.valido) {
+                showError(educationForm.institution, validationResult.mensaje);
                 hasErrors = true;
-            } else {
-                hideError(field);
+            } else if (!validarPalabrasClaras(educationForm.institution.value.trim())) {
+                showError(educationForm.institution, 'El nombre de la institución debe contener palabras claras y válidas.');
+                hasErrors = true;
+            }else if (!validarLongitudMaxima(educationForm.institution.value.trim(), 15)) {
+                showError(educationForm.institution, 'La institución no puede tener más de 15 caracteres.');
+                hasErrors = true;
             }
         }
 
-        // Validar fechas
+        if (!educationForm.degree.value.trim()) {
+            showError(educationForm.degree, 'El título es requerido');
+            hasErrors = true;
+        } else {
+            const validationResult = validarNombreEntidad(educationForm.degree.value.trim(), 'título');
+            if (!validationResult.valido) {
+                showError(educationForm.degree, validationResult.mensaje);
+                hasErrors = true;
+            } else if (!validarPalabrasClaras(educationForm.degree.value.trim())) {
+                showError(educationForm.degree, 'El título debe contener palabras claras y válidas.');
+                hasErrors = true;
+            } else if (!validarLongitudMaxima(educationForm.degree.value.trim(), 15)) {
+                showError(educationForm.degree, 'El título no puede tener más de 15 caracteres.');
+                hasErrors = true;
+            }
+        }
+
+        if (!educationForm.studyLevel.value) {
+            showError(educationForm.studyLevel, 'El nivel de estudio es requerido');
+            hasErrors = true;
+        }
+
+        if (!educationForm.startDate.value) {
+            showError(educationForm.startDate, 'La fecha de inicio es requerida');
+            hasErrors = true;
+        } else {
+            const validationResult = validarFecha(educationForm.startDate.value);
+            if (!validationResult.valido) {
+                showError(educationForm.startDate, validationResult.mensaje);
+                hasErrors = true;
+            }
+        }
+
+        if (educationForm.description.value.trim() && !isValidDescription(educationForm.description.value.trim())) {
+            showError(educationForm.description, 'La descripción debe ser clara, con al menos 3 palabras y sin repeticiones excesivas.');
+            hasErrors = true;
+        }
+
+        // Validar fechas (incluye la lógica de endDate vs startDate y future dates)
         if (!validateDates()) {
             hasErrors = true;
         }
 
         if (hasErrors) {
-            educationForm.error.textContent = 'Por favor completa los campos requeridos';
+            educationForm.error.textContent = 'Por favor corrige los errores en los campos de educación.';
             educationForm.error.style.display = 'block';
             return;
         }
@@ -160,6 +286,29 @@ export function initEducation() {
         return startFormatted;
     }
 
+    function validarLongitudMaxima(texto, maxLongitud) {
+        return texto.length <= maxLongitud;
+    }
+
+    function validarPalabrasClaras(texto) {
+        // Verificar que no tenga caracteres repetidos excesivamente (más de 3 seguidos)
+        if (/(.)\1{3,}/.test(texto)) {
+            return false;
+        }
+
+        // Verificar que tenga al menos una vocal (para evitar cadenas sin sentido)
+        if (!/[aeiouáéíóú]/i.test(texto)) {
+            return false;
+        }
+
+        // Verificar que tenga al menos una letra y un espacio o carácter válido
+        if (!/^[a-záéíóúñ\s]+$/i.test(texto)) {
+            return false;
+        }
+
+        return true;
+    }
+
     function removeEducation(index) {
         educations.splice(index, 1);
         updateEducationList();
@@ -184,8 +333,10 @@ export function initEducation() {
         hideAllErrors([
             educationForm.institution,
             educationForm.degree,
+            educationForm.studyLevel, // Added studyLevel to clear errors
             educationForm.startDate,
-            educationForm.endDate
+            educationForm.endDate,
+            educationForm.description // Added description to clear errors
         ]);
     }
 
@@ -216,6 +367,7 @@ export function initEducation() {
     function getEducations() {
         return educations;
     }
+
 
     // Inicializar
     toggleEndDate();
