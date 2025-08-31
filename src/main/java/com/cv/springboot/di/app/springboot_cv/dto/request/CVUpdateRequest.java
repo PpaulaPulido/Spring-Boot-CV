@@ -39,6 +39,9 @@ public class CVUpdateRequest {
     @Valid
     private List<EducationRequest> educations;
 
+    @Valid
+    private List<WorkExperienceRequest> workExperiences;
+
     // Getters y Setters
     public Long getSummaryId() {
         return summaryId;
@@ -150,5 +153,13 @@ public class CVUpdateRequest {
 
     public void setTheme(String theme) {
         this.theme = theme;
+    }
+
+    public List<WorkExperienceRequest> getWorkExperiences() {
+        return workExperiences;
+    }
+
+    public void setWorkExperiences(List<WorkExperienceRequest> workExperiences) {
+        this.workExperiences = workExperiences;
     }
 }

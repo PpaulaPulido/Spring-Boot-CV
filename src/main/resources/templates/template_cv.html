@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Constructor de Hojas de Vida - CurrículumCraft</title>
+  <title th:text="${editMode ? 'Editar Hoja de Vida' : 'Crear Hoja de Vida'} + ' - CurrículumCraft'">Constructor de Hojas de Vida - CurrículumCraft</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css" />
   <link rel="stylesheet" href="/css/general.css" />
   <link rel="stylesheet" href="/css/template_cv.css" />
@@ -34,8 +34,8 @@
 
   <main class="main-content">
     <section class="form-section">
-      <h2>Crear Hoja de Vida</h2>
-      <form id="cvForm" th:action="@{/cv/create}" th:object="${cvRequest}" method="post" novalidate
+      <h2 th:text="${editMode ? 'Editar Hoja de Vida' : 'Crear Hoja de Vida'}">Crear Hoja de Vida</h2>
+      <form id="cvForm" th:action="${editMode ? '/cv/update/' + cvId : '/cv/create'}" th:object="${cvRequest}" method="post" novalidate
         enctype="multipart/form-data">
 
         <div class="form-group">
@@ -49,40 +49,40 @@
 
         <div class="form-group">
           <label for="fullName">Nombre Completo *</label>
-          <input type="text" id="fullName" th:field="*{fullName}" placeholder="Escribe el nombre completo" required />
+          <input type="text" id="fullName" th:field="*{fullName}" placeholder="Escribe el nombre completo" required class="form-control" />
           <span class="error-message" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
         </div>
 
         <div class="form-group">
           <label for="email">Correo electrónico *</label>
-          <input type="email" id="email" th:field="*{email}" placeholder="ejemplo@correo.com" required />
+          <input type="email" id="email" th:field="*{email}" placeholder="ejemplo@correo.com" required class="form-control" />
           <span class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
         </div>
 
         <div class="form-group">
           <label for="phone">Teléfono *</label>
-          <input type="tel" id="phone" th:field="*{phone}" placeholder="+57 123 456 7890" required />
+          <input type="tel" id="phone" th:field="*{phone}" placeholder="+57 123 456 7890" required class="form-control" />
           <span class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
         </div>
 
         <div class="form-group">
           <label for="address">Dirección</label>
-          <input type="text" id="address" th:field="*{address}" placeholder="Tu dirección completa" />
+          <input type="text" id="address" th:field="*{address}" placeholder="Tu dirección completa" class="form-control" />
         </div>
 
         <div class="form-group">
           <label for="linkedin">Perfil de LinkedIn</label>
-          <input type="text" id="linkedin" th:field="*{linkedin}" placeholder="linkedin.com/in/usuario" />
+          <input type="text" id="linkedin" th:field="*{linkedin}" placeholder="linkedin.com/in/usuario" class="form-control" />
         </div>
 
         <div class="form-group">
           <label for="portfolio">Portafolio Personal</label>
-          <input type="text" id="portfolio" th:field="*{portfolio}" placeholder="www.miportafolio.com" />
+          <input type="text" id="portfolio" th:field="*{portfolio}" placeholder="www.miportafolio.com" class="form-control" />
         </div>
 
         <div class="form-group">
           <label for="profession">Profesión</label>
-          <input type="text" id="profession" th:field="*{profession}" placeholder="Ej. Ingeniero de Software" />
+          <input type="text" id="profession" th:field="*{profession}" placeholder="Ej. Ingeniero de Software" class="form-control" />
           <span class="error-message" th:if="${#fields.hasErrors('profession')}" th:errors="*{profession}"></span>
         </div>
 
@@ -125,7 +125,7 @@
           <h3>Habilidades Técnicas *</h3>
           <div class="form-group">
             <label for="technicalSkillInput">Nombre de Habilidad Técnica *</label>
-            <input type="text" id="technicalSkillInput" placeholder="Ej. Python, Git, Spring Boot" />
+            <input type="text" id="technicalSkillInput" placeholder="Ej. Python, Git, Spring Boot" class="form-control" />
           </div>
           <div class="form-group">
             <label for="technicalSkillCategory">Categoría</label>
@@ -228,12 +228,12 @@
 
           <div class="form-group">
             <label for="educationInstitution">Institución Educativa *</label>
-            <input type="text" id="educationInstitution" placeholder="Ej: Universidad Nacional" />
+            <input type="text" id="educationInstitution" placeholder="Ej: Universidad Nacional" class="form-control" />
           </div>
 
           <div class="form-group">
             <label for="educationDegree">Título Obtenido *</label>
-            <input type="text" id="educationDegree" placeholder="Ej: Ingeniero de Sistemas" />
+            <input type="text" id="educationDegree" placeholder="Ej: Ingeniero de Sistemas" class="form-control" />
           </div>
 
           <div class="form-group">
@@ -307,12 +307,12 @@
 
           <div class="form-group">
             <label for="workPosition">Puesto *</label>
-            <input type="text" id="workPosition" placeholder="Ej: Desarrollador Full Stack" />
+            <input type="text" id="workPosition" placeholder="Ej: Desarrollador Full Stack" class="form-control" />
           </div>
 
           <div class="form-group">
             <label for="workCompany">Empresa *</label>
-            <input type="text" id="workCompany" placeholder="Ej: Google, Microsoft, etc." />
+            <input type="text" id="workCompany" placeholder="Ej: Google, Microsoft, etc." class="form-control" />
           </div>
 
           <div class="form-row">
@@ -348,21 +348,27 @@
         <div class="form-group">
           <h3>Elige un Tema</h3>
           <div class="theme-selector">
-            <label>
-              <input type="radio" th:field="*{theme}" value="default" checked>
-              <span>Clásico</span>
-            </label>
-            <label>
-              <input type="radio" th:field="*{theme}" value="moderno">
-              <span>Moderno</span>
-            </label>
+            <div class="theme-option" data-theme="default">
+              <label>
+                <input type="radio" th:field="*{theme}" value="default" checked>
+                <span>Clásico</span>
+                <div class="theme-preview default"></div>
+              </label>
+            </div>
+            <div class="theme-option" data-theme="moderno">
+              <label>
+                <input type="radio" th:field="*{theme}" value="moderno">
+                <span>Moderno</span>
+                <div class="theme-preview moderno"></div>
+              </label>
+            </div>
           </div>
         </div>
 
         <!-- Contenedor para campos ocultos de experiencia laboral -->
         <div id="workContainer"></div>
 
-        <button type="submit" class="button button-primary">Crear Hoja de Vida</button>
+        <button type="submit" class="button button-primary" th:text="${editMode ? 'Actualizar Hoja de Vida' : 'Crear Hoja de Vida'}">Crear Hoja de Vida</button>
       </form>
     </section>
     <div class="preview-section">
@@ -387,6 +393,10 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script th:inline="javascript">
+    /* Pass initial data from Spring Boot model to JavaScript */
+    var initialCvData = /*[[${cvRequest}]]*/ null;
+  </script>
   <script type="module" src="/js/template_cv.js"></script>
 
 </body>

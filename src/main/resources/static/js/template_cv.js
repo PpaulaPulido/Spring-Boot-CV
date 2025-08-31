@@ -33,8 +33,12 @@ import { initWorkExperience } from './work_experience.js';
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("cvForm");
     const iti = initPhoneInput("#phone");
-    const educationModule = initEducation();
-    const workExperienceModule = initWorkExperience();
+
+    // Check for initial data passed from the server
+    const initialData = window.initialCvData || {};
+
+    const educationModule = initEducation(initialData.educations);
+    const workExperienceModule = initWorkExperience(initialData.workExperiences);
 
     const softSkillInput = document.getElementById("softSkillSelect");
     const technicalSkillInput = document.getElementById("technicalSkillInput");
@@ -46,8 +50,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const profileImageInput = document.getElementById("profileImageFile");
 
     // Arrays para habilidades
-    let softSkills = [];
-    let technicalSkills = [];
+    let softSkills = initialData.softSkills || [];
+    let technicalSkills = initialData.technicalSkills || [];
+
+    function initializeLists() {
+        if (softSkills.length > 0) updateSoftSkillList();
+        if (technicalSkills.length > 0) updateTechnicalSkillList();
+    }
 
     function collectFormData() {
         const data = {};
@@ -245,10 +254,10 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (isDuplicateSkillGlobal(skillName, softSkills, technicalSkills)) {
+        /* if (isDuplicateSkillGlobal(skillName, softSkills, technicalSkills)) {
             showError(softSkillInput, 'Ya agregaste esta habilidad (blanda o técnica).');
             return;
-        }
+        } */
 
         // Límite opcional para no desbordar el CV
         if (softSkills.length >= 15) {
@@ -281,10 +290,10 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        if (isDuplicateSkillGlobal(skillName, softSkills, technicalSkills)) {
+        /* if (isDuplicateSkillGlobal(skillName, softSkills, technicalSkills)) {
             showError(technicalSkillInput, 'Ya agregaste esta habilidad (blanda o técnica).');
             return;
-        }
+        } */
 
         if (technicalSkills.length >= 10) {
             showError(technicalSkillInput, 'Máximo 10 habilidades técnicas.');
@@ -653,6 +662,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Initialize
+    initializeLists();
     hideAllErrors(form);
     updateHiddenFields();
 });

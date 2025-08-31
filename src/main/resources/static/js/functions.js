@@ -272,7 +272,7 @@ export function isValidFullName(value) {
         }
     }
 
-    return null; // No error
+    return null; // Todo correcto
 }
 
 // Función para detectar patrones de teclado
@@ -431,8 +431,8 @@ export function validarNombreEntidad(valor, tipo) {
         return { valido: false, mensaje: `El ${tipo} debe tener al menos 2 caracteres` };
     }
 
-    if (valor.length > 50) {
-        return { valido: false, mensaje: `El ${tipo} no puede exceder los 50 caracteres` };
+    if (valor.length > 255) {
+        return { valido: false, mensaje: `El ${tipo} no puede exceder los 255 caracteres` };
     }
 
     // Validar que no contenga caracteres repetidos excesivamente
@@ -448,6 +448,11 @@ export function validarNombreEntidad(valor, tipo) {
     // Validar formato básico (letras, espacios, algunos caracteres especiales)
     if (!/^[a-záéíóúñ\s\-.,()&]+$/i.test(valor)) {
         return { valido: false, mensaje: `El ${tipo} contiene caracteres no permitidos` };
+    }
+
+    // No permitir patrones de teclado o secuencias
+    if (isKeyboardPattern(valor) || isSequential(valor)) {
+        return { valido: false, mensaje: `El ${tipo} parece un patrón de teclado o secuencia no válida.` };
     }
 
     return { valido: true, mensaje: '' };
@@ -518,7 +523,6 @@ export function isValidTechnicalSkillName(value) {
     if (basura.some(b => n.includes(b))) {
         return "La habilidad técnica parece texto de prueba o inválido.";
     }
-
     return null;
 }
 
@@ -559,7 +563,7 @@ export function isValidDescription(value) {
     const cleanValue = value.trim();
 
     // Longitud mínima y máxima
-    if (cleanValue.length < 10 || cleanValue.length > 500) return false;
+    if (cleanValue.length < 10 || cleanValue.length > 1000) return false;
 
     // Evitar repeticiones exageradas de caracteres (ej: aaaaaa o sssssss)
     if (/(.)\1{4,}/.test(cleanValue)) return false;
@@ -575,7 +579,7 @@ export function isValidDescription(value) {
 
 export function validarFecha(fechaStr) {
     // Convertir a objeto Date
-    const fecha = new Date(fechaStr);
+    const fecha = new Date(fechaStr + '-01'); // Add -01 to treat as first day of month
 
     // Verificar que sea una fecha válida
     if (isNaN(fecha.getTime())) {
@@ -584,14 +588,21 @@ export function validarFecha(fechaStr) {
 
     const año = fecha.getFullYear();
     const añoMin = 1950; // No aceptar fechas anteriores a 1950
-    const añoMax = new Date().getFullYear() + 10; // Máximo 10 años en el futuro
+    const fechaActual = new Date(); // Get current date and time
+    const añoActual = fechaActual.getFullYear();
+    const mesActual = fechaActual.getMonth(); // 0-11
+    const diaActual = fechaActual.getDate();
+
+    const fechaComparacion = new Date(año, fecha.getMonth(), 1); // First day of the month to compare
+    const fechaActualComparacion = new Date(añoActual, mesActual, 1); // First day of current month
 
     if (año < añoMin) {
         return { valido: false, mensaje: `El año no puede ser menor a ${añoMin}` };
     }
 
-    if (año > añoMax) {
-        return { valido: false, mensaje: `El año no puede ser mayor a ${añoMax}` };
+    // Check if date is in the future (YearMonth comparison)
+    if (fechaComparacion > fechaActualComparacion) {
+        return { valido: false, mensaje: "La fecha no puede ser futura" };
     }
 
     return { valido: true, mensaje: "Fecha válida" };

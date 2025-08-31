@@ -735,3 +735,117 @@ optgroup option {
     display: none;
   }
 }
+
+/* Theme Selector Styling */
+.theme-selector {
+    display: flex;
+    gap: 20px; /* Space between theme options */
+    margin-top: 15px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: center; /* Center the options */
+}
+
+.theme-option {
+    flex: 1; /* Allow options to grow and shrink */
+    min-width: 150px; /* Minimum width for each option */
+    max-width: 200px; /* Maximum width for each option */
+    border: 2px solid #e0e0e0;
+    border-radius: var(--radius);
+    padding: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative; /* For radio button positioning */
+    overflow: hidden; /* Ensure preview doesn't overflow */
+}
+
+.theme-option:hover {
+    border-color: var(--primary-light);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+}
+
+/* Style for the radio button itself (hide default, use custom styling) */
+.theme-option input[type="radio"] {
+    position: absolute;
+    opacity: 0; /* Hide the default radio button */
+    pointer-events: none; /* Make it not clickable directly */
+}
+
+/* Style for the custom radio button indicator */
+.theme-option input[type="radio"] + span::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+    transition: all 0.2s ease;
+}
+
+/* Style for the custom radio button when checked */
+.theme-option input[type="radio"]:checked + span::before {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    box-shadow: inset 0 0 0 5px white; /* Inner white circle */
+}
+
+/* Style for the label text */
+.theme-option span {
+    font-weight: bold;
+    color: var(--text-dark);
+    display: flex; /* Use flex to align radio and text */
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+/* Highlight the selected theme option */
+.theme-option input[type="radio"]:checked ~ .theme-preview {
+    border-color: var(--primary); /* Highlight preview border */
+}
+
+.theme-option input[type="radio"]:checked + span {
+    color: var(--primary); /* Highlight text */
+}
+
+.theme-option.selected { /* Optional: Add a class via JS for selected state */
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0, 74, 173, 0.2);
+    transform: translateY(-3px);
+}
+
+
+/* Theme Preview Boxes */
+.theme-preview {
+    width: 100%;
+    height: 80px; /* Height of the preview box */
+    border-radius: var(--radius);
+    margin-top: 10px;
+    border: 1px solid #eee; /* Subtle border for preview */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8em;
+    color: white; /* Default text color for preview */
+    overflow: hidden;
+    position: relative;
+}
+
+/* Specific Theme Previews */
+.theme-preview.default {
+    background: linear-gradient(to right, #f8f9fa 50%, #ffffff 50%); /* Light gray and white */
+    border: 1px solid #ddd;
+}
+
+.theme-preview.moderno {
+    background: linear-gradient(to right, #2c3e50 50%, #34495e 50%); /* Dark blue-gray shades */
+    border: 1px solid #1abc9c;
+}
+
+/* Add more theme previews as needed */
+/* .theme-preview.another-theme {
+    background: linear-gradient(to right, #color1, #color2);
+} */

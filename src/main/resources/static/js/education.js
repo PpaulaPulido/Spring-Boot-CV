@@ -1,6 +1,6 @@
 import { showError, hideError, hideAllErrors, validarNombreEntidad, isValidDescription, validarFecha, isValidLength } from './functions.js';
 
-export function initEducation() {
+export function initEducation(initialEducations) {
     const educationForm = {
         institution: document.getElementById('educationInstitution'),
         degree: document.getElementById('educationDegree'),
@@ -16,7 +16,7 @@ export function initEducation() {
         hiddenContainer: document.getElementById('educationContainer')
     };
 
-    let educations = [];
+    let educations = initialEducations || [];
 
     // Helper Validation Functions (moved to functions.js)
     // function isValidLength(value, min, max) { ... } // Moved
@@ -47,8 +47,10 @@ export function initEducation() {
     });
     educationForm.studyLevel.addEventListener('change', function () {
         hideError(this);
-        if (!this.value) {
+        if (!educationForm.studyLevel.value) {
             showError(this, 'Debes seleccionar un nivel de estudio.');
+        } else if (!isValidLength(value, 1, 255)) { // Assuming 1 char min for selection
+            showError(this, 'El nivel de estudio no puede exceder los 255 caracteres.');
         }
     });
     educationForm.startDate.addEventListener('change', function () {
@@ -149,12 +151,6 @@ export function initEducation() {
             if (!validationResult.valido) {
                 showError(educationForm.institution, validationResult.mensaje);
                 hasErrors = true;
-            } else if (!validarPalabrasClaras(educationForm.institution.value.trim())) {
-                showError(educationForm.institution, 'El nombre de la institución debe contener palabras claras y válidas.');
-                hasErrors = true;
-            }else if (!validarLongitudMaxima(educationForm.institution.value.trim(), 15)) {
-                showError(educationForm.institution, 'La institución no puede tener más de 15 caracteres.');
-                hasErrors = true;
             }
         }
 
@@ -165,12 +161,6 @@ export function initEducation() {
             const validationResult = validarNombreEntidad(educationForm.degree.value.trim(), 'título');
             if (!validationResult.valido) {
                 showError(educationForm.degree, validationResult.mensaje);
-                hasErrors = true;
-            } else if (!validarPalabrasClaras(educationForm.degree.value.trim())) {
-                showError(educationForm.degree, 'El título debe contener palabras claras y válidas.');
-                hasErrors = true;
-            } else if (!validarLongitudMaxima(educationForm.degree.value.trim(), 15)) {
-                showError(educationForm.degree, 'El título no puede tener más de 15 caracteres.');
                 hasErrors = true;
             }
         }
@@ -286,28 +276,7 @@ export function initEducation() {
         return startFormatted;
     }
 
-    function validarLongitudMaxima(texto, maxLongitud) {
-        return texto.length <= maxLongitud;
-    }
-
-    function validarPalabrasClaras(texto) {
-        // Verificar que no tenga caracteres repetidos excesivamente (más de 3 seguidos)
-        if (/(.)\1{3,}/.test(texto)) {
-            return false;
-        }
-
-        // Verificar que tenga al menos una vocal (para evitar cadenas sin sentido)
-        if (!/[aeiouáéíóú]/i.test(texto)) {
-            return false;
-        }
-
-        // Verificar que tenga al menos una letra y un espacio o carácter válido
-        if (!/^[a-záéíóúñ\s]+$/i.test(texto)) {
-            return false;
-        }
-
-        return true;
-    }
+    
 
     function removeEducation(index) {
         educations.splice(index, 1);
@@ -333,10 +302,8 @@ export function initEducation() {
         hideAllErrors([
             educationForm.institution,
             educationForm.degree,
-            educationForm.studyLevel, // Added studyLevel to clear errors
             educationForm.startDate,
-            educationForm.endDate,
-            educationForm.description // Added description to clear errors
+            educationForm.endDate
         ]);
     }
 
@@ -371,6 +338,7 @@ export function initEducation() {
 
     // Inicializar
     toggleEndDate();
+    updateEducationList();
 
     return {
         validateEducations,

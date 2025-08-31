@@ -1,30 +1,119 @@
-/* Default Theme - Updated for new structure */
+/* Default Theme - Updated for a cleaner, more modern look */
 .resume-container {
-    border: 1px solid #ddd;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
+    display: flex;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .resume-left {
-    background-color: #f7f2ec;
+    background-color: #f8f9fa;
     color: #333;
+    padding: 30px;
+    flex: 0 0 30%;
+}
+
+.resume-left .img-container {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto 20px;
+    border: 4px solid #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.resume-left .img-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .resume-left h4 {
-    color: #333;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 5px;
+    color: #0056b3;
+    border-bottom: 2px solid #0056b3;
+    padding-bottom: 8px;
+    margin-top: 20px;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.resume-left p {
+    font-size: 0.9em;
+    line-height: 1.6;
+    word-break: break-all;
+    overflow-wrap: break-word;
+
+.resume-left a {
+    color: #0056b3;
+    text-decoration: none;
+    word-break: break-all;
+    overflow-wrap: break-word;
+
+.resume-left a:hover {
+    text-decoration: underline;
+}
+
+.resume-left ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.resume-left ul li {
+    margin-bottom: 8px;
+}
+
+.resume-right {
+    padding: 40px;
+    flex: 1;
+}
+
+.resume-right header {
+    margin-bottom: 30px;
+    text-align: center;
 }
 
 .resume-right header h1 {
     color: #333;
+    font-size: 2.8em;
+    margin-bottom: 5px;
+    font-weight: 600;
 }
+
+.resume-right header p {
+    color: #555;
+    font-size: 1.2em;
+    margin-top: 0;
+    word-break: break-all;
+    overflow-wrap: break-word;
 
 .resume-right h3 {
-    border-bottom: 2px solid #ddd;
-    color: #333;
+    border-bottom: 2px solid #e0e0e0;
+    color: #0056b3;
+    padding-bottom: 10px;
+    margin-top: 25px;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.resume-left a {
-    color: #004aad;
+.experience-item {
+    margin-bottom: 20px;
 }
+
+.experience-item h4 {
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.experience-item p {
+    font-size: 0.95em;
+    color: #555;
+    line-height: 1.6;
+    word-break: break-all;
+    overflow-wrap: break-word;

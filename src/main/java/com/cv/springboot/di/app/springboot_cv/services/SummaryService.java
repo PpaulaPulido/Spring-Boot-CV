@@ -4,6 +4,7 @@ import com.cv.springboot.di.app.springboot_cv.dto.request.CVUpdateRequest;
 import com.cv.springboot.di.app.springboot_cv.dto.request.EducationRequest;
 import com.cv.springboot.di.app.springboot_cv.dto.request.SoftSkillRequest;
 import com.cv.springboot.di.app.springboot_cv.dto.request.TechnicalSkillRequest;
+import com.cv.springboot.di.app.springboot_cv.dto.request.WorkExperienceRequest;
 import com.cv.springboot.di.app.springboot_cv.dto.response.EducationResponse;
 import com.cv.springboot.di.app.springboot_cv.dto.response.SoftSkillResponse;
 import com.cv.springboot.di.app.springboot_cv.dto.response.SummaryResponse;
@@ -15,6 +16,7 @@ import com.cv.springboot.di.app.springboot_cv.models.SoftSkill;
 import com.cv.springboot.di.app.springboot_cv.models.Summary;
 import com.cv.springboot.di.app.springboot_cv.models.TechnicalSkill;
 import com.cv.springboot.di.app.springboot_cv.models.User;
+import com.cv.springboot.di.app.springboot_cv.models.WorkExperience;
 import com.cv.springboot.di.app.springboot_cv.repositories.SummaryRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -183,6 +185,20 @@ public class SummaryService {
 
         // Actualizar educaciones
         updateEducations(existingSummary, updateRequest.getEducations());
+
+        // Actualizar experiencias laborales
+        existingSummary.clearWorkExperiences();
+        if (updateRequest.getWorkExperiences() != null) {
+            for (WorkExperienceRequest workExperienceRequest : updateRequest.getWorkExperiences()) {
+                WorkExperience workExperience = new WorkExperience();
+                workExperience.setPosition(workExperienceRequest.getPosition());
+                workExperience.setCompany(workExperienceRequest.getCompany());
+                workExperience.setStartDate(workExperienceRequest.getStartDate());
+                workExperience.setEndDate(workExperienceRequest.getEndDate());
+                workExperience.setDescription(workExperienceRequest.getDescription());
+                existingSummary.addWorkExperience(workExperience);
+            }
+        }
 
         return summaryRepository.save(existingSummary);
     }

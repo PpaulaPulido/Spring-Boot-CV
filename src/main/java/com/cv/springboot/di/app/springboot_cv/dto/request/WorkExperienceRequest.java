@@ -2,8 +2,13 @@ package com.cv.springboot.di.app.springboot_cv.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import java.time.YearMonth;
 
+import com.cv.springboot.di.app.springboot_cv.validation.ValidDateRange;
+
+@ValidDateRange
 public class WorkExperienceRequest {
     
     @NotBlank(message = "El puesto es obligatorio")
