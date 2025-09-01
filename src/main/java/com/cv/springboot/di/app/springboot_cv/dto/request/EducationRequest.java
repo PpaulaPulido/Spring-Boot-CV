@@ -1,5 +1,6 @@
 package com.cv.springboot.di.app.springboot_cv.dto.request;
 
+import com.cv.springboot.di.app.springboot_cv.validation.ValidEntityName;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
@@ -15,9 +16,11 @@ public class EducationRequest {
     private Long id;
     
     @NotBlank(message = "La institución es obligatoria")
+    @ValidEntityName(message = "El nombre de la institución no es válido")
     private String institution;
     
     @NotBlank(message = "El título es obligatorio")
+    @ValidEntityName(message = "El nombre del título no es válido")
     private String degree;
     
     private String studyLevel;

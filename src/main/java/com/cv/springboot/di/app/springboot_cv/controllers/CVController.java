@@ -15,8 +15,12 @@ import com.cv.springboot.di.app.springboot_cv.services.UserService;
 import com.cv.springboot.di.app.springboot_cv.services.EducationService;
 import com.cv.springboot.di.app.springboot_cv.services.WorkExperienceService;
 import com.cv.springboot.di.app.springboot_cv.services.ImageService;
+import com.cv.springboot.di.app.springboot_cv.services.PdfService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,8 +28,14 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
@@ -43,6 +53,8 @@ public class CVController {
     private final ImageService imageService;
     private final EducationService educationService;
     private final WorkExperienceService workExperienceService;
+    private final PdfService pdfService;
+    private final TemplateEngine templateEngine;
 
     @Value("${app.upload.dir:uploads/images/}")
     private String uploadDirectory;
@@ -53,7 +65,9 @@ public class CVController {
             UserService userService,
             EducationService educationService,
             WorkExperienceService workExperienceService,
-            ImageService imageService) {
+            ImageService imageService,
+            PdfService pdfService,
+            TemplateEngine templateEngine) {
         this.summaryService = summaryService;
         this.technicalSkillService = technicalSkillService;
         this.softSkillService = softSkillService;
@@ -61,6 +75,8 @@ public class CVController {
         this.imageService = imageService;
         this.educationService = educationService;
         this.workExperienceService = workExperienceService;
+        this.pdfService = pdfService;
+        this.templateEngine = templateEngine;
     }
 
     @GetMapping("/templateCv")
@@ -74,7 +90,7 @@ public class CVController {
     public String createCV(@Valid @ModelAttribute("cvRequest") CVRequest cvRequest,
             BindingResult result,
             Authentication authentication,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, Model model) {
 
         if (cvRequest.getTechnicalSkills() == null || cvRequest.getTechnicalSkills().isEmpty()) {
             result.rejectValue("technicalSkills", "NotEmpty", "Debes agregar al menos una habilidad técnica");
@@ -90,6 +106,8 @@ public class CVController {
         }
 
         if (result.hasErrors()) {
+            model.addAttribute("editMode", false);
+            cvRequest.setProfileImageFile(null); // Evitar error de serialización
             return "template_cv";
         }
 
@@ -118,9 +136,43 @@ public class CVController {
             summary.setUser(user);
             summary.setPersonalInfo(personalInfo);
 
-            Summary savedSummary = summaryService.saveSummary(summary);
+            cvRequest.getTechnicalSkills().forEach(skillRequest -> {
+                TechnicalSkill skill = new TechnicalSkill();
+                skill.setName(skillRequest.getName());
+                skill.setCategory(skillRequest.getCategory());
+                summary.addTechnicalSkill(skill);
+            });
 
-            // Guardar Technical Skills, Soft Skills, Educations, Work Experiences...
+            cvRequest.getSoftSkills().forEach(skillRequest -> {
+                SoftSkill skill = new SoftSkill();
+                skill.setName(skillRequest.getName());
+                skill.setDescription(skillRequest.getDescription());
+                summary.addSoftSkill(skill);
+            });
+
+            cvRequest.getEducations().forEach(educationRequest -> {
+                Education education = new Education();
+                education.setInstitution(educationRequest.getInstitution());
+                education.setDegree(educationRequest.getDegree());
+                education.setStudyLevel(educationRequest.getStudyLevel());
+                education.setStartDate(educationRequest.getStartDate());
+                education.setEndDate(educationRequest.getEndDate());
+                education.setCurrent(educationRequest.getCurrent());
+                education.setDescription(educationRequest.getDescription());
+                summary.addEducation(education);
+            });
+
+            cvRequest.getWorkExperiences().forEach(experienceRequest -> {
+                WorkExperience experience = new WorkExperience();
+                experience.setPosition(experienceRequest.getPosition());
+                experience.setCompany(experienceRequest.getCompany());
+                experience.setStartDate(experienceRequest.getStartDate());
+                experience.setEndDate(experienceRequest.getEndDate());
+                experience.setDescription(experienceRequest.getDescription());
+                summary.addWorkExperience(experience);
+            });
+
+            Summary savedSummary = summaryService.saveSummary(summary);
 
             redirectAttributes.addFlashAttribute("success", "¡Hoja de vida creada exitosamente!");
             return "redirect:/user/dashboard";
@@ -136,10 +188,14 @@ public class CVController {
                 errorMessage += "Ya existe un CV con información similar. Por favor, verifica los datos.";
             }
 
-            redirectAttributes.addFlashAttribute("error", errorMessage);
+            model.addAttribute("error", errorMessage);
+            model.addAttribute("editMode", false);
+            cvRequest.setProfileImageFile(null);
             return "template_cv";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Error al crear la hoja de vida: " + e.getMessage());
+            model.addAttribute("error", "Error al crear la hoja de vida: " + e.getMessage());
+            model.addAttribute("editMode", false);
+            cvRequest.setProfileImageFile(null);
             return "template_cv";
         }
     }
@@ -147,64 +203,67 @@ public class CVController {
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model, Authentication authentication, RedirectAttributes redirectAttributes) {
         try {
-            String email = authentication.getName();
-            User user = userService.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+            if (!model.containsAttribute("cvRequest")) {
+                String email = authentication.getName();
+                User user = userService.findByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            Summary summary = summaryService.getSummaryByIdAndUserId(id, user.getId())
-                    .orElseThrow(() -> new RuntimeException("CV no encontrado o no tienes permisos para editarlo"));
+                Summary summary = summaryService.getSummaryByIdAndUserId(id, user.getId())
+                        .orElseThrow(() -> new RuntimeException("CV no encontrado o no tienes permisos para editarlo"));
 
-            CVRequest cvRequest = new CVRequest();
-            PersonalInfo personalInfo = summary.getPersonalInfo();
-            if (personalInfo != null) {
-                cvRequest.setFullName(personalInfo.getFullName());
-                cvRequest.setEmail(personalInfo.getEmail());
-                cvRequest.setPhone(personalInfo.getPhone());
-                cvRequest.setAddress(personalInfo.getAddress());
-                cvRequest.setLinkedin(personalInfo.getLinkedin());
-                cvRequest.setPortfolio(personalInfo.getPortfolio());
-                cvRequest.setProfession(personalInfo.getProfession());
-                cvRequest.setSummary(personalInfo.getSummary());
-                cvRequest.setTheme(personalInfo.getTheme());
+                CVRequest cvRequest = new CVRequest();
+                PersonalInfo personalInfo = summary.getPersonalInfo();
+                if (personalInfo != null) {
+                    cvRequest.setFullName(personalInfo.getFullName());
+                    cvRequest.setEmail(personalInfo.getEmail());
+                    cvRequest.setPhone(personalInfo.getPhone());
+                    cvRequest.setAddress(personalInfo.getAddress());
+                    cvRequest.setLinkedin(personalInfo.getLinkedin());
+                    cvRequest.setPortfolio(personalInfo.getPortfolio());
+                    cvRequest.setProfession(personalInfo.getProfession());
+                    cvRequest.setSummary(personalInfo.getSummary());
+                    cvRequest.setTheme(personalInfo.getTheme());
+                }
+
+                cvRequest.setTechnicalSkills(summary.getTechnicalSkills().stream().map(skill -> {
+                    TechnicalSkillRequest req = new TechnicalSkillRequest();
+                    req.setName(skill.getName());
+                    req.setCategory(skill.getCategory());
+                    return req;
+                }).collect(Collectors.toList()));
+
+                cvRequest.setSoftSkills(summary.getSoftSkills().stream().map(skill -> {
+                    SoftSkillRequest req = new SoftSkillRequest();
+                    req.setName(skill.getName());
+                    req.setDescription(skill.getDescription());
+                    return req;
+                }).collect(Collectors.toList()));
+
+                cvRequest.setEducations(summary.getEducations().stream().map(edu -> {
+                    EducationRequest req = new EducationRequest();
+                    req.setInstitution(edu.getInstitution());
+                    req.setDegree(edu.getDegree());
+                    req.setStudyLevel(edu.getStudyLevel());
+                    req.setStartDate(edu.getStartDate());
+                    req.setEndDate(edu.getEndDate());
+                    req.setCurrent(edu.getCurrent());
+                    req.setDescription(edu.getDescription());
+                    return req;
+                }).collect(Collectors.toList()));
+
+                cvRequest.setWorkExperiences(summary.getWorkExperiences().stream().map(exp -> {
+                    WorkExperienceRequest req = new WorkExperienceRequest();
+                    req.setPosition(exp.getPosition());
+                    req.setCompany(exp.getCompany());
+                    req.setStartDate(exp.getStartDate());
+                    req.setEndDate(exp.getEndDate());
+                    req.setDescription(exp.getDescription());
+                    return req;
+                }).collect(Collectors.toList()));
+
+                model.addAttribute("cvRequest", cvRequest);
             }
 
-            cvRequest.setTechnicalSkills(summary.getTechnicalSkills().stream().map(skill -> {
-                TechnicalSkillRequest req = new TechnicalSkillRequest();
-                req.setName(skill.getName());
-                req.setCategory(skill.getCategory());
-                return req;
-            }).collect(Collectors.toList()));
-
-            cvRequest.setSoftSkills(summary.getSoftSkills().stream().map(skill -> {
-                SoftSkillRequest req = new SoftSkillRequest();
-                req.setName(skill.getName());
-                req.setDescription(skill.getDescription());
-                return req;
-            }).collect(Collectors.toList()));
-
-            cvRequest.setEducations(summary.getEducations().stream().map(edu -> {
-                EducationRequest req = new EducationRequest();
-                req.setInstitution(edu.getInstitution());
-                req.setDegree(edu.getDegree());
-                req.setStudyLevel(edu.getStudyLevel());
-                req.setStartDate(edu.getStartDate());
-                req.setEndDate(edu.getEndDate());
-                req.setCurrent(edu.getCurrent());
-                req.setDescription(edu.getDescription());
-                return req;
-            }).collect(Collectors.toList()));
-
-            cvRequest.setWorkExperiences(summary.getWorkExperiences().stream().map(exp -> {
-                WorkExperienceRequest req = new WorkExperienceRequest();
-                req.setPosition(exp.getPosition());
-                req.setCompany(exp.getCompany());
-                req.setStartDate(exp.getStartDate());
-                req.setEndDate(exp.getEndDate());
-                req.setDescription(exp.getDescription());
-                return req;
-            }).collect(Collectors.toList()));
-
-            model.addAttribute("cvRequest", cvRequest);
             model.addAttribute("editMode", true);
             model.addAttribute("cvId", id);
 
@@ -336,6 +395,42 @@ public class CVController {
         SummaryResponse cv = summaryService.convertToResponse(summary);
 
         model.addAttribute("cv", cv);
+        model.addAttribute("isWebView", true); // Flag for web view
         return "cv_detail";
+    }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<byte[]> downloadCvAsPdf(@PathVariable Long id, Authentication authentication, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            String email = authentication.getName();
+            User user = userService.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            Summary summary = summaryService.getSummaryByIdAndUserId(id, user.getId())
+                    .orElseThrow(() -> new RuntimeException("CV no encontrado o no tienes permisos"));
+
+            SummaryResponse cv = summaryService.convertToResponse(summary);
+
+            final JakartaServletWebApplication application =
+                    JakartaServletWebApplication.buildApplication(request.getServletContext());
+            final IWebExchange exchange = application.buildExchange(request, response);
+            final WebContext context = new WebContext(exchange);
+            context.setVariable("cv", cv);
+            context.setVariable("isWebView", false); // Flag for PDF view
+
+            String htmlContent = templateEngine.process("cv_detail", context);
+
+            String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+            byte[] pdfBytes = pdfService.generatePdfFromHtml(htmlContent, baseUrl);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "cv-" + cv.getPersonalInfo().getFullName() + ".pdf");
+
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace(); // Imprimir el stack trace para depuración
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

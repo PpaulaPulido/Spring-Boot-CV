@@ -455,6 +455,19 @@ export function validarNombreEntidad(valor, tipo) {
         return { valido: false, mensaje: `El ${tipo} parece un patrón de teclado o secuencia no válida.` };
     }
 
+    // Validar que no haya secuencias largas de consonantes
+    if (/[bcdfghjklmnpqrstvwxyzñ]{5,}/i.test(valor.replace(/\s/g, ''))) {
+        return { valido: false, mensaje: `El ${tipo} parece contener secuencias de consonantes muy largas.` };
+    }
+
+    // Validar que cada palabra tenga vocales
+    const words = valor.split(/\s+/);
+    for (const word of words) {
+        if (word.length > 2 && !/[aeiouáéíóú]/i.test(word)) {
+            return { valido: false, mensaje: `El texto en ${tipo} contiene palabras sin vocales como \"${word}\".` };
+        }
+    }
+
     return { valido: true, mensaje: '' };
 }
 
@@ -486,6 +499,20 @@ export function isValidSoftSkillName(value) {
     if (basura.some(b => n.includes(b))) {
         return "La habilidad blanda parece texto de prueba o inválido.";
     }
+
+    // Validar que no haya secuencias largas de consonantes
+    if (/[bcdfghjklmnpqrstvwxyzñ]{5,}/i.test(v.replace(/\s/g, ''))) {
+        return "La habilidad blanda parece contener secuencias de consonantes muy largas.";
+    }
+
+    // Validar que cada palabra tenga vocales
+    const words = v.split(/\s+/);
+    for (const word of words) {
+        if (word.length > 2 && !/[aeiouáéíóú]/i.test(word)) {
+            return `El texto en la habilidad blanda contiene palabras sin vocales como \"${word}\".`;
+        }
+    }
+
     return null;
 }
 
@@ -523,6 +550,23 @@ export function isValidTechnicalSkillName(value) {
     if (basura.some(b => n.includes(b))) {
         return "La habilidad técnica parece texto de prueba o inválido.";
     }
+
+    // Validar que no haya secuencias largas de consonantes
+    if (/[bcdfghjklmnpqrstvwxyzñ]{5,}/i.test(v.replace(/\s/g, ''))) {
+        return "La habilidad técnica parece contener secuencias de consonantes muy largas.";
+    }
+
+    // Validar que cada palabra tenga vocales (con excepciones para C++, C#, etc.)
+    const words = v.split(/\s+/);
+    for (const word of words) {
+        // Excepciones para lenguajes de programación comunes
+        if (/^(c#|c\+\+)$/i.test(word)) continue;
+
+        if (word.length > 2 && !/[aeiouáéíóú]/i.test(word)) {
+            return `El texto en la habilidad técnica contiene palabras sin vocales como \"${word}\".`;
+        }
+    }
+
     return null;
 }
 
@@ -543,6 +587,20 @@ export function isValidTechnicalCategory(value) {
     if (basura.some(b => n.includes(b))) {
         return "La categoría parece texto de prueba o inválido.";
     }
+
+    // Validar que no haya secuencias largas de consonantes
+    if (/[bcdfghjklmnpqrstvwxyzñ]{5,}/i.test(v.replace(/\s/g, ''))) {
+        return "La categoría parece contener secuencias de consonantes muy largas.";
+    }
+
+    // Validar que cada palabra tenga vocales
+    const words = v.split(/\s+/);
+    for (const word of words) {
+        if (word.length > 2 && !/[aeiouáéíóú]/i.test(word)) {
+            return `El texto en la categoría contiene palabras sin vocales como \"${word}\".`;
+        }
+    }
+
     return null;
 }
 

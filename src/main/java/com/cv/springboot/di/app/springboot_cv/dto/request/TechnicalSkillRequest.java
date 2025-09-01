@@ -1,9 +1,16 @@
 package com.cv.springboot.di.app.springboot_cv.dto.request;
 
+import com.cv.springboot.di.app.springboot_cv.validation.ValidSkillCategory;
+import com.cv.springboot.di.app.springboot_cv.validation.ValidSkillName;
+import jakarta.validation.constraints.NotBlank;
+
 public class TechnicalSkillRequest {
 
     private Long id;
+    @NotBlank(message = "El nombre de la habilidad técnica es obligatorio")
+    @ValidSkillName
     private String name;
+    @ValidSkillCategory
     private String category;
 
     public String getName() { return name; }

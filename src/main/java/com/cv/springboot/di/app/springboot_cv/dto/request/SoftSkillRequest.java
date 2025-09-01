@@ -1,8 +1,13 @@
 package com.cv.springboot.di.app.springboot_cv.dto.request;
 
+import com.cv.springboot.di.app.springboot_cv.validation.ValidSkillName;
+import jakarta.validation.constraints.NotBlank;
+
 public class SoftSkillRequest {
     
     private Long id;
+    @NotBlank(message = "El nombre de la habilidad blanda es obligatorio")
+    @ValidSkillName
     private String name;
     private String description;
 

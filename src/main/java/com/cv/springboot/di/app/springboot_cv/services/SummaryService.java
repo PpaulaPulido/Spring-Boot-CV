@@ -39,6 +39,7 @@ public class SummaryService {
     }
 
     // Crear o actualizar un resumen
+    @Transactional
     public Summary saveSummary(Summary summary) {
         return summaryRepository.save(summary);
     }

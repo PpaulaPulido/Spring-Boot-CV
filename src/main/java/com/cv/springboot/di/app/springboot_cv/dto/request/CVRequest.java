@@ -6,10 +6,17 @@ import jakarta.validation.constraints.NotBlank; //no permitir espacios en blanco
 import jakarta.validation.constraints.Pattern; //validar con expresiones regulares
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile; // Importar MultipartFile para manejar archivos subidos
+import com.cv.springboot.di.app.springboot_cv.validation.ValidFullName;
+import com.cv.springboot.di.app.springboot_cv.validation.ValidProfession;
+import com.cv.springboot.di.app.springboot_cv.validation.ValidLinkedIn;
+import com.cv.springboot.di.app.springboot_cv.validation.ValidAddress;
+import com.cv.springboot.di.app.springboot_cv.validation.ValidURL;
+import com.cv.springboot.di.app.springboot_cv.validation.ValidSummary;
 
 public class CVRequest {
 
     @NotBlank(message = "El nombre completo es obligatorio")
+    @ValidFullName(message = "El nombre completo no es válido")
     private String fullName;
 
     @NotBlank(message = "El correo electrónico es obligatorio")
@@ -20,10 +27,15 @@ public class CVRequest {
     @Pattern(regexp = "^\\+?[0-9. ()-]{7,25}$", message = "El formato del teléfono no es válido")
     private String phone;
 
+    @ValidAddress(message = "La dirección no es válida")
     private String address;
+    @ValidLinkedIn(message = "La URL de LinkedIn no es válida")
     private String linkedin;
+    @ValidURL(message = "La URL del portafolio no es válida")
     private String portfolio;
+    @ValidProfession(message = "La profesión no es válida")
     private String profession;
+    @ValidSummary(message = "El resumen profesional no es válido")
     private String summary;
     private MultipartFile profileImageFile;
     private String theme;

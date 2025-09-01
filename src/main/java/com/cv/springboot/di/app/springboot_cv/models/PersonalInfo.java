@@ -1,5 +1,6 @@
 package com.cv.springboot.di.app.springboot_cv.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable; // Importando Embeddable para definir una clase que se puede incrustar en otra entidad
 import jakarta.persistence.Transient; // Importando Transient para indicar que un campo no debe ser persistido en la base de datos
 import org.springframework.web.multipart.MultipartFile; // Importando MultipartFile para manejar archivos de imagen
@@ -13,6 +14,7 @@ public class PersonalInfo {
     private String linkedin;
     private String portfolio;
     private String profession;
+    @Column(length = 2000)
     private String summary;
     private String profileImagePath;
     private String theme;

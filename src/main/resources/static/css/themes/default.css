@@ -45,12 +45,14 @@
     line-height: 1.6;
     word-break: break-all;
     overflow-wrap: break-word;
+}
 
 .resume-left a {
     color: #0056b3;
     text-decoration: none;
     word-break: break-all;
     overflow-wrap: break-word;
+}
 
 .resume-left a:hover {
     text-decoration: underline;
@@ -88,6 +90,7 @@
     margin-top: 0;
     word-break: break-all;
     overflow-wrap: break-word;
+}
 
 .resume-right h3 {
     border-bottom: 2px solid #e0e0e0;
@@ -116,4 +119,4 @@
     color: #555;
     line-height: 1.6;
     word-break: break-all;
-    overflow-wrap: break-word;
+}

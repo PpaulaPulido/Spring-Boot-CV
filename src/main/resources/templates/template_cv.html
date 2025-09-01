@@ -38,6 +38,17 @@
       <form id="cvForm" th:action="${editMode ? '/cv/update/' + cvId : '/cv/create'}" th:object="${cvRequest}" method="post" novalidate
         enctype="multipart/form-data">
 
+        <!-- Alert Messages -->
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${param.error}" class="alert alert-danger" th:text="${param.error}"></div>
+        <div th:if="${param.success}" class="alert alert-success" th:text="${param.success}"></div>
+        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+            <ul>
+                <li th:each="err : ${#fields.globalErrors()}" th:text="${err}"></li>
+            </ul>
+        </div>
+
         <div class="form-group">
           <label for="profileImageFile">Foto de CV</label>
           <input type="file" id="profileImageFile" th:field="*{profileImageFile}" accept=".jpg,.jpeg,.png"
