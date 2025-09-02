@@ -1,6 +1,6 @@
-import { initPhoneInput, showAlert, setupPasswordToggle, isValidLength } from './functions.js';
+import { initPhoneInput, showAlert, setupPasswordToggle } from './functions.js';
+import { isValidEmail } from './functions.js';
 
-// Tu función de validación del teléfono
 function validatePhone(iti) {
     if (!iti.isValidNumber()) {
         return "Número de teléfono inválido para el país seleccionado.";
@@ -8,8 +8,7 @@ function validatePhone(iti) {
     return null;
 }
 
-// Regex para validación
-const emailRegex = /^[a-zA-Z0-9._%+-]{3,}@[a-zA-Z0-9.-]{3,}\.(com|co|es|net|org|edu)$/i;
+// Regex para validación de contraseña
 const passRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupPasswordToggle("togglePassword", "password");
     setupPasswordToggle("toggleConfirmPassword", "confirmPassword");
 
-    // Función para mostrar errores
     function showError(input, message) {
         const formGroup = input.closest(".form-group");
         let errorSpan = formGroup.querySelector(".error-message");
@@ -37,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
         input.classList.add("is-invalid");
     }
 
-    // Función para ocultar errores
     function hideError(input) {
         const formGroup = input.closest(".form-group");
         const errorSpan = formGroup.querySelector(".error-message");
@@ -46,54 +43,46 @@ document.addEventListener("DOMContentLoaded", () => {
             errorSpan.classList.remove("has-error");
         }
         input.classList.remove("is-invalid");
-
     }
 
-    // Escucha el evento de envío del formulario
     registerForm.addEventListener("submit", (e) => {
-        e.preventDefault(); // Evita el envío del formulario por defecto
+        e.preventDefault();
 
         let hasErrors = false;
 
-        // Limpiamos los errores anteriores al inicio de la validación
         hideError(emailInput);
         hideError(passwordInput);
         hideError(confirmPasswordInput);
         hideError(phoneInput);
 
-        // Validación del email
+        // ✅ Validación de email con isValidEmail
         const emailValue = emailInput.value.trim();
-        if (!emailRegex.test(emailValue)) {
-            showError(emailInput, 'Formato de correo electrónico inválido. Ej: usuario@dominio.com');
-            hasErrors = true;
-        } else if (emailValue.includes('..') || emailValue.startsWith('.') || emailValue.endsWith('.')) {
-            showError(emailInput, 'El correo electrónico contiene caracteres inválidos o formato incorrecto.');
-            hasErrors = true;
-        } else if (!isValidLength(emailValue, 5, 254)) {
-            showError(emailInput, 'El correo electrónico debe tener entre 5 y 254 caracteres.');
+        const emailError = isValidEmail(emailValue);
+        if (emailError) {
+            showError(emailInput, emailError);
             hasErrors = true;
         }
 
-        // Validación de la contraseña
+        // ✅ Validación de contraseña
         if (!passRegex.test(passwordInput.value)) {
             showError(passwordInput, "La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial.");
             hasErrors = true;
         }
 
-        // Validación de la confirmación de contraseña
+        // ✅ Confirmar contraseña
         if (passwordInput.value !== confirmPasswordInput.value) {
             showError(confirmPasswordInput, "Las contraseñas no coinciden.");
             hasErrors = true;
         }
 
-        // Validación del teléfono
+        // ✅ Validación de teléfono
         const phoneError = validatePhone(iti);
         if (phoneError) {
             showError(phoneInput, phoneError);
             hasErrors = true;
         }
 
-        // Si no hay errores, envía el formulario
+        // ✅ Si no hay errores, enviar formulario
         if (!hasErrors) {
             showAlert({
                 icon: "success",
@@ -111,17 +100,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Validar en tiempo real al cambiar el foco del campo
+    // ✅ Validación en tiempo real de email
     emailInput.addEventListener("blur", () => {
         const emailValue = emailInput.value.trim();
-        hideError(emailInput); // Clear previous error
+        hideError(emailInput);
         if (emailValue) {
-            if (!emailRegex.test(emailValue)) {
-                showError(emailInput, 'Formato de correo electrónico inválido. Ej: usuario@dominio.com');
-            } else if (emailValue.includes('..') || emailValue.startsWith('.') || emailValue.endsWith('.')) {
-                showError(emailInput, 'El correo electrónico contiene caracteres inválidos o formato incorrecto.');
-            } else if (!isValidLength(emailValue, 5, 254)) {
-                showError(emailInput, 'El correo electrónico debe tener entre 5 y 254 caracteres.');
+            const emailError = isValidEmail(emailValue);
+            if (emailError) {
+                showError(emailInput, emailError);
             }
         }
     });

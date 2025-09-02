@@ -338,11 +338,6 @@ export function isValidEmail(email) {
         return "El nombre de usuario no puede ser secuencial o predecible.";
     }
 
-    // 8. Evitar solo letras en la parte local
-    if (/^[a-zA-Z]{3,}$/.test(localPart)) {
-        return "El email debe incluir números o caracteres adicionales, no solo letras.";
-    }
-
     // 9. Validar caracteres del dominio
     if (!/^[a-zA-Z0-9-]+$/.test(domain)) {
         return "El dominio del email contiene caracteres no permitidos.";
