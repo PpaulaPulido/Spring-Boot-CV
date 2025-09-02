@@ -18,12 +18,45 @@ export function initPhoneInput(inputSelector) {
         separateDialCode: true,
         hiddenInput: "full_phone",
         utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-        customPlaceholder: function (selectedCountryPlaceholder, selectedCountryData) {
+        customPlaceholder: function (selectedCountryPlaceholder) {
             return "Ej: " + selectedCountryPlaceholder;
         }
     });
 
+    // Borrar placeholder vacío
     inputPhone.placeholder = "";
+
+    // Función para mostrar mensajes personalizados
+    function getPhoneErrorMessage(errorCode) {
+        switch (errorCode) {
+            case 1: return "El número de teléfono es demasiado corto.";
+            case 2: return "El código de país es inválido.";
+            case 3: return "El número de teléfono es demasiado corto.";
+            case 4: return "El número de teléfono es demasiado largo.";
+            case 5: return "No es un número de teléfono válido.";
+            case 6: return "El número solo es válido localmente.";
+            default: return "Número de teléfono inválido.";
+        }
+    }
+
+    // Validar al salir del campo
+    inputPhone.addEventListener('blur', function () {
+        hideError(inputPhone);
+        if (!iti.isValidNumber()) {
+            const errorMessage = getPhoneErrorMessage(iti.getValidationError());
+            showError(inputPhone, errorMessage);
+        }
+    });
+
+    // Validar en tiempo real
+    inputPhone.addEventListener('input', function () {
+        hideError(inputPhone);
+        if (inputPhone.value.trim() && !iti.isValidNumber()) {
+            const errorMessage = getPhoneErrorMessage(iti.getValidationError());
+            showError(inputPhone, errorMessage);
+        }
+    });
+
     return iti;
 }
 
@@ -171,116 +204,175 @@ export function isLinkedInURL(value) {
     return null;
 }
 
-export function isValidEmail(email) {
-    email = email.trim();
-
-    // Validar longitud total
-    if (email.length < 6 || email.length > 100) {
-        return "El email debe tener entre 6 y 100 caracteres.";
-    }
-
-    // Regex general
-    const regex = /^[a-zA-Z0-9](?!.*[._-]{2})[a-zA-Z0-9._-]{2,}@[a-zA-Z0-9-]{3,}\.(com|co|es|net|org|edu)$/i;
-    if (!regex.test(email)) {
-        return "Formato de email inválido. Ej: usuario123@dominio.com";
-    }
-
-    const [localPart, domainAndExt] = email.split('@');
-    const [domain, extension] = domainAndExt.split('.');
-
-    // No permitir caracteres repetidos más de 2 veces
-    if (/(.)\1\1/.test(localPart)) {
-        return "El nombre de usuario no puede tener caracteres repetidos en exceso.";
-    }
-
-    // No permitir secuencias simples
-    const sequences = ['123', 'abc', 'qwe', 'asd', 'zxc'];
-    if (sequences.some(seq => localPart.toLowerCase().includes(seq))) {
-        return "El nombre de usuario no puede ser secuencial o predecible.";
-    }
-
-    // Evitar solo letras
-    if (/^[a-zA-Z]{3,}$/.test(localPart)) {
-        return "El email debe incluir números o caracteres adicionales, no solo letras.";
-    }
-
-    // Validar dominio
-    if (domain.length < 3 || /^-/.test(domain) || /-$/.test(domain)) {
-        return "El dominio debe tener al menos 3 caracteres y no puede empezar o terminar con guion.";
-    }
-
-    return null; // Todo correcto
-}
-
 export function isValidFullName(value) {
     const trimmedValue = value.trim();
 
-    // 1. Validar que no esté vacío
+    // 1. No vacío
     if (!trimmedValue) {
         return 'El nombre completo no puede estar vacío.';
     }
 
-    // 2. Validar longitud total
+    // 2. Longitud total
     if (trimmedValue.length < 4 || trimmedValue.length > 100) {
         return 'El nombre completo debe tener entre 4 y 100 caracteres.';
     }
 
-    // 3. Validar que tenga al menos dos palabras
-    const nameParts = trimmedValue.split(/\s+/).filter(part => part.length > 0);
+    // 3. Palabras no permitidas
+    const inappropriateWords = [
+        'admin', 'usuario', 'test', 'usertest', 'null', 'undefined', 
+        'name', 'fake', 'demo', 'prueba', 'xxxx', 'aaaa'
+    ];
+    const lowerValue = trimmedValue.toLowerCase();
+    for (const word of inappropriateWords) {
+        if (lowerValue.includes(word)) {
+            return 'El nombre contiene palabras no permitidas.';
+        }
+    }
+
+    // 4. No espacios dobles
+    if (/\s{2,}/.test(trimmedValue)) {
+        return 'El nombre no puede contener espacios dobles.';
+    }
+
+    // 5. Al menos dos palabras
+    const nameParts = trimmedValue.split(/\s+/);
     if (nameParts.length < 2) {
         return 'Debe ingresar al menos un nombre y un apellido.';
     }
 
-    // 4. Validar cada parte del nombre
+    // 6. Máximo tres palabras (opcional, ajustable)
+    if (nameParts.length > 3) {
+        return 'El nombre no puede contener más de tres palabras.';
+    }
+
+    // 7. Validación de cada palabra
+    const allowedLowercaseConnectors = ['de', 'del', 'la', 'las', 'los', 'y', 'san', 'santa'];
     for (let i = 0; i < nameParts.length; i++) {
         const part = nameParts[i];
 
-        // Longitud de cada parte
         if (part.length < 2 || part.length > 25) {
             return `Cada parte del nombre debe tener entre 2 y 25 caracteres. Problema en: "${part}"`;
         }
 
-        // Caracteres permitidos (letras, algunos caracteres especiales)
         if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ'’\-]+$/.test(part)) {
-            return `Solo se permiten letras y algunos caracteres especiales (ñ, acentos, ' y -). Problema en: "${part}"`;
+            return `Solo se permiten letras, guiones, apóstrofos y caracteres acentuados. Problema en: "${part}"`;
         }
 
-        // No más de 2 caracteres repetidos consecutivos
         if (/(.)\1\1/.test(part)) {
             return `No se permiten caracteres repetidos en exceso. Problema en: "${part}"`;
         }
 
-        // No patrones de teclado comunes
         if (isKeyboardPattern(part)) {
             return `El texto parece un patrón de teclado no válido. Problema en: "${part}"`;
         }
 
-        // No secuencias alfanuméricas
         if (isSequential(part)) {
             return `El texto parece una secuencia no válida. Problema en: "${part}"`;
         }
 
-        // Validar que comience con mayúscula (excepto para prefijos como "de", "del")
-        const lowerPart = part.toLowerCase();
-        if (i > 0 && (lowerPart === 'de' || lowerPart === 'del' || lowerPart === 'la' || lowerPart === 'las' || lowerPart === 'los')) {
-            // Los prefijos pueden estar en minúscula
-            continue;
+        if (!/[aeiouáéíóúüAEIOUÁÉÍÓÚÜ]/.test(part)) {
+            return `Cada palabra debe contener al menos una vocal. Problema en: "${part}"`;
         }
 
-        if (!/^[A-ZÁÉÍÓÚÑÜ]/.test(part)) {
-            return `Cada palabra debe comenzar con mayúscula. Problema en: "${part}"`;
+        const lowerPart = part.toLowerCase();
+        if (!allowedLowercaseConnectors.includes(lowerPart)) {
+            if (!/^[A-ZÁÉÍÓÚÑÜ]/.test(part)) {
+                return `Cada palabra debe comenzar con mayúscula. Problema en: "${part}"`;
+            }
         }
     }
 
     return null; // Todo correcto
 }
 
-// Función para detectar patrones de teclado
+export function isValidEmail(email) {
+    email = email.trim();
+
+    // 1. Longitud total
+    if (email.length < 6 || email.length > 100) {
+        return "El email debe tener entre 6 y 100 caracteres.";
+    }
+
+    // 2. Regex estricto para formato general
+    const regex = /^(?!(.*[._-]){3})[a-zA-Z0-9](?!.*[._-]{2})[a-zA-Z0-9._-]{1,62}[a-zA-Z0-9]@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z]{2,})+$/;
+    if (!regex.test(email)) {
+        return "Formato de email inválido. Ej: usuario123@dominio.com";
+    }
+
+    // 3. Separar partes
+    const [localPart, domainAndExt] = email.split('@');
+    const domainParts = domainAndExt.split('.');
+    const domain = domainParts[0];
+    const extension = domainParts.slice(1).join('.');
+
+    // 4. Longitud de partes
+    if (localPart.length < 1 || localPart.length > 64) {
+        return "La parte local del email es demasiado corta o larga.";
+    }
+    if (domainAndExt.length < 4 || domainAndExt.length > 253) {
+        return "El dominio del email es inválido.";
+    }
+
+    // 5. Bloquear dominios temporales
+    const disposableDomains = [
+        'tempmail.com', '10minutemail.com', 'guerrillamail.com', 'mailinator.com'
+    ];
+    if (disposableDomains.includes(domainAndExt.toLowerCase())) {
+        return "No se permiten direcciones de correo temporales.";
+    }
+
+    // 6. Evitar repeticiones excesivas
+    if (/(.)\1{3,}/.test(domain)) {
+        return "El dominio del email contiene caracteres repetidos en exceso.";
+    }
+    if (/(.)\1{2,}/.test(localPart)) {
+        return "El nombre de usuario no puede tener caracteres repetidos en exceso.";
+    }
+
+    // 7. Evitar patrones de teclado y secuencias
+    const sequences = ['123', 'abc', 'qwe', 'asd', 'zxc'];
+    if (isKeyboardPattern(domain) || isSequential(domain)) {
+        return "El dominio del email contiene patrones o secuencias no válidas.";
+    }
+    if (sequences.some(seq => localPart.toLowerCase().includes(seq))) {
+        return "El nombre de usuario no puede ser secuencial o predecible.";
+    }
+
+    // 8. Evitar solo letras en la parte local
+    if (/^[a-zA-Z]{3,}$/.test(localPart)) {
+        return "El email debe incluir números o caracteres adicionales, no solo letras.";
+    }
+
+    // 9. Validar caracteres del dominio
+    if (!/^[a-zA-Z0-9-]+$/.test(domain)) {
+        return "El dominio del email contiene caracteres no permitidos.";
+    }
+    if (domain.startsWith('-') || domain.endsWith('-')) {
+        return "El dominio del email no puede comenzar o terminar con guión.";
+    }
+    if (domain.length < 3) {
+        return "El dominio debe tener al menos 3 caracteres.";
+    }
+
+    // 10. Validar extensiones de dominio permitidas
+    const allowedExtensions = [
+        'com', 'co', 'org', 'net', 'edu', 'gov', 'mil', 'info', 'io', 'me', 'dev', 'tech'
+    ];
+    if (!allowedExtensions.includes(extension.toLowerCase())) {
+        return "Extensión de dominio no permitida. Use .com, .co, .org, .net, etc.";
+    }
+
+    return null; // Todo correcto
+}
+
+// Función para detectar patrones de teclado (mejorada)
 function isKeyboardPattern(text) {
     const lowerText = text.toLowerCase();
     const keyboardPatterns = [
-        'qwerty', 'asdf', 'zxcv', 'poiu', 'lkj', 'mnb',
-        '123', 'abc', 'qwe', 'asd', 'zxc', 'iop', 'jkl', 'bnm'
+        'qwerty', 'asdf', 'zxcv', 'poiu', 'lkj', 'mnb', 'asdfgh', 'qwertyu',
+        '123', 'abc', 'qwe', 'asd', 'zxc', 'iop', 'jkl', 'bnm', '1234', 'abcd',
+        'asdfafd', 'ghajksdhgl', 'erqheorybx', 'avxcv,jz', 'sadfasdf', 'asdghadsghkl',
+        'asdghlakd', 'dfadgafdgdsgdf', 'sfadfa', 'adfgadfg', 'asdfasdf'
     ];
 
     return keyboardPatterns.some(pattern => lowerText.includes(pattern));
@@ -308,6 +400,11 @@ function isSequential(text) {
     }
 
     return false;
+}
+
+function hasExcessiveRepetition(text) {
+    // Checks for any character repeated 4 or more times consecutively
+    return /(.)\1{3,}/.test(text);
 }
 
 export function isValidProfession(value) {
@@ -358,17 +455,59 @@ export function isValidProfession(value) {
 
 // New validation functions
 
-export function isValidAddress(value) {
-    const trimmedValue = value.trim();
-    const regex = /^(?! )[a-zA-ZÀ-ÿ0-9\s,.\-#\/]{10,150}(?<! )$/; // Fixed: Escaped hyphen
+export function isValidAddress(address) {
+    if (!address) {
+        return 'La dirección es obligatoria';
+    }
 
-    if (!regex.test(trimmedValue)) {
-        return "La dirección debe tener entre 10 y 150 caracteres, contener números y letras, y solo se permiten espacios, comas, puntos y guiones. No puede iniciar ni terminar con espacio.";
+    // Normalizar espacios y mayúsculas
+    address = address.trim().replace(/\s+/g, ' ');
+
+    // 1. Longitud mínima y máxima
+    if (address.length < 5 || address.length > 200) {
+        return 'La dirección debe tener entre 5 y 200 caracteres.';
     }
-    // Additional check for ending space if lookbehind is not fully supported or for clarity
-    if (value.endsWith(" ") && trimmedValue.length === value.length) {
-        return "La dirección no puede terminar con espacio.";
+
+    // 2. No solo números
+    if (/^\d+$/.test(address.replace(/\s/g, ''))) {
+        return 'La dirección no puede contener solo números.';
     }
+
+    // 3. Debe contener al menos un número
+    if (!/\d/.test(address)) {
+        return 'La dirección debe contener al menos un número.';
+    }
+
+    // 4. Patrones sospechosos
+    const suspiciousPatterns = [
+        /(.)\1{5,}/,              
+        /(1234|abcd|asdf|qwerty)/i 
+    ];
+    for (const pattern of suspiciousPatterns) {
+        if (pattern.test(address)) {
+            return 'La dirección contiene patrones no válidos.';
+        }
+    }
+
+    // 5. Tipos de vía aceptados
+    const tiposVia = [
+        'Calle', 'Carrera', 'Transversal', 'Avenida',
+        'Diagonal', 'Circular', 'Autopista', 'Pasaje'
+    ];
+
+    // 6. Regex flexible para BIS + orientaciones en cualquier punto lógico
+    const regex = new RegExp(
+        `^(${tiposVia.join('|')})\\s*` + // Tipo de vía
+        `\\d{1,3}[A-Za-z]?(?:\\s+BIS)?(?:\\s+(?:Sur|Norte|Este|Oeste))?\\s*` + // Número de vía + opcionales
+        `#\\s*\\d{1,3}[A-Za-z]?(?:\\s+BIS)?(?:\\s+(?:Sur|Norte|Este|Oeste))?\\s*` + // Complemento + opcionales
+        `-\\s*\\d{1,3}[A-Za-z]?(?:\\s+(?:Sur|Norte|Este|Oeste))?$`, // Número final + opcional
+        'i' // insensible a mayúsculas/minúsculas
+    );
+
+    if (!regex.test(address)) {
+        return 'Formato inválido. Ejemplo: "Calle 45 BIS Sur # 12B - 34 Norte"';
+    }
+
     return null;
 }
 
@@ -436,7 +575,7 @@ export function validarNombreEntidad(valor, tipo) {
     }
 
     // Validar que no contenga caracteres repetidos excesivamente
-    if (/(.)\1{3,}/.test(valor)) {
+    if (hasExcessiveRepetition(valor)) {
         return { valido: false, mensaje: `El ${tipo} contiene caracteres repetidos excesivamente` };
     }
 
@@ -480,24 +619,139 @@ export function normalizeSkillText(s) {
         .replace(/[\u0300-\u036f]/g, ""); // quita acentos
 }
 
+export function isValidTechnicalSkillName(value) {
+    const v = (value || "").trim();
+
+    // Longitud
+    if (v.length < 2 || v.length > 50) {
+        return "La habilidad técnica debe tener entre 2 y 50 caracteres.";
+    }
+
+    // Permitir letras, números, espacios y símbolos comunes
+    if (!/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.+#()_\-\/&]+$/.test(v)) {
+        return "La habilidad técnica contiene caracteres no permitidos.";
+    }
+
+    // Evitar repeticiones exageradas de caracteres
+    if (/(.)\1{3,}/.test(v)) {
+        return "La habilidad técnica no puede repetir el mismo carácter más de 4 veces seguidas.";
+    }
+
+    // Debe contener al menos una palabra de 2 o más letras seguidas
+    if (!/\b[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]{2,}\b/.test(v)) {
+        return "La habilidad técnica debe contener al menos una palabra válida.";
+    }
+
+    // Evitar paréntesis con menos de 3 caracteres dentro
+    if (/\([^)]{0,2}\)/.test(v)) {
+        return "El texto entre paréntesis es demasiado corto o inválido.";
+    }
+
+    // Lista ampliada de palabras basura
+    const basura = [
+        "asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz",
+        "dfadgafdgdsgdf", "sfadfa", "afdadsf", "hñljkñh", "eiruqpowieyt",
+        "cxvbzm", "asdfasdf", "adfgadfg", "sadfasdf", "ghajksdhgl"
+    ];
+    const n = normalizeSkillText(v);
+    if (basura.some(b => n.includes(b))) {
+        return "La habilidad técnica parece texto de prueba o inválido.";
+    }
+
+    // Detectar patrones de teclado
+    if (isKeyboardSequence(v)) {
+        return "La habilidad técnica parece un patrón de teclado no válido.";
+    }
+
+    // Validar proporción vocales/consonantes
+    if (!hasValidVowelConsonantRatio(v)) {
+        return "La habilidad técnica no tiene una proporción válida de vocales y consonantes.";
+    }
+
+    // Evitar spam de caracteres especiales
+    if (isSpecialCharacterSpam(v)) {
+        return "La habilidad técnica contiene demasiados caracteres especiales en relación con las letras.";
+    }
+
+    // Detectar patrones repetitivos
+    if (hasRepeatingPatterns(v)) {
+        return "La habilidad técnica contiene patrones repetitivos no válidos.";
+    }
+
+    // Validar que no haya secuencias largas de consonantes
+    if (/[bcdfghjklmnpqrstvwxyzñ]{5,}/i.test(v.replace(/\s/g, ''))) {
+        return "La habilidad técnica parece contener secuencias de consonantes muy largas.";
+    }
+
+    // Validar que cada palabra tenga vocales (con excepciones para C++, C#, etc.)
+    const words = v.split(/\s+/);
+    for (const word of words) {
+        if (/^(c#|c\+\+)$/i.test(word)) continue;
+        if (word.length > 2 && !/[aeiouáéíóú]/i.test(word)) {
+            return `El texto en la habilidad técnica contiene palabras sin vocales como \"${word}\".`;
+        }
+    }
+
+    return null;
+}
+
 export function isValidSoftSkillName(value) {
     const v = (value || "").trim();
 
+    // Longitud
     if (v.length < 2 || v.length > 50) {
         return "La habilidad blanda debe tener entre 2 y 50 caracteres.";
     }
-    // letras + espacios + guion y apóstrofo, con acentos
-    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'’-]+$/.test(v)) {
-        return "La habilidad blanda solo puede contener letras, espacios, guiones y apóstrofos.";
+
+    // Permitir letras, espacios y algunos símbolos comunes (similar a technical skills pero más restrictivo)
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s.,\-()]+$/.test(v)) {
+        return "La habilidad blanda contiene caracteres no permitidos.";
     }
+
+    // Evitar repeticiones exageradas de caracteres
     if (/(.)\1{3,}/.test(v)) {
-        return "La habilidad blanda no puede repetir el mismo carácter más de 3 veces seguidas.";
+        return "La habilidad blanda no puede repetir el mismo carácter más de 4 veces seguidas.";
     }
-    // Evita basura tipo 'asdf', 'qwerty', 'lorem', etc.
-    const basura = ["asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz"];
+
+    // Debe contener al menos una palabra de 2 o más letras seguidas
+    if (!/\b[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]{2,}\b/.test(v)) {
+        return "La habilidad blanda debe contener al menos una palabra válida.";
+    }
+
+    // Evitar paréntesis con menos de 3 caracteres dentro
+    if (/\([^)]{0,2}\)/.test(v)) {
+        return "El texto entre paréntesis es demasiado corto o inválido.";
+    }
+
+    // Lista ampliada de palabras basura
+    const basura = [
+        "asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz",
+        "dfadgafdgdsgdf", "sfadfa", "afdadsf", "hñljkñh", "eiruqpowieyt",
+        "cxvbzm", "asdfasdf", "adfgadfg", "sadfasdf", "ghajksdhgl"
+    ];
     const n = normalizeSkillText(v);
     if (basura.some(b => n.includes(b))) {
         return "La habilidad blanda parece texto de prueba o inválido.";
+    }
+
+    // Detectar patrones de teclado
+    if (isKeyboardSequence(v)) {
+        return "La habilidad blanda parece un patrón de teclado no válido.";
+    }
+
+    // Validar proporción vocales/consonantes
+    if (!hasValidVowelConsonantRatio(v)) {
+        return "La habilidad blanda no tiene una proporción válida de vocales y consonantes.";
+    }
+
+    // Evitar spam de caracteres especiales (más restrictivo para soft skills)
+    if (isSpecialCharacterSpam(v, true)) { // Pass true for soft skills to be more strict
+        return "La habilidad blanda contiene demasiados caracteres especiales en relación con las letras.";
+    }
+
+    // Detectar patrones repetitivos
+    if (hasRepeatingPatterns(v)) {
+        return "La habilidad blanda contiene patrones repetitivos no válidos.";
     }
 
     // Validar que no haya secuencias largas de consonantes
@@ -516,58 +770,54 @@ export function isValidSoftSkillName(value) {
     return null;
 }
 
-export function isValidTechnicalSkillName(value) {
-    const v = (value || "").trim();
-
-    // Longitud
-    if (v.length < 2 || v.length > 50) {
-        return "La habilidad técnica debe tener entre 2 y 50 caracteres.";
-    }
-
-    // Permitir letras, números, espacios y símbolos comunes
-    if (!/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s.+#()_\-\/&]+$/.test(v)) {
-        return "La habilidad técnica contiene caracteres no permitidos.";
-    }
-
-    // Evitar repeticiones exageradas de caracteres
-    if (/(.)\1{4,}/.test(v)) {
-        return "La habilidad técnica no puede repetir el mismo carácter más de 4 veces seguidas.";
-    }
-
-    // Debe contener al menos una palabra de 2 o más letras seguidas
-    if (!/\b[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]{2,}\b/.test(v)) {
-        return "La habilidad técnica debe contener al menos una palabra válida.";
-    }
-
-    // Evitar paréntesis con menos de 3 caracteres dentro (probable basura)
-    if (/\([^)]{0,2}\)/.test(v)) {
-        return "El texto entre paréntesis es demasiado corto o inválido.";
-    }
-
-    // Bloquear palabras basura conocidas
-    const basura = ["asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz", "dfadgafdgdsgdf", "sfadfa"];
-    const n = normalizeSkillText(v);
-    if (basura.some(b => n.includes(b))) {
-        return "La habilidad técnica parece texto de prueba o inválido.";
-    }
-
-    // Validar que no haya secuencias largas de consonantes
-    if (/[bcdfghjklmnpqrstvwxyzñ]{5,}/i.test(v.replace(/\s/g, ''))) {
-        return "La habilidad técnica parece contener secuencias de consonantes muy largas.";
-    }
-
-    // Validar que cada palabra tenga vocales (con excepciones para C++, C#, etc.)
-    const words = v.split(/\s+/);
-    for (const word of words) {
-        // Excepciones para lenguajes de programación comunes
-        if (/^(c#|c\+\+)$/i.test(word)) continue;
-
-        if (word.length > 2 && !/[aeiouáéíóú]/i.test(word)) {
-            return `El texto en la habilidad técnica contiene palabras sin vocales como \"${word}\".`;
+// Detectar secuencias de teclado
+function isKeyboardSequence(text) {
+    const keyboardRows = [
+        'qwertyuiop', 'asdfghjkl', 'zxcvbnm',
+        '1234567890', 'poiuytrewq', 'lkjhgfdsa', 'mnbvcxz'
+    ];
+    const lowerText = text.toLowerCase().replace(/[^a-z0-9]/g, '');
+    for (let i = 0; i <= lowerText.length - 4; i++) {
+        const segment = lowerText.substring(i, i + 4);
+        for (const row of keyboardRows) {
+            if (row.includes(segment)) {
+                return true;
+            }
         }
     }
+    return false;
+}
 
-    return null;
+// Validar proporción vocales/consonantes
+function hasValidVowelConsonantRatio(text) {
+    const cleanText = text.replace(/[^a-záéíóúñü]/gi, '');
+    if (cleanText.length < 4) return true;
+    const vowelCount = (cleanText.match(/[aeiouáéíóúü]/gi) || []).length;
+    const vowelRatio = vowelCount / cleanText.length;
+    return vowelRatio >= 0.15 && vowelRatio <= 0.85;
+}
+
+// Detectar spam de caracteres especiales
+function isSpecialCharacterSpam(text, isSoftSkill = false) {
+    const letterCount = (text.match(/[a-záéíóúñü]/gi) || []).length;
+    // Count any character that is not a letter, number, or space
+    const specialCharCount = (text.match(/[^a-zA-Z0-9áéíóúÁÉÍÓÚñÑüÜ\s]/g) || []).length;
+    if (isSoftSkill) {
+        return specialCharCount > letterCount * 0.3; // Más estricto para soft skills
+    }
+    return specialCharCount > letterCount;
+}
+
+// Detectar patrones repetitivos
+function hasRepeatingPatterns(text) {
+    const lowerText = text.toLowerCase();
+    const patterns = [
+        /(.)\1{2,}/,
+        /(..)\1{2,}/,
+        /(...)\1{2,}/,
+        /(asd|qwe|zxc|jkl|iop|bnm){2,}/i
+    ];
+    return patterns.some(pattern => pattern.test(lowerText));
 }
 
 export function isValidTechnicalCategory(value) {
@@ -579,7 +829,7 @@ export function isValidTechnicalCategory(value) {
     if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(v)) {
         return "La categoría solo puede contener letras y espacios.";
     }
-    if (/(.)\1{3,}/.test(v)) {
+    if (hasExcessiveRepetition(v)) {
         return "La categoría no puede repetir el mismo carácter más de 3 veces seguidas.";
     }
     const basura = ["asdf", "qwerty", "lorem", "ipsum", "test", "xxxxx", "zzzzz"];
